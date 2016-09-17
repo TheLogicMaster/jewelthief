@@ -1,0 +1,313 @@
+
+textures.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Cloud
+  rotate: false
+  xy: 1, 39
+  size: 71, 24
+  orig: 71, 24
+  offset: 0, 0
+  index: -1
+BigBandit
+  rotate: false
+  xy: 1, 5
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings
+  rotate: false
+  xy: 35, 5
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Sailboat
+  rotate: false
+  xy: 74, 36
+  size: 32, 27
+  orig: 32, 27
+  offset: 0, 0
+  index: -1
+BluePlayer
+  rotate: false
+  xy: 108, 31
+  size: 30, 32
+  orig: 30, 32
+  offset: 0, 0
+  index: -1
+BluePlayerRight
+  rotate: false
+  xy: 140, 31
+  size: 30, 32
+  orig: 30, 32
+  offset: 0, 0
+  index: -1
+RedPlayer
+  rotate: false
+  xy: 172, 31
+  size: 30, 32
+  orig: 30, 32
+  offset: 0, 0
+  index: -1
+RedPlayerRight
+  rotate: false
+  xy: 204, 31
+  size: 30, 32
+  orig: 30, 32
+  offset: 0, 0
+  index: -1
+WhitePlayer
+  rotate: false
+  xy: 236, 31
+  size: 30, 32
+  orig: 30, 32
+  offset: 0, 0
+  index: -1
+WhitePlayerRight
+  rotate: false
+  xy: 268, 31
+  size: 30, 32
+  orig: 30, 32
+  offset: 0, 0
+  index: -1
+Sphinx
+  rotate: false
+  xy: 300, 36
+  size: 29, 27
+  orig: 29, 27
+  offset: 0, 0
+  index: -1
+Battleship
+  rotate: false
+  xy: 331, 40
+  size: 32, 23
+  orig: 32, 23
+  offset: 0, 0
+  index: -1
+Bat
+  rotate: false
+  xy: 365, 45
+  size: 32, 18
+  orig: 32, 18
+  offset: 0, 0
+  index: -1
+Helicopter
+  rotate: false
+  xy: 399, 48
+  size: 32, 15
+  orig: 32, 15
+  offset: 0, 0
+  index: -1
+Wizard
+  rotate: false
+  xy: 69, 4
+  size: 23, 30
+  orig: 23, 30
+  offset: 0, 0
+  index: -1
+Bandit
+  rotate: false
+  xy: 433, 42
+  size: 28, 21
+  orig: 28, 21
+  offset: 0, 0
+  index: -1
+Camel
+  rotate: false
+  xy: 463, 43
+  size: 27, 20
+  orig: 27, 20
+  offset: 0, 0
+  index: -1
+Soldier
+  rotate: false
+  xy: 94, 2
+  size: 11, 32
+  orig: 11, 32
+  offset: 0, 0
+  index: -1
+Battlecopter
+  rotate: false
+  xy: 107, 12
+  size: 28, 17
+  orig: 28, 17
+  offset: 0, 0
+  index: -1
+Diamond
+  rotate: false
+  xy: 137, 6
+  size: 21, 23
+  orig: 21, 23
+  offset: 0, 0
+  index: -1
+Peridot
+  rotate: false
+  xy: 492, 46
+  size: 17, 17
+  orig: 17, 17
+  offset: 0, 0
+  index: -1
+Ruby
+  rotate: false
+  xy: 160, 12
+  size: 17, 17
+  orig: 17, 17
+  offset: 0, 0
+  index: -1
+Topaz
+  rotate: false
+  xy: 179, 12
+  size: 17, 17
+  orig: 17, 17
+  offset: 0, 0
+  index: -1
+flag_germany
+  rotate: false
+  xy: 198, 13
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+flag_spain
+  rotate: false
+  xy: 216, 13
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+flag_usa
+  rotate: false
+  xy: 234, 13
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+Emerald
+  rotate: false
+  xy: 252, 12
+  size: 13, 17
+  orig: 13, 17
+  offset: 0, 0
+  index: -1
+Sapphire
+  rotate: false
+  xy: 267, 12
+  size: 13, 17
+  orig: 13, 17
+  offset: 0, 0
+  index: -1
+Citrine
+  rotate: false
+  xy: 282, 11
+  size: 11, 18
+  orig: 11, 18
+  offset: 0, 0
+  index: -1
+star
+  rotate: false
+  xy: 107, 1
+  size: 9, 9
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
+Coin
+  rotate: false
+  xy: 198, 1
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+particle
+  rotate: false
+  xy: 210, 1
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+Pearl
+  rotate: false
+  xy: 222, 1
+  size: 10, 10
+  orig: 10, 10
+  offset: 0, 0
+  index: -1
+Drop
+  rotate: false
+  xy: 295, 11
+  size: 11, 18
+  orig: 11, 18
+  offset: 0, 0
+  index: -1
+Gold
+  rotate: false
+  xy: 308, 22
+  size: 16, 12
+  orig: 16, 12
+  offset: 0, 0
+  index: -1
+Amethyst
+  rotate: false
+  xy: 308, 7
+  size: 13, 13
+  orig: 13, 13
+  offset: 0, 0
+  index: -1
+Aquamarine
+  rotate: false
+  xy: 365, 30
+  size: 13, 13
+  orig: 13, 13
+  offset: 0, 0
+  index: -1
+Onyx
+  rotate: false
+  xy: 380, 30
+  size: 13, 13
+  orig: 13, 13
+  offset: 0, 0
+  index: -1
+Garnet
+  rotate: false
+  xy: 326, 18
+  size: 11, 16
+  orig: 11, 16
+  offset: 0, 0
+  index: -1
+Opal
+  rotate: false
+  xy: 339, 21
+  size: 11, 17
+  orig: 11, 17
+  offset: 0, 0
+  index: -1
+checkbox_checked
+  rotate: false
+  xy: 352, 27
+  size: 11, 11
+  orig: 11, 11
+  offset: 0, 0
+  index: -1
+Spider
+  rotate: false
+  xy: 323, 5
+  size: 12, 11
+  orig: 12, 11
+  offset: 0, 0
+  index: -1
+checkbox_unchecked
+  rotate: false
+  xy: 352, 14
+  size: 11, 11
+  orig: 11, 11
+  offset: 0, 0
+  index: -1
+fade
+  rotate: false
+  xy: 69, 36
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1

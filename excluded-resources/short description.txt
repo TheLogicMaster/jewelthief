@@ -1,0 +1,1 @@
+A remake of the legendary Jewel Thief game from 1991 for Android and Desktop using the libGDX framework.
