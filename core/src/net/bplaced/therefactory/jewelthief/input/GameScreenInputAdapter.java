@@ -2,7 +2,7 @@ package net.bplaced.therefactory.jewelthief.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -16,7 +16,7 @@ import net.bplaced.therefactory.jewelthief.ui.Hud;
 /**
  * The input handler for the GameScreen.
  */
-public class GameInputHandler implements InputProcessor {
+public class GameScreenInputAdapter extends InputAdapter {
 
     private final Hud hud;
     private final Game game;
@@ -27,7 +27,7 @@ public class GameInputHandler implements InputProcessor {
     private int numTouches = 0;
     private boolean allowButtonClick; // prevent button click when dialog appears while still dragging player around
 
-    public GameInputHandler(Game game, Viewport viewport, Hud hud) {
+    public GameScreenInputAdapter(Game game, Viewport viewport, Hud hud) {
         this.game = game;
         this.viewport = viewport;
         this.hud = hud;
@@ -40,10 +40,11 @@ public class GameInputHandler implements InputProcessor {
         if (keycode == Keys.BACK) {
             if (game.isMenuShown()) {
                 JewelThief.getInstance().switchToMainMenu();
+                return true;
             } else {
                 game.showMenu();
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -61,11 +62,13 @@ public class GameInputHandler implements InputProcessor {
                 game.switchDebug();
                 return true;
             }
-            if (character == '2') {
+            else if (character == '2') {
                 game.rearrangeEnemies();
+                return true;
             }
-            if (character == '3') {
+            else if (character == '3') {
                 game.collectAllJewels();
+                return true;
             }
         }
         return false;
@@ -75,7 +78,7 @@ public class GameInputHandler implements InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         numTouches++;
         if (!(JewelThief.getInstance().getScreen() instanceof GameScreen)) {
-            return false;
+            return true;
         }
         pressOrReleaseButtonAt(viewport.unproject(new Vector3(screenX, screenY, 0)));
         return true;
@@ -88,20 +91,20 @@ public class GameInputHandler implements InputProcessor {
         releaseAllButtons();
 
         // check if button has been clicked
-        Vector3 screenCoord = viewport.unproject(new Vector3(screenX, screenY, 0));
+        Vector3 touchCoordinates = viewport.unproject(new Vector3(screenX, screenY, 0));
         if (!game.isMenuShown() && game.getPlayer().getNumMen() > 0
-                && Util.within(screenCoord, hud.getShowMenuButton())) {
+                && Util.within(touchCoordinates, hud.getShowMenuButton())) {
             game.showMenu();
         } else if (game.getPlayer().getNumMen() <= 0) {
             if (allowButtonClick) {
                 allowButtonClick = false;
 
                 // play again? yes
-                if (Util.within(screenCoord, game.getGameOverPlayAgainBtn())) {
+                if (Util.within(touchCoordinates, game.getGameOverPlayAgainBtn())) {
                     game.resetGame();
                 }
                 // play again? no
-                else if (Util.within(screenCoord, game.getGameOverExitBtn())) {
+                else if (Util.within(touchCoordinates, game.getGameOverExitBtn())) {
                     JewelThief.getInstance().switchToMainMenu();
                 }
             } else {
@@ -109,19 +112,18 @@ public class GameInputHandler implements InputProcessor {
             }
         } else if (game.isMenuShown()) {
             // yes
-            if (Util.within(screenCoord, game.getMenuYesBtn())) {
+            if (Util.within(touchCoordinates, game.getMenuYesBtn())) {
                 JewelThief.getInstance().switchToMainMenu();
             }
             // no
-            else if (Util.within(screenCoord, game.getMenuNoBtn())) {
+            else if (Util.within(touchCoordinates, game.getMenuNoBtn())) {
                 game.hideMenu();
             }
             // restart
-            else if (Util.within(screenCoord, game.getMenuRestartBtn())) {
+            else if (Util.within(touchCoordinates, game.getMenuRestartBtn())) {
                 game.resetGame();
             }
         }
-
         return true;
     }
 
@@ -136,21 +138,21 @@ public class GameInputHandler implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        Vector3 unprojectedCoordinates = viewport.unproject(new Vector3(screenX, screenY, 0));
+        Vector3 touchCoordinates = viewport.unproject(new Vector3(screenX, screenY, 0));
         if (game.isPaused()) {
-            pressOrReleaseButtonAt(unprojectedCoordinates);
+            pressOrReleaseButtonAt(touchCoordinates);
         } else {
             if (playerDragging && numTouches == 1) {
 
                 // do not exceed right border
-                float newX = Math.min(unprojectedCoordinates.x - deltaX, game.getBackground().getX() + game.getBackground().getWidth()
+                float newX = Math.min(touchCoordinates.x - deltaX, game.getBackground().getX() + game.getBackground().getWidth()
                         - game.getPlayer().getSprite().getWidth() / 2 - 1);
 
                 // do not exceed left border
                 newX = Math.max(game.getBackground().getX() + game.getPlayer().getSprite().getWidth() / 2, newX);
 
                 // do not exceed lower border
-                float newY = Math.max(unprojectedCoordinates.y - deltaY, game.getBackground().getY() + game.getPlayer().getSprite().getHeight() / 2);
+                float newY = Math.max(touchCoordinates.y - deltaY, game.getBackground().getY() + game.getPlayer().getSprite().getHeight() / 2);
 
                 // do not exceed upper border
                 newY = Math.min(game.getBackground().getY() + game.getBackground().getHeight() - game.getPlayer().getSprite().getHeight() / 2 - 1, newY);
@@ -160,22 +162,10 @@ public class GameInputHandler implements InputProcessor {
                 playerDragging = true;
             }
             // delta between touch point and player position
-            deltaX = (unprojectedCoordinates.x - game.getPlayer().getPosition().x);
-            deltaY = (unprojectedCoordinates.y - game.getPlayer().getPosition().y);
+            deltaX = (touchCoordinates.x - game.getPlayer().getPosition().x);
+            deltaY = (touchCoordinates.y - game.getPlayer().getPosition().y);
         }
         return true;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     private void pressOrReleaseButtonAt(Vector3 screenCoord) {

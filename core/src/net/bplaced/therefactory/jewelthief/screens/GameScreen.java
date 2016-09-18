@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import net.bplaced.therefactory.jewelthief.Game;
 import net.bplaced.therefactory.jewelthief.actors.Player;
 import net.bplaced.therefactory.jewelthief.constants.Config;
-import net.bplaced.therefactory.jewelthief.input.GameInputHandler;
+import net.bplaced.therefactory.jewelthief.input.GameScreenInputAdapter;
 import net.bplaced.therefactory.jewelthief.ui.Hud;
 
 public class GameScreen extends ScreenAdapter {
@@ -41,7 +41,7 @@ public class GameScreen extends ScreenAdapter {
         super.show();
         hud.show();
         game.show();
-        Gdx.input.setInputProcessor(new GameInputHandler(game, viewport, hud));
+        Gdx.input.setInputProcessor(new GameScreenInputAdapter(game, viewport, hud));
     }
 
     @Override

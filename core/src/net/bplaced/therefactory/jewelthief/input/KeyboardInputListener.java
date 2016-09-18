@@ -7,7 +7,7 @@ import net.bplaced.therefactory.jewelthief.constants.Config;
 import net.bplaced.therefactory.jewelthief.constants.I18NKeys;
 import net.bplaced.therefactory.jewelthief.net.HTTP;
 
-public class KeyboardInput implements TextInputListener {
+public class KeyboardInputListener implements TextInputListener {
 
     @Override
     public void input(String text) {

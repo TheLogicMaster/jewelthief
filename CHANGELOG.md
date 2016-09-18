@@ -1,6 +1,13 @@
 Jewel Thief - Changelog
 =========
 
+### Version 1.0.8 - September 18, 2016
+
+* Inverted scrolling direction of highscores
+* Improved translation texts
+* Fixed wrong multiplexing of touch input events
+* Optimized code 
+
 ### Version 1.0.7 - September 15, 2016
 
 * Added a scrollbar to highscores
@@ -34,7 +41,7 @@ Jewel Thief - Changelog
 ### Version 1.0.2 - August 24, 2016
 
 * Your best score is now also displayed when being offline
-* Optimized Code
+* Optimized code
 
 ### Version 1.0.1 - August 24, 2016
 

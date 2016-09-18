@@ -1,8 +1,6 @@
 package net.bplaced.therefactory.jewelthief.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
@@ -22,17 +20,24 @@ import net.bplaced.therefactory.jewelthief.JewelThief;
 import net.bplaced.therefactory.jewelthief.constants.Config;
 import net.bplaced.therefactory.jewelthief.constants.I18NKeys;
 import net.bplaced.therefactory.jewelthief.constants.PrefsKeys;
-import net.bplaced.therefactory.jewelthief.input.KeyboardInput;
+import net.bplaced.therefactory.jewelthief.input.MenuScreenInputAdapter;
 import net.bplaced.therefactory.jewelthief.misc.Util;
-import net.bplaced.therefactory.jewelthief.net.HTTP;
 import net.bplaced.therefactory.jewelthief.ui.buttons.GrayButton;
 import net.bplaced.therefactory.jewelthief.ui.buttons.GrayStateButton;
 
-public class MenuScreen extends ScreenAdapter implements InputProcessor {
+public class MenuScreen extends ScreenAdapter {
 
-    private boolean showSettings = false;
-    private boolean showAbout = false;
-    private boolean showHighscores = false;
+    public enum MenuState {
+        ShowMenu,
+        ShowSettings,
+        ShowAbout,
+        ShowHighscores,
+        ShowPromo
+    }
+
+    private MenuState menuState;
+    private MenuScreenInputAdapter inputHandler;
+    private float scrollbarPosition;
 
     private final SpriteBatch batch;
     private final ShapeRenderer sr;
@@ -49,18 +54,18 @@ public class MenuScreen extends ScreenAdapter implements InputProcessor {
     private final Sprite badge;
     private final Sprite[] stars;
 
-    private final GrayStateButton soundSettingButton;
-    private final GrayStateButton musicSettingButton;
-    private final GrayStateButton languageSettingButton;
-    private final GrayButton resetHighscoreSettingButton;
-    private final GrayButton playernameSettingButton;
-    private final GrayButton singlePlayerButton;
-    private final GrayButton highscoresButton;
-    private final GrayButton settingsButton;
-    private final GrayButton aboutButton;
-    private final GrayButton updateHighscoresButton;
-    private final GrayButton returnToMainMenuButton;
-    private final GrayButton licenseButton;
+    public final GrayStateButton soundSettingButton;
+    public final GrayStateButton musicSettingButton;
+    public final GrayStateButton languageSettingButton;
+    public final GrayButton resetHighscoreSettingButton;
+    public final GrayButton playernameSettingButton;
+    public final GrayButton singlePlayerButton;
+    public final GrayButton highscoresButton;
+    public final GrayButton settingsButton;
+    public final GrayButton aboutButton;
+    public final GrayButton updateHighscoresButton;
+    public final GrayButton returnToMainMenuButton;
+    public final GrayButton licenseButton;
 
     private final OrthographicCamera camera;
     private final FitViewport viewport;
@@ -68,30 +73,24 @@ public class MenuScreen extends ScreenAdapter implements InputProcessor {
     private final BitmapFont font;
     private final float[] starSpeeds;
     private final float borderSize;
-    private final KeyboardInput listener;
-    private final Preferences prefs;
 
     private String[] highscores;
-    private int numTouches;
     private boolean fetchingHighscores;
+
+    private final Preferences prefs;
     private I18NBundle bundle;
     private int showLicenseYOffset = 0;
-    private float touchStartY; // required for highscore list scrolling
-    private float deltaY; // required for highscore list scrolling
-    private float lastDeltaY; // required for highscore list scrolling
-    private boolean touchDragging;
-    private long timestampLastClickOnResetHighscoreSettingButton = 0; // only reset highscore when tapped twice within x seconds
-    private boolean showPromo;
 
     public MenuScreen(SpriteBatch batch, ShapeRenderer sr) {
 
         // initialize member variables
+        menuState = MenuState.ShowMenu;
         prefs = JewelThief.getInstance().getPreferences();
         this.batch = batch;
         this.sr = sr;
         this.bundle = JewelThief.getInstance().getBundle();
+        this.highscores = new String[0];
         font = JewelThief.getInstance().getFont();
-        listener = new KeyboardInput();
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT, camera);
@@ -182,14 +181,56 @@ public class MenuScreen extends ScreenAdapter implements InputProcessor {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(this);
+        inputHandler = new MenuScreenInputAdapter(this, viewport);
+        Gdx.input.setInputProcessor(inputHandler);
         Gdx.input.setCatchBackKey(true);
-        timestampLastClickOnResetHighscoreSettingButton = 0;
 
         // play background music
         if (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC)) {
             JewelThief.getInstance().playMusicFile(false);
         }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        sr.dispose();
+    }
+
+    private void update(float delta) {
+        inputHandler.update(delta);
+
+        // stars
+        for (int i = 0; i < stars.length; i++) {
+            Sprite star = stars[i];
+            if (star.getY() < borderSize) {
+                star.setY(Config.WINDOW_HEIGHT - star.getHeight());
+            } else {
+                star.setY(star.getY() - starSpeeds[i]);
+            }
+        }
+
+        // images on buttons
+        player.setPosition(singlePlayerButton.getX() + singlePlayerButton.getWidth() / 2 - player.getWidth() / 2
+                + singlePlayerButton.getPressedOffset(), singlePlayerButton.getY() + singlePlayerButton.getHeight() / 2
+                - 5 - singlePlayerButton.getPressedOffset());
+        redplayer.setPosition(highscoresButton.getX() + highscoresButton.getWidth() / 2 - redplayer.getWidth() / 2
+                + highscoresButton.getPressedOffset(), highscoresButton.getY() + highscoresButton.getHeight() / 2 - 3
+                - highscoresButton.getPressedOffset());
+        blueplayer.setPosition(redplayer.getX() - 5, redplayer.getY() - 5);
+        settings.setPosition(settingsButton.getX() + settingsButton.getWidth() / 2 - settings.getWidth() / 2
+                + settingsButton.getPressedOffset(), 52 - settingsButton.getPressedOffset());
+        soldier.setPosition(
+                aboutButton.getX() + aboutButton.getWidth() / 2 - soldier.getWidth() / 2
+                        + aboutButton.getPressedOffset() - 1, 63 - aboutButton.getPressedOffset());
+        pearl.setPosition(
+                aboutButton.getX() + aboutButton.getWidth() / 2 - soldier.getWidth() / 2
+                        + aboutButton.getPressedOffset(), 50 - aboutButton.getPressedOffset());
     }
 
     @Override
@@ -218,17 +259,17 @@ public class MenuScreen extends ScreenAdapter implements InputProcessor {
         title.setPosition(Config.WINDOW_WIDTH / 2 - title.getWidth() / 2, Config.WINDOW_HEIGHT / 2 + 70
                 + showLicenseYOffset);
 
-        if (!showHighscores)
+        if (menuState != MenuState.ShowHighscores)
             title.draw(batch);
         batch.end();
 
         sr.setProjectionMatrix(camera.combined);
         sr.begin(ShapeType.Filled);
         sr.setColor(Color.BLACK);
-        sr.rect(0, 0, Config.WINDOW_WIDTH, showHighscores ? Config.WINDOW_HEIGHT - 70 : skyline.getY()
+        sr.rect(0, 0, Config.WINDOW_WIDTH, menuState == MenuState.ShowHighscores ? Config.WINDOW_HEIGHT - 70 : skyline.getY()
                 + showLicenseYOffset);
 
-        if (showPromo) {
+        if (menuState == MenuState.ShowPromo) {
             sr.end();
             batch.begin();
             batch.draw(badge, 0, 0, (int)(646/2.1), (int)(250/2.1));
@@ -238,18 +279,22 @@ public class MenuScreen extends ScreenAdapter implements InputProcessor {
             batch.end();
         } else {
             // buttons
-            if (showAbout || showHighscores || showSettings) {
+            if (menuState == MenuState.ShowAbout || menuState == MenuState.ShowHighscores || menuState == MenuState.ShowSettings) {
                 returnToMainMenuButton.renderShape(sr);
-                if (showHighscores) {
-                    updateHighscoresButton.renderShape(sr);
-                } else if (showSettings) {
-                    soundSettingButton.renderShape(sr);
-                    musicSettingButton.renderShape(sr);
-                    playernameSettingButton.renderShape(sr);
-                    languageSettingButton.renderShape(sr);
-                    resetHighscoreSettingButton.renderShape(sr);
-                } else if (showAbout) {
-                    licenseButton.renderShape(sr);
+                switch (getState()) {
+                    case ShowHighscores:
+                        updateHighscoresButton.renderShape(sr);
+                        break;
+                    case ShowSettings:
+                        soundSettingButton.renderShape(sr);
+                        musicSettingButton.renderShape(sr);
+                        playernameSettingButton.renderShape(sr);
+                        languageSettingButton.renderShape(sr);
+                        resetHighscoreSettingButton.renderShape(sr);
+                        break;
+                    case ShowAbout:
+                        licenseButton.renderShape(sr);
+                        break;
                 }
             } else {
                 singlePlayerButton.renderShape(sr);
@@ -260,324 +305,97 @@ public class MenuScreen extends ScreenAdapter implements InputProcessor {
             sr.end();
 
             batch.begin();
-            if (showAbout || showHighscores || showSettings) {
+            if (menuState == MenuState.ShowAbout || menuState == MenuState.ShowHighscores || menuState == MenuState.ShowSettings) {
                 returnToMainMenuButton.renderCaption(batch);
                 skyline.setY(Config.WINDOW_HEIGHT - 173 + showLicenseYOffset);
             }
-            if (showHighscores) {
-                updateHighscoresButton.setCaption(bundle.get(I18NKeys.UPDATE));
-                updateHighscoresButton.renderCaption(batch);
-                skyline.setY(Config.WINDOW_HEIGHT - 75);
-                if (fetchingHighscores) {
-                    font.setColor(Color.WHITE);
-                    font.draw(batch, bundle.get(I18NKeys.FETCHING) + "...", 15, 205);
-                } else {
-                    if (highscores != null) {
-                        for (int i = 0; i < highscores.length; i++) {
-                            font.setColor(i == getMyRank() ? Color.GREEN : Color.WHITE);
-                            float posY = (205 - i * Config.HIGHSCORES_LINE_HEIGHT + deltaY);
-                            if (posY < skyline.getY()) { // lines disappear when over skyline sprite
-                                font.draw(batch, highscores[i], 15, posY);
+            switch (getState()){
+                case ShowHighscores:
+                    updateHighscoresButton.setCaption(bundle.get(I18NKeys.UPDATE));
+                    updateHighscoresButton.renderCaption(batch);
+                    skyline.setY(Config.WINDOW_HEIGHT - 75);
+                    if (fetchingHighscores) {
+                        font.setColor(Color.WHITE);
+                        font.draw(batch, bundle.get(I18NKeys.FETCHING) + "...", 15, 205);
+                    } else {
+                        if (highscores != null) {
+                            for (int i = 0; i < highscores.length; i++) {
+                                font.setColor(i == getMyRank() ? Color.GREEN : Color.WHITE);
+                                float posY = (205 - i * Config.HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
+                                if (posY < skyline.getY()) { // lines disappear when over skyline sprite
+                                    font.draw(batch, highscores[i], 15, posY);
+                                }
                             }
+
+                            // scrollbar
+                            font.draw(batch, "^", Config.WINDOW_WIDTH - 20, 205);
+                            font.draw(batch, "#", Config.WINDOW_WIDTH - 20, Math.min(200, scrollbarPosition));
+                            font.getData().setScale(1, -1);
+                            font.draw(batch, "^", Config.WINDOW_WIDTH - 20, 10);
+                            font.getData().setScale(1, 1);
                         }
-                        
-                        // scrollbar
-                        font.draw(batch, "^", Config.WINDOW_WIDTH - 20, 205);
-                        float scrollbarPos = (22f-200f)/(Config.HIGHSCORES_LINE_HEIGHT * (highscores.length - 1)) * deltaY + 200;
-                        font.draw(batch, "#", Config.WINDOW_WIDTH - 20, Math.min(200, scrollbarPos));
-                        font.getData().setScale(1, -1);
-                        font.draw(batch, "^", Config.WINDOW_WIDTH - 20, 10);
-                        font.getData().setScale(1, 1);
                     }
-                }
-            } else if (showSettings) {
+                    break;
+                case ShowSettings:
+                    // playername
+                    playernameSettingButton.setCaption(prefs.getString(PrefsKeys.PLAYER_NAME).trim().length() == 0 ? "<"
+                            + bundle.get(I18NKeys.PLAYERNAME) + ">" : bundle.get(I18NKeys.PLAYERNAME) + ": " + prefs.getString(PrefsKeys.PLAYER_NAME));
+                    playernameSettingButton.renderCaption(batch);
+                    font.setColor(Color.WHITE);
 
-                // playername
-                playernameSettingButton.setCaption(prefs.getString(PrefsKeys.PLAYER_NAME).trim().length() == 0 ? "<"
-                        + bundle.get(I18NKeys.PLAYERNAME) + ">" : bundle.get(I18NKeys.PLAYERNAME) + ": " + prefs.getString(PrefsKeys.PLAYER_NAME));
-                playernameSettingButton.renderCaption(batch);
-                font.setColor(Color.WHITE);
+                    // sound
+                    soundSettingButton.setCaption(bundle.get(I18NKeys.SOUND) + " " + bundle.get(I18NKeys.IS) + " "
+                            + (prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? bundle.get(I18NKeys.ON) : bundle.get(I18NKeys.OFF)));
+                    soundSettingButton.renderCaption(batch);
 
-                // sound
-                soundSettingButton.setCaption(bundle.get(I18NKeys.SOUND) + " " + bundle.get(I18NKeys.IS) + " "
-                        + (prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? bundle.get(I18NKeys.ON) : bundle.get(I18NKeys.OFF)));
-                soundSettingButton.renderCaption(batch);
+                    // music
+                    musicSettingButton.setCaption(bundle.get(I18NKeys.MUSIC) + " " + bundle.get(I18NKeys.IS) + " "
+                            + (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? bundle.get(I18NKeys.ON) : bundle.get(I18NKeys.OFF)));
+                    musicSettingButton.renderCaption(batch);
 
-                // music
-                musicSettingButton.setCaption(bundle.get(I18NKeys.MUSIC) + " " + bundle.get(I18NKeys.IS) + " "
-                        + (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? bundle.get(I18NKeys.ON) : bundle.get(I18NKeys.OFF)));
-                musicSettingButton.renderCaption(batch);
+                    // language
+                    languageSettingButton.renderCaption(batch);
 
-                // language
-                languageSettingButton.renderCaption(batch);
+                    // reset highscore
+                    resetHighscoreSettingButton.setCaption(bundle.get(I18NKeys.RESET_HIGHSCORE));
+                    resetHighscoreSettingButton.renderCaption(batch);
+                    break;
+                case ShowAbout:
+                    font.setColor(Color.WHITE);
+                    font.draw(batch, bundle.format(I18NKeys.ABOUT_TEXT, Config.PLUS_ONE_MAN_INTERVAL, Config.VERSION_NAME), 15,
+                            100 + showLicenseYOffset);
+                    if (showLicenseYOffset > 0) {
+                        font.draw(batch, bundle.get(I18NKeys.LICENSE_TEXT), 15, showLicenseYOffset + 2);
+                    }
+                    batch.draw(therefactory, 144, showLicenseYOffset + 19, 135, 11);
+                    licenseButton.setCaption(bundle.get(I18NKeys.LICENSE));
+                    licenseButton.renderCaption(batch);
+                    break;
+                default:
+                    // buttons' icons
+                    player.draw(batch);
+                    redplayer.draw(batch);
+                    blueplayer.draw(batch);
+                    pearl.draw(batch);
+                    soldier.draw(batch);
+                    settings.draw(batch);
 
-                // reset highscore
-                resetHighscoreSettingButton.setCaption(bundle.get(I18NKeys.RESET_HIGHSCORE));
-                resetHighscoreSettingButton.renderCaption(batch);
-            } else if (showAbout) {
-                font.setColor(Color.WHITE);
-                font.draw(batch, bundle.format(I18NKeys.ABOUT_TEXT, Config.PLUS_ONE_MAN_INTERVAL, Config.VERSION_NAME), 15,
-                        100 + showLicenseYOffset);
-                if (showLicenseYOffset > 0) {
-                    font.draw(batch, bundle.get(I18NKeys.LICENSE_TEXT), 15, showLicenseYOffset + 2);
-                }
-                batch.draw(therefactory, 144, showLicenseYOffset + 19, 135, 11);
-                licenseButton.setCaption(bundle.get(I18NKeys.LICENSE));
-                licenseButton.renderCaption(batch);
-            } else {
-                // buttons' icons
-                player.draw(batch);
-                redplayer.draw(batch);
-                blueplayer.draw(batch);
-                pearl.draw(batch);
-                soldier.draw(batch);
-                settings.draw(batch);
-
-                // buttons themselves
-                singlePlayerButton.setCaption(bundle.get(I18NKeys.SINGLEPLAYER));
-                highscoresButton.setCaption(bundle.get(I18NKeys.HIGHSCORES));
-                settingsButton.setCaption(bundle.get(I18NKeys.SETTINGS));
-                aboutButton.setCaption(bundle.get(I18NKeys.ABOUT));
-                singlePlayerButton.renderCaption(batch);
-                highscoresButton.renderCaption(batch);
-                settingsButton.renderCaption(batch);
-                aboutButton.renderCaption(batch);
+                    // buttons themselves
+                    singlePlayerButton.setCaption(bundle.get(I18NKeys.SINGLEPLAYER));
+                    highscoresButton.setCaption(bundle.get(I18NKeys.HIGHSCORES));
+                    settingsButton.setCaption(bundle.get(I18NKeys.SETTINGS));
+                    aboutButton.setCaption(bundle.get(I18NKeys.ABOUT));
+                    singlePlayerButton.renderCaption(batch);
+                    highscoresButton.renderCaption(batch);
+                    settingsButton.renderCaption(batch);
+                    aboutButton.renderCaption(batch);
+                    break;
             }
-
             batch.end();
         }
     }
 
-    private void update(float delta) {
-
-        // highscore list scrolling (scroll list back to top if dragged down too far)
-        if (!touchDragging && deltaY < 0) {
-            deltaY = Math.min(0, deltaY + 5);
-            lastDeltaY = deltaY;
-        }
-
-        // stars
-        for (int i = 0; i < stars.length; i++) {
-            Sprite star = stars[i];
-            if (star.getY() < borderSize) {
-                star.setY(Config.WINDOW_HEIGHT - star.getHeight());
-            } else {
-                star.setY(star.getY() - starSpeeds[i]);
-            }
-        }
-
-        // images on buttons
-        player.setPosition(singlePlayerButton.getX() + singlePlayerButton.getWidth() / 2 - player.getWidth() / 2
-                + singlePlayerButton.getPressedOffset(), singlePlayerButton.getY() + singlePlayerButton.getHeight() / 2
-                - 5 - singlePlayerButton.getPressedOffset());
-        redplayer.setPosition(highscoresButton.getX() + highscoresButton.getWidth() / 2 - redplayer.getWidth() / 2
-                + highscoresButton.getPressedOffset(), highscoresButton.getY() + highscoresButton.getHeight() / 2 - 3
-                - highscoresButton.getPressedOffset());
-        blueplayer.setPosition(redplayer.getX() - 5, redplayer.getY() - 5);
-        settings.setPosition(settingsButton.getX() + settingsButton.getWidth() / 2 - settings.getWidth() / 2
-                + settingsButton.getPressedOffset(), 52 - settingsButton.getPressedOffset());
-        soldier.setPosition(
-                aboutButton.getX() + aboutButton.getWidth() / 2 - soldier.getWidth() / 2
-                + aboutButton.getPressedOffset() - 1, 63 - aboutButton.getPressedOffset());
-        pearl.setPosition(
-                aboutButton.getX() + aboutButton.getWidth() / 2 - soldier.getWidth() / 2
-                + aboutButton.getPressedOffset(), 50 - aboutButton.getPressedOffset());
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height);
-    }
-
-    public void setHighscores(String[] string) {
-        highscores = string;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        sr.dispose();
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Keys.BACK) {
-            if (showSettings || showHighscores || showAbout) {
-                showSettings = false;
-                showHighscores = false;
-                showAbout = false;
-            } else {
-                Gdx.app.exit();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        numTouches++;
-        Vector3 screenCoord = viewport.unproject(new Vector3(screenX, screenY, 0));
-        pressOrReleaseButtons(screenCoord);
-        handleTouchOnStars(screenCoord);
-        touchStartY = screenCoord.y;
-
-        if (Config.DEBUG_MODE && Util.within(screenCoord, title)) {
-            showPromo = true;
-        } else if (showPromo) {
-            showPromo = false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        Vector3 screenCoord = viewport.unproject(new Vector3(screenX, screenY, 0));
-        pressOrReleaseButtons(screenCoord);
-        handleTouchOnStars(screenCoord);
-        if (numTouches == 1 && !updateHighscoresButton.isPressed() && !returnToMainMenuButton.isPressed()) {
-            deltaY = lastDeltaY + (touchStartY - screenCoord.y);
-            deltaY = Math.min(deltaY, highscores == null ? 0 : Config.HIGHSCORES_LINE_HEIGHT * (highscores.length - 1)); // stop scrolling if only last line is visible
-        }
-        touchDragging = true;
-        return true;
-    }
-
-    private void handleTouchOnStars(Vector3 unprojected) {
-        if (touchDragging || unprojected.y < skyline.getY()) {
-            return; // only allow single taps on the stars to prevent unintentional disappearing of stars 
-        }
-        for (Sprite star : stars) {
-            if (Util.within(unprojected.x, star.getX(), star.getX() + star.getWidth())
-                    && Util.within(unprojected.y, star.getY(), star.getY() + star.getHeight())) {
-                JewelThief.getInstance().playCymbalSound();
-                star.setPosition(star.getX(), Config.WINDOW_HEIGHT + star.getHeight() * 3);
-            }
-        }
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Preferences prefs = JewelThief.getInstance().getPreferences();
-        numTouches = Math.max(0, numTouches - 1);
-        
-        if (returnToMainMenuButton.isPressed()) {
-            returnToMainMenuButton.release();
-            showLicenseYOffset = 0;
-            showSettings = false;
-            showHighscores = false;
-            showAbout = false;
-        } else if (showAbout) {
-            if (licenseButton.isPressed()) {
-                licenseButton.release();
-                if (showLicenseYOffset == 0) {
-                    showLicenseYOffset = 54;
-                } else {
-                    showLicenseYOffset = 0;
-                }
-            }
-        } else if (showHighscores) {
-            if (updateHighscoresButton.isPressed()) {
-                updateHighscoresButton.release();
-                fetchingHighscores = true;
-                HTTP.fetchHighscores(this, prefs.getString(PrefsKeys.ID), prefs.getString(PrefsKeys.PLAYER_NAME),
-                        prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_JEWELS), prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_SECONDS));
-            }
-        } else if (showSettings) {
-            if (playernameSettingButton.isPressed()) {
-                playernameSettingButton.release();
-                Gdx.input.getTextInput(listener, bundle.get(I18NKeys.PLEASE_ENTER_YOUR_NAME),
-                        prefs.getString(PrefsKeys.PLAYER_NAME), "");
-            } else if (soundSettingButton.isPressed()) {
-                soundSettingButton.release();
-                soundSettingButton.nextState();
-                prefs.putBoolean(PrefsKeys.ENABLE_SOUND, !prefs.getBoolean(PrefsKeys.ENABLE_SOUND));
-                prefs.flush();
-            } else if (musicSettingButton.isPressed()) {
-                musicSettingButton.release();
-                musicSettingButton.nextState();
-                prefs.putBoolean(PrefsKeys.ENABLE_MUSIC, !prefs.getBoolean(PrefsKeys.ENABLE_MUSIC));
-                prefs.flush();
-                if (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC)) {
-                    JewelThief.getInstance().playMusicFile(true);
-                } else {
-                    JewelThief.getInstance().pauseMusic();
-                }
-            } else if (languageSettingButton.isPressed()) {
-                languageSettingButton.release();
-                languageSettingButton.nextState();
-                bundle = JewelThief.getInstance().setLocale(languageSettingButton.getState() == 0 ? "en" : "de");
-            } else if (resetHighscoreSettingButton.isPressed()) {
-                resetHighscoreSettingButton.release();
-                if (timestampLastClickOnResetHighscoreSettingButton > System.currentTimeMillis() - 1000) {
-                    timestampLastClickOnResetHighscoreSettingButton = 0;
-                    prefs.remove(PrefsKeys.MY_RANK);
-                    prefs.remove(PrefsKeys.BEST_SCORE);
-                    prefs.remove(PrefsKeys.BEST_SCORE_NUM_JEWELS);
-                    prefs.remove(PrefsKeys.BEST_SCORE_NUM_SECONDS);
-                    JewelThief.getInstance().toast(bundle.get(I18NKeys.HIGHSCORE_IS_RESET), true);
-                } else {
-                    timestampLastClickOnResetHighscoreSettingButton = System.currentTimeMillis();
-                    JewelThief.getInstance().toast(bundle.get(I18NKeys.TAP_AGAIN_TO_RESET_HIGHSCORE), false);
-                }
-            }
-        }
-        // main menu
-        else {
-            if (singlePlayerButton.isPressed()) {
-                JewelThief.getInstance().showIntroScreen();
-                singlePlayerButton.release();
-            } else if (highscoresButton.isPressed()) {
-                deltaY = 0;
-                if (prefs.contains(PrefsKeys.CACHED_HIGHSCORES)) {
-                    highscores = prefs.getString(PrefsKeys.CACHED_HIGHSCORES).split("\n");
-                    //Gdx.app.log(getClass().getName(), prefs.getString(PrefsKeys.CACHED_HIGHSCORES));
-                }
-                showHighscores = true;
-                highscoresButton.release();
-            } else if (settingsButton.isPressed()) {
-                showSettings = true;
-                settingsButton.release();
-            } else if (aboutButton.isPressed()) {
-                showAbout = true;
-                aboutButton.release();
-            }
-        }
-        lastDeltaY = deltaY;
-        touchDragging = false;
-        return true;
-    }
-
-    private void pressOrReleaseButtons(Vector3 screenCoord) {
-        if (numTouches == 1) {
-            if (showAbout) {
-                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, licenseButton);
-            } else if (showHighscores) {
-                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, updateHighscoresButton);
-            } else if (showSettings) {
-                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, soundSettingButton,
-                        musicSettingButton, playernameSettingButton,  languageSettingButton, resetHighscoreSettingButton);
-            } else {
-                Util.pressOrReleaseButtons(screenCoord, singlePlayerButton, highscoresButton, settingsButton, aboutButton);
-            }
-        } else {
-            releaseAllButtons();
-        }
-    }
-
-    private void releaseAllButtons() {
+    public void releaseAllButtons() {
         singlePlayerButton.release();
         highscoresButton.release();
         settingsButton.release();
@@ -589,18 +407,6 @@ public class MenuScreen extends ScreenAdapter implements InputProcessor {
         playernameSettingButton.release();
         resetHighscoreSettingButton.release();
         licenseButton.release();
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     public void setFetchingHighscores(boolean fetchingHighscores) {
@@ -615,4 +421,67 @@ public class MenuScreen extends ScreenAdapter implements InputProcessor {
     public int getMyRank() {
         return prefs.contains(PrefsKeys.MY_RANK) ? prefs.getInteger(PrefsKeys.MY_RANK) : -1;
     }
+
+    public void setHighscores(String[] string) {
+        highscores = string;
+    }
+
+    public void setScrollbarPosition(float scrollbarPosition) {
+        this.scrollbarPosition = scrollbarPosition;
+    }
+
+    public Sprite getTitle() {
+        return title;
+    }
+
+    public MenuState getState() {
+        return menuState;
+    }
+
+    public void setState(MenuState state) {
+        this.menuState = state;
+    }
+
+    public String[] getHighscores() {
+        return highscores;
+    }
+
+    public void setShowLicenseYOffset(int showLicenseYOffset) {
+        this.showLicenseYOffset = showLicenseYOffset;
+    }
+
+    public int getShowLicenseYOffset() {
+        return showLicenseYOffset;
+    }
+
+    public void handleTouchOnStars(Vector3 touchCoordinates) {
+        if (touchCoordinates.y > skyline.getY()) {
+            for (Sprite star : stars) {
+                if (Util.within(touchCoordinates.x, star.getX(), star.getX() + star.getWidth())
+                        && Util.within(touchCoordinates.y, star.getY(), star.getY() + star.getHeight())) {
+                    JewelThief.getInstance().playCymbalSound();
+                    star.setPosition(star.getX(), Config.WINDOW_HEIGHT + star.getHeight() * 3);
+                }
+            }
+        }
+    }
+    
+    public void pressOrReleaseButtons(Vector3 screenCoord) {
+        switch (getState()) {
+            case ShowAbout:
+                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, licenseButton);
+                break;
+            case ShowHighscores:
+                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, updateHighscoresButton);
+                break;
+            case ShowSettings:
+                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, soundSettingButton,
+                        musicSettingButton, playernameSettingButton,  languageSettingButton, resetHighscoreSettingButton);
+                break;
+            default:
+                Util.pressOrReleaseButtons(screenCoord, singlePlayerButton, highscoresButton, settingsButton, aboutButton);
+                break;
+        }
+    }
+
 }
