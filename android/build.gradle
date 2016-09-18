@@ -17,7 +17,7 @@ android {
         instrumentTest.setRoot('tests')
     }
     defaultConfig {
-        applicationId "net.bplaced.therefactory.jewelthief"
+        applicationId "at.therefactory.jewelthief"
         minSdkVersion 8
         targetSdkVersion 24
         versionCode 108
@@ -67,7 +67,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'net.bplaced.therefactory.jewelthief/AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'at.therefactory.jewelthief/AndroidLauncher'
 }
 // sets up the Android Eclipse project, using the old Ant based build.
 eclipse {
