@@ -81,7 +81,7 @@ public class MenuScreenInputAdapter extends InputAdapter {
             deltaY = lastDeltaY + (touchStartY - touchCoordinates.y);
             deltaY = Math.max(deltaY, menuScreen.getHighscores() == null ? 0 : -Config.HIGHSCORES_LINE_HEIGHT * (menuScreen.getHighscores().length - 1)); // stop scrolling if only last line is visible
             deltaY = -deltaY; // invert vertical scrolling direction
-            menuScreen.setScrollbarPosition((22f - 200f) / (Config.HIGHSCORES_LINE_HEIGHT * (menuScreen.getHighscores().length - 1)) * deltaY + 200);
+            menuScreen.setScrollbarPositionY((22f - 200f) / (Config.HIGHSCORES_LINE_HEIGHT * (menuScreen.getHighscores().length - 1)) * deltaY + 200);
         }
         touchDragging = true;
         return true;

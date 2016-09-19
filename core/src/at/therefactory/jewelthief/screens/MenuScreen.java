@@ -60,7 +60,7 @@ public class MenuScreen extends ScreenAdapter {
     private final Preferences prefs;
     private MenuState menuState;
     private MenuScreenInputAdapter inputHandler;
-    private float scrollbarPosition;
+    private float scrollbarPositionY;
     private String[] highscores;
     private boolean fetchingHighscores;
     private I18NBundle bundle;
@@ -169,6 +169,7 @@ public class MenuScreen extends ScreenAdapter {
         inputHandler = new MenuScreenInputAdapter(this, viewport);
         Gdx.input.setInputProcessor(inputHandler);
         Gdx.input.setCatchBackKey(true);
+        scrollbarPositionY = Config.INITIAL_SCROLLBAR_POSITION_Y;
 
         // play background music
         if (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC)) {
@@ -313,11 +314,13 @@ public class MenuScreen extends ScreenAdapter {
                             }
 
                             // scrollbar
-                            font.draw(batch, "^", Config.WINDOW_WIDTH - 20, 205);
-                            font.draw(batch, "#", Config.WINDOW_WIDTH - 20, Math.min(200, scrollbarPosition));
-                            font.getData().setScale(1, -1);
-                            font.draw(batch, "^", Config.WINDOW_WIDTH - 20, 10);
-                            font.getData().setScale(1, 1);
+                            if (highscores.length > 0) {
+                                font.draw(batch, "^", Config.WINDOW_WIDTH - 20, Config.INITIAL_SCROLLBAR_POSITION_Y + 5);
+                                font.draw(batch, "#", Config.WINDOW_WIDTH - 20, Math.min(Config.INITIAL_SCROLLBAR_POSITION_Y, scrollbarPositionY));
+                                font.getData().setScale(1, -1);
+                                font.draw(batch, "^", Config.WINDOW_WIDTH - 20, 10);
+                                font.getData().setScale(1, 1);
+                            }
                         }
                     }
                     break;
@@ -407,8 +410,8 @@ public class MenuScreen extends ScreenAdapter {
         prefs.flush();
     }
 
-    public void setScrollbarPosition(float scrollbarPosition) {
-        this.scrollbarPosition = scrollbarPosition;
+    public void setScrollbarPositionY(float scrollbarPositionY) {
+        this.scrollbarPositionY = scrollbarPositionY;
     }
 
     public Sprite getTitle() {

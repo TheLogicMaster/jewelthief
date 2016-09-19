@@ -81,4 +81,5 @@ public class Config {
 	// other
 	public static final int PLAYERNAME_MAXLEN = 20;
 	public static final int NUM_HTTP_REQUEST_TRIES = 3;
+	public static final float INITIAL_SCROLLBAR_POSITION_Y = 200;
 }
