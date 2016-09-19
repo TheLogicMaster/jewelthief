@@ -1,6 +1,13 @@
 Jewel Thief - Changelog
 =========
 
+### Version 1.0.9 - September 19, 2016
+
+* Fixed language not being changeable
+* Fixed wrong initial position of scrollbar
+* Added lookup of version at run-time
+* Code Refactoring
+
 ### Version 1.0.8 - September 18, 2016
 
 * Inverted scrolling direction of highscores
