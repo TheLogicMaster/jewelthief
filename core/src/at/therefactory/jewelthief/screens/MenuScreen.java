@@ -27,33 +27,6 @@ import at.therefactory.jewelthief.ui.buttons.GrayStateButton;
 
 public class MenuScreen extends ScreenAdapter {
 
-    public enum MenuState {
-        ShowMenu,
-        ShowSettings,
-        ShowAbout,
-        ShowHighscores,
-        ShowPromo
-    }
-
-    private MenuState menuState;
-    private MenuScreenInputAdapter inputHandler;
-    private float scrollbarPosition;
-
-    private final SpriteBatch batch;
-    private final ShapeRenderer sr;
-
-    private final Sprite title;
-    private final Sprite player;
-    private final Sprite redplayer;
-    private final Sprite blueplayer;
-    private final Sprite pearl;
-    private final Sprite soldier;
-    private final Sprite settings;
-    private final Sprite skyline;
-    private final Sprite therefactory;
-    private final Sprite badge;
-    private final Sprite[] stars;
-
     public final GrayStateButton soundSettingButton;
     public final GrayStateButton musicSettingButton;
     public final GrayStateButton languageSettingButton;
@@ -66,18 +39,30 @@ public class MenuScreen extends ScreenAdapter {
     public final GrayButton updateHighscoresButton;
     public final GrayButton returnToMainMenuButton;
     public final GrayButton licenseButton;
-
+    private final SpriteBatch batch;
+    private final ShapeRenderer sr;
+    private final Sprite title;
+    private final Sprite player;
+    private final Sprite redplayer;
+    private final Sprite blueplayer;
+    private final Sprite pearl;
+    private final Sprite soldier;
+    private final Sprite settings;
+    private final Sprite skyline;
+    private final Sprite therefactory;
+    private final Sprite badge;
+    private final Sprite[] stars;
     private final OrthographicCamera camera;
     private final FitViewport viewport;
-
     private final BitmapFont font;
     private final float[] starSpeeds;
     private final float borderSize;
-
+    private final Preferences prefs;
+    private MenuState menuState;
+    private MenuScreenInputAdapter inputHandler;
+    private float scrollbarPosition;
     private String[] highscores;
     private boolean fetchingHighscores;
-
-    private final Preferences prefs;
     private I18NBundle bundle;
     private int showLicenseYOffset = 0;
 
@@ -134,16 +119,16 @@ public class MenuScreen extends ScreenAdapter {
                 bundle.get(I18NKeys.SOUND) + " " + bundle.get(I18NKeys.IS) + " " + bundle.get(I18NKeys.OFF),
                 bundle.get(I18NKeys.SOUND) + " " + bundle.get(I18NKeys.IS) + " " + bundle.get(I18NKeys.ON)},
                 new String[]{"checkbox_unchecked", "checkbox_checked"}, prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? 1 : 0,
-                        false, 16, 66, 130, 40);
+                false, 16, 66, 130, 40);
         musicSettingButton = new GrayStateButton(new String[]{
                 bundle.get(I18NKeys.MUSIC) + " " + bundle.get(I18NKeys.IS) + " " + bundle.get(I18NKeys.OFF),
                 bundle.get(I18NKeys.MUSIC) + " " + bundle.get(I18NKeys.IS) + " " + bundle.get(I18NKeys.ON)},
                 new String[]{"checkbox_unchecked", "checkbox_checked"}, prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? 1 : 0,
-                        false, soundSettingButton.getX(), 16, soundSettingButton.getWidth(), soundSettingButton.getHeight());
+                false, soundSettingButton.getX(), 16, soundSettingButton.getWidth(), soundSettingButton.getHeight());
         playernameSettingButton = new GrayButton(bundle.get(I18NKeys.PLAYERNAME), 155, soundSettingButton.getY(), 100,
                 soundSettingButton.getHeight(), true);
         languageSettingButton = new GrayStateButton(new String[]{"English", "Deutsch"}, new String[]{"flag_usa",
-        "flag_germany"}, prefs.getString("language").equals("en") ? 0 : 1, true,
+                "flag_germany"}, prefs.getString("language").equals("en") ? 0 : 1, true,
                 playernameSettingButton.getX(), 16, 100, 40);
         resetHighscoreSettingButton = new GrayButton(bundle.get(I18NKeys.RESET_HIGHSCORE), 264, 16, 100, 40, true);
 
@@ -272,7 +257,7 @@ public class MenuScreen extends ScreenAdapter {
         if (menuState == MenuState.ShowPromo) {
             sr.end();
             batch.begin();
-            batch.draw(badge, 0, 0, (int)(646/2.1), (int)(250/2.1));
+            batch.draw(badge, 0, 0, (int) (646 / 2.1), (int) (250 / 2.1));
             font.setColor(Color.WHITE);
             font.draw(batch, "christian.detamble@outlook.com", 300, 45);
             batch.draw(therefactory, 310, 70, 180, 14);
@@ -309,7 +294,7 @@ public class MenuScreen extends ScreenAdapter {
                 returnToMainMenuButton.renderCaption(batch);
                 skyline.setY(Config.WINDOW_HEIGHT - 173 + showLicenseYOffset);
             }
-            switch (getState()){
+            switch (getState()) {
                 case ShowHighscores:
                     updateHighscoresButton.setCaption(bundle.get(I18NKeys.UPDATE));
                     updateHighscoresButton.renderCaption(batch);
@@ -413,17 +398,13 @@ public class MenuScreen extends ScreenAdapter {
         this.fetchingHighscores = fetchingHighscores;
     }
 
-    public void setMyRank(int myRank) {
-        prefs.putInteger(PrefsKeys.MY_RANK, myRank);
-        prefs.flush();
-    }
-
     public int getMyRank() {
         return prefs.contains(PrefsKeys.MY_RANK) ? prefs.getInteger(PrefsKeys.MY_RANK) : -1;
     }
 
-    public void setHighscores(String[] string) {
-        highscores = string;
+    public void setMyRank(int myRank) {
+        prefs.putInteger(PrefsKeys.MY_RANK, myRank);
+        prefs.flush();
     }
 
     public void setScrollbarPosition(float scrollbarPosition) {
@@ -446,12 +427,16 @@ public class MenuScreen extends ScreenAdapter {
         return highscores;
     }
 
-    public void setShowLicenseYOffset(int showLicenseYOffset) {
-        this.showLicenseYOffset = showLicenseYOffset;
+    public void setHighscores(String[] string) {
+        highscores = string;
     }
 
     public int getShowLicenseYOffset() {
         return showLicenseYOffset;
+    }
+
+    public void setShowLicenseYOffset(int showLicenseYOffset) {
+        this.showLicenseYOffset = showLicenseYOffset;
     }
 
     public void handleTouchOnStars(Vector3 touchCoordinates) {
@@ -465,7 +450,7 @@ public class MenuScreen extends ScreenAdapter {
             }
         }
     }
-    
+
     public void pressOrReleaseButtons(Vector3 screenCoord) {
         switch (getState()) {
             case ShowAbout:
@@ -476,12 +461,24 @@ public class MenuScreen extends ScreenAdapter {
                 break;
             case ShowSettings:
                 Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, soundSettingButton,
-                        musicSettingButton, playernameSettingButton,  languageSettingButton, resetHighscoreSettingButton);
+                        musicSettingButton, playernameSettingButton, languageSettingButton, resetHighscoreSettingButton);
                 break;
             default:
                 Util.pressOrReleaseButtons(screenCoord, singlePlayerButton, highscoresButton, settingsButton, aboutButton);
                 break;
         }
+    }
+
+    public void setBundle(I18NBundle bundle) {
+        this.bundle = bundle;
+    }
+
+    public enum MenuState {
+        ShowMenu,
+        ShowSettings,
+        ShowAbout,
+        ShowHighscores,
+        ShowPromo
     }
 
 }

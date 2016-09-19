@@ -222,7 +222,7 @@ public class JewelThief extends Game {
             musicFiles = new String[fileList.length];
             for (int i = 0; i < musicFiles.length; i++) {
                 musicFiles[i] = fileList[i].path();
-                Gdx.app.log(getClass().getName(), "'" + fileList[i].path() + "' loaded");
+                Gdx.app.log(getClass().getName(), "Loaded '" + fileList[i].path() + "'");
             }
         }
         
