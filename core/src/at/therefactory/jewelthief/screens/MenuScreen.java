@@ -362,7 +362,7 @@ public class MenuScreen extends ScreenAdapter {
                     break;
                 case ShowAbout:
                     font.setColor(Color.WHITE);
-                    font.draw(batch, bundle.format(I18NKeys.ABOUT_TEXT, Config.PLUS_ONE_MAN_INTERVAL, Config.VERSION_NAME), 15,
+                    font.draw(batch, bundle.format(I18NKeys.ABOUT_TEXT, Config.PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()), 15,
                             100 + showLicenseYOffset);
                     if (showLicenseYOffset > 0) {
                         font.draw(batch, bundle.get(I18NKeys.LICENSE_TEXT), 15, showLicenseYOffset + 2);

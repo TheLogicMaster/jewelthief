@@ -282,6 +282,10 @@ public class JewelThief extends Game {
         }
     }
 
+    public String getVersionName() {
+        return (androidInterface == null ? Config.VERSION_NAME : androidInterface.getVersionName());
+    }
+
     /**
      * Globally sets the locale of the application.
      *

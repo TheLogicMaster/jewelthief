@@ -12,4 +12,11 @@ public interface AndroidInterface {
      */
     void toast(String message, boolean longDuration);
 
+    /**
+     * Tries to return the version name set by the build.gradle.
+     * If that fails the Config.VERSION_NAME is returned.
+     * @return
+     */
+    String getVersionName();
+
 }

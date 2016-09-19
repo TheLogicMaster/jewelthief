@@ -1,5 +1,6 @@
 package at.therefactory.jewelthief;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
+import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.misc.AndroidInterface;
 
 public class AndroidLauncher extends AndroidApplication implements AndroidInterface {
@@ -37,6 +39,16 @@ public class AndroidLauncher extends AndroidApplication implements AndroidInterf
             }
 
         });
+    }
+
+    @Override
+    public String getVersionName() {
+        try {
+            return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Config.VERSION_NAME;
     }
 
 }
