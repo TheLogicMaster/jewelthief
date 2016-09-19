@@ -142,6 +142,7 @@ public class MenuScreenInputAdapter extends InputAdapter {
                 menuScreen.languageSettingButton.release();
                 menuScreen.languageSettingButton.nextState();
                 bundle = JewelThief.getInstance().setLocale(menuScreen.languageSettingButton.getState() == 0 ? "en" : "de");
+                menuScreen.setBundle(bundle);
             } else if (menuScreen.resetHighscoreSettingButton.isPressed()) {
                 menuScreen.resetHighscoreSettingButton.release();
                 if (timestampLastClickOnResetHighscoreSettingButton > System.currentTimeMillis() - 1000) {
