@@ -8,10 +8,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import at.therefactory.jewelthief.Game;
 import at.therefactory.jewelthief.JewelThief;
-import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.misc.Util;
 import at.therefactory.jewelthief.screens.GameScreen;
 import at.therefactory.jewelthief.ui.Hud;
+
+import static at.therefactory.jewelthief.constants.Config.DEBUG_MODE;
 
 /**
  * The input handler for the GameScreen.
@@ -57,7 +58,7 @@ public class GameScreenInputAdapter extends InputAdapter {
 
     @Override
     public boolean keyTyped(char character) {
-        if (Config.DEBUG_MODE) {
+        if (DEBUG_MODE) {
             if (character == '1') {
                 game.switchDebug();
                 return true;

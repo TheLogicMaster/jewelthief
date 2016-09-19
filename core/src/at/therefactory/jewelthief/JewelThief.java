@@ -16,7 +16,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.I18NBundle;
 
-import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.misc.AndroidInterface;
 import at.therefactory.jewelthief.misc.Util;
@@ -26,6 +25,11 @@ import at.therefactory.jewelthief.screens.GameScreen;
 import at.therefactory.jewelthief.screens.LogoScreen;
 import at.therefactory.jewelthief.screens.MenuScreen;
 import at.therefactory.jewelthief.ui.Particles;
+
+import static at.therefactory.jewelthief.constants.Config.DEFAULT_LOCALE;
+import static at.therefactory.jewelthief.constants.Config.VERSION_NAME;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
 
 public class JewelThief extends Game {
 
@@ -78,7 +82,7 @@ public class JewelThief extends Game {
             prefs.putString(PrefsKeys.ID, System.nanoTime() + "0" + Util.randomWithin(1000, 9999)).flush();
         }
         if (!prefs.contains(PrefsKeys.LANGUAGE)) {
-            prefs.putString(PrefsKeys.LANGUAGE, Config.DEFAULT_LOCALE).flush();
+            prefs.putString(PrefsKeys.LANGUAGE, DEFAULT_LOCALE).flush();
         }
         for (String setting : new String[]{PrefsKeys.ENABLE_SOUND, PrefsKeys.ENABLE_MUSIC}) {
             if (!prefs.contains(setting)) {
@@ -92,7 +96,7 @@ public class JewelThief extends Game {
         textureAtlas = new TextureAtlas("textures.pack");
         assetManager = new AssetManager();
         fade = textureAtlas.createSprite("fade");
-        fade.setSize(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
+        fade.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         fade.setPosition(0, 0);
         particles = new Particles(textureAtlas);
 
@@ -283,7 +287,7 @@ public class JewelThief extends Game {
     }
 
     public String getVersionName() {
-        return (androidInterface == null ? Config.VERSION_NAME : androidInterface.getVersionName());
+        return (androidInterface == null ? VERSION_NAME : androidInterface.getVersionName());
     }
 
     /**

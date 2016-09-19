@@ -17,13 +17,29 @@ import com.badlogic.gdx.utils.I18NBundle;
 
 import at.therefactory.jewelthief.actors.Enemy;
 import at.therefactory.jewelthief.actors.Player;
-import at.therefactory.jewelthief.constants.Config;
-import at.therefactory.jewelthief.constants.I18NKeys;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.jewels.Jewel;
 import at.therefactory.jewelthief.misc.Util;
 import at.therefactory.jewelthief.net.HTTP;
 import at.therefactory.jewelthief.ui.buttons.GrayButton;
+
+import static at.therefactory.jewelthief.constants.Config.PLUS_ONE_MAN_INTERVAL;
+import static at.therefactory.jewelthief.constants.Config.START_LEVEL;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
+import static at.therefactory.jewelthief.constants.Config.levels;
+import static at.therefactory.jewelthief.constants.I18NKeys.APPLAUSE_PHRASES;
+import static at.therefactory.jewelthief.constants.I18NKeys.EXIT_TO_MENU;
+import static at.therefactory.jewelthief.constants.I18NKeys.GAME_END_PHRASE;
+import static at.therefactory.jewelthief.constants.I18NKeys.GET_READY;
+import static at.therefactory.jewelthief.constants.I18NKeys.GIVING_UP_ALREADY;
+import static at.therefactory.jewelthief.constants.I18NKeys.IMPROVED_HIGHSCORE;
+import static at.therefactory.jewelthief.constants.I18NKeys.MISSED_HIGHSCORE;
+import static at.therefactory.jewelthief.constants.I18NKeys.MOTIVATION_PHRASES;
+import static at.therefactory.jewelthief.constants.I18NKeys.NO;
+import static at.therefactory.jewelthief.constants.I18NKeys.PLAY_AGAIN;
+import static at.therefactory.jewelthief.constants.I18NKeys.RESTART;
+import static at.therefactory.jewelthief.constants.I18NKeys.YES;
 
 public class Game {
 
@@ -91,36 +107,36 @@ public class Game {
         soundApplause = manager.get("audio/sounds/applause.ogg", Sound.class);
         soundLose = manager.get("audio/sounds/one_blow_from_party_horn.ogg", Sound.class);
         Sprite fade = JewelThief.getInstance().getTextureAtlas().createSprite("fade");
-        fade.setSize(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
+        fade.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         fade.setPosition(0, 0);
         fade.setAlpha(0.6f);
 
         // sprites
-        background = new Sprite(new Texture("levels/" + Config.levels[currentLevel].getLevelName() + ".png"));
-        float fieldBorder = (Config.WINDOW_WIDTH - background.getWidth()) / 2;
-        background.setPosition(fieldBorder, (Config.WINDOW_HEIGHT - background.getHeight() - 32) / 2);
+        background = new Sprite(new Texture("levels/" + levels[currentLevel].getLevelName() + ".png"));
+        float fieldBorder = (WINDOW_WIDTH - background.getWidth()) / 2;
+        background.setPosition(fieldBorder, (WINDOW_HEIGHT - background.getHeight() - 32) / 2);
 
         // rectangles
         playerField = new Rectangle(background.getX(), background.getY(), background.getWidth() - 1,
                 background.getHeight() - 1);
-        getreadyRect = new Rectangle(Config.WINDOW_WIDTH / 2 - 120 / 2, Config.WINDOW_HEIGHT / 2 - 48 / 2, 120, 48);
-        showMenuRect = new Rectangle(Config.WINDOW_WIDTH / 2 - 230 / 2, Config.WINDOW_HEIGHT / 2 - 120 / 2, 230, 120);
-        gameOverRect = new Rectangle(Config.WINDOW_WIDTH / 2 - 320 / 2, Config.WINDOW_HEIGHT / 2 - 130 / 2, 320, 130);
+        getreadyRect = new Rectangle(WINDOW_WIDTH / 2 - 120 / 2, WINDOW_HEIGHT / 2 - 48 / 2, 120, 48);
+        showMenuRect = new Rectangle(WINDOW_WIDTH / 2 - 230 / 2, WINDOW_HEIGHT / 2 - 120 / 2, 230, 120);
+        gameOverRect = new Rectangle(WINDOW_WIDTH / 2 - 320 / 2, WINDOW_HEIGHT / 2 - 130 / 2, 320, 130);
 
         // buttons
-        menuYesBtn = new GrayButton(bundle.get(I18NKeys.YES), 150, 95, 55, 40);
-        menuNoBtn = new GrayButton(bundle.get(I18NKeys.NO), 215, menuYesBtn.getY(), 55, menuYesBtn.getHeight());
-        menuRestartBtn = new GrayButton(bundle.get(I18NKeys.RESTART), 280, menuYesBtn.getY(), 80,
+        menuYesBtn = new GrayButton(bundle.get(YES), 150, 95, 55, 40);
+        menuNoBtn = new GrayButton(bundle.get(NO), 215, menuYesBtn.getY(), 55, menuYesBtn.getHeight());
+        menuRestartBtn = new GrayButton(bundle.get(RESTART), 280, menuYesBtn.getY(), 80,
                 menuYesBtn.getHeight());
-        gameOverPlayAgainBtn = new GrayButton(bundle.get(I18NKeys.PLAY_AGAIN), 155, 90, 90, menuYesBtn.getHeight());
-        gameOverExitBtn = new GrayButton(bundle.get(I18NKeys.EXIT_TO_MENU), 260, gameOverPlayAgainBtn.getY(), 110,
+        gameOverPlayAgainBtn = new GrayButton(bundle.get(PLAY_AGAIN), 155, 90, 90, menuYesBtn.getHeight());
+        gameOverExitBtn = new GrayButton(bundle.get(EXIT_TO_MENU), 260, gameOverPlayAgainBtn.getY(), 110,
                 menuYesBtn.getHeight());
 
         resetGame();
     }
 
     private void loadLevel(int currentLevel) {
-        background.setTexture(new Texture("levels/" + Config.levels[currentLevel].getLevelName() + ".png"));
+        background.setTexture(new Texture("levels/" + levels[currentLevel].getLevelName() + ".png"));
         enemyField = new Rectangle(background.getX(), background.getY(), background.getWidth(), background.getHeight());
         jewelField = new Rectangle(background.getX(), background.getY(), background.getWidth(), 145);
         if (currentLevel == 13) {
@@ -131,7 +147,7 @@ public class Game {
         }
 
         // spawn enemies
-        int deltaEnemies = Config.levels[currentLevel].getNumEnemies() - enemies.size;
+        int deltaEnemies = levels[currentLevel].getNumEnemies() - enemies.size;
 
         // remove exceeding enemies
         for (int i = 0; deltaEnemies < 0 && i < Math.abs(deltaEnemies); i++) {
@@ -144,7 +160,7 @@ public class Game {
         try {
             newEnemies.clear();
             for (int i = 0; i < numRemainingEnemies; i++) {
-                Enemy enemy = Config.levels[currentLevel].getEnemyClass().newInstance();
+                Enemy enemy = levels[currentLevel].getEnemyClass().newInstance();
                 Enemy oldEnemy = enemies.get(i);
                 enemy.setMovementInverter(oldEnemy.getMovementInverter());
                 enemy.setPosition(oldEnemy.getSprite().getX(), oldEnemy.getSprite().getY());
@@ -158,7 +174,7 @@ public class Game {
 
             // add additional enemies with new random position
             for (int i = 0; deltaEnemies > 0 && i < deltaEnemies; i++) {
-                Enemy enemy = Config.levels[currentLevel].getEnemyClass().newInstance();
+                Enemy enemy = levels[currentLevel].getEnemyClass().newInstance();
                 enemy.setPosition(
                         Util.randomWithin(enemyField.getX() + enemy.getSprite().getWidth() / 2, enemyField.getX()
                                 + enemyField.getWidth() - enemy.getSprite().getWidth() / 2), 100);
@@ -169,8 +185,8 @@ public class Game {
             rearrangeEnemies();
 
             // spawn jewels
-            for (int i = 0; i < Config.levels[currentLevel].getNumJewels(); i++) {
-                Jewel jewel = Config.levels[currentLevel].getJewelClass().newInstance();
+            for (int i = 0; i < levels[currentLevel].getNumJewels(); i++) {
+                Jewel jewel = levels[currentLevel].getJewelClass().newInstance();
                 jewel.setPosition(Util.randomWithin(jewelField.getX() + jewel.getSprite().getWidth() / 2,
                         jewelField.getX() + jewelField.getWidth() - jewel.getSprite().getWidth() / 2), Util
                         .randomWithin(jewelField.getY() + jewel.getSprite().getHeight() / 2,
@@ -191,7 +207,7 @@ public class Game {
         player.turnTemporarilyRed(false);
         soundEnabled = prefs.getBoolean(PrefsKeys.ENABLE_SOUND);
         showMenu = false;
-        currentLevel = Config.START_LEVEL;
+        currentLevel = START_LEVEL;
         enemies.clear();
         jewels.clear();
         numSeconds = 0;
@@ -203,7 +219,7 @@ public class Game {
         loadLevel(currentLevel);
 
         // initial update for all entities
-        player.setPosition(Config.WINDOW_WIDTH / 2, Config.WINDOW_HEIGHT / 2 + 50);
+        player.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 50);
         player.update();
         for (Enemy enemy : enemies)
             enemy.update(enemyField);
@@ -279,14 +295,14 @@ public class Game {
                     soundCollectJewel.play(0.6f);
                 }
                 player.incrementNumCollectedJewels();
-                if (player.getNumCollectedJewels() % Config.PLUS_ONE_MAN_INTERVAL == 0)
+                if (player.getNumCollectedJewels() % PLUS_ONE_MAN_INTERVAL == 0)
                     player.incrementNumMen();
             }
         }
 
         // proceed to next level
         if (jewels.size == 0) {
-            if (currentLevel + 1 >= Config.levels.length) {
+            if (currentLevel + 1 >= levels.length) {
                 //gameWon = true; // currently deprecated due to endless gameplay
                 currentLevel = 0;
             } else {
@@ -306,15 +322,15 @@ public class Game {
         int currentScore = (player.getNumCollectedJewels() - numSeconds);
 
         // build game end phrase to display in dialog
-        String[] applausePhrases = bundle.get(I18NKeys.APPLAUSE_PHRASES).split(";");
-        String[] motivationPhrases = bundle.get(I18NKeys.MOTIVATION_PHRASES).split(";");
+        String[] applausePhrases = bundle.get(APPLAUSE_PHRASES).split(";");
+        String[] motivationPhrases = bundle.get(MOTIVATION_PHRASES).split(";");
         gameEndPhrase = bundle
-                .format(I18NKeys.GAME_END_PHRASE,
+                .format(GAME_END_PHRASE,
                         Math.max(0, currentScore),
                         player.getNumCollectedJewels(),
                         Util.secondsToTimeString(numSeconds),
-                        currentScore > bestScore ? bundle.get(I18NKeys.IMPROVED_HIGHSCORE) : bundle
-                                .get(I18NKeys.MISSED_HIGHSCORE), currentScore > bestScore ? (currentScore - bestScore)
+                        currentScore > bestScore ? bundle.get(IMPROVED_HIGHSCORE) : bundle
+                                .get(MISSED_HIGHSCORE), currentScore > bestScore ? (currentScore - bestScore)
                                 : Math.abs(Math.max(0, currentScore) - bestScore),
                         currentScore > bestScore ? applausePhrases[Util.randomWithin(0, applausePhrases.length - 1)]
                                 : motivationPhrases[Util.randomWithin(0, motivationPhrases.length - 1)]);
@@ -385,24 +401,24 @@ public class Game {
             font.setColor(Color.WHITE);
             font.draw(batch, "Jewel Thief", 220, 198);
             font.setColor(Color.BLACK);
-            font.draw(batch, gameEndPhrase, Config.WINDOW_WIDTH / 2 - 145, Config.WINDOW_HEIGHT / 2 + 25);
-            gameOverPlayAgainBtn.setCaption(bundle.get(I18NKeys.PLAY_AGAIN));
+            font.draw(batch, gameEndPhrase, WINDOW_WIDTH / 2 - 145, WINDOW_HEIGHT / 2 + 25);
+            gameOverPlayAgainBtn.setCaption(bundle.get(PLAY_AGAIN));
             gameOverPlayAgainBtn.renderCaption(batch);
-            gameOverExitBtn.setCaption(bundle.get(I18NKeys.EXIT_TO_MENU));
+            gameOverExitBtn.setCaption(bundle.get(EXIT_TO_MENU));
             gameOverExitBtn.renderCaption(batch);
         } else if (showMenu) {
             font.setColor(Color.WHITE);
             font.draw(batch, "Jewel Thief", 220, 193);
             font.setColor(Color.BLACK);
-            font.draw(batch, bundle.get(I18NKeys.GIVING_UP_ALREADY), 200, 157);
-            menuYesBtn.setCaption(bundle.get(I18NKeys.YES));
+            font.draw(batch, bundle.get(GIVING_UP_ALREADY), 200, 157);
+            menuYesBtn.setCaption(bundle.get(YES));
             menuYesBtn.renderCaption(batch);
-            menuNoBtn.setCaption(bundle.get(I18NKeys.NO));
+            menuNoBtn.setCaption(bundle.get(NO));
             menuNoBtn.renderCaption(batch);
-            menuRestartBtn.setCaption(bundle.get(I18NKeys.RESTART));
+            menuRestartBtn.setCaption(bundle.get(RESTART));
             menuRestartBtn.renderCaption(batch);
         } else if (showGetReady) {
-            font.draw(batch, bundle.get(I18NKeys.GET_READY) + "...", Config.WINDOW_WIDTH / 2 - 43, Config.WINDOW_HEIGHT / 2 + 3);
+            font.draw(batch, bundle.get(GET_READY) + "...", WINDOW_WIDTH / 2 - 43, WINDOW_HEIGHT / 2 + 3);
         }
     }
 
@@ -421,8 +437,8 @@ public class Game {
                 sr.rect(menuRestartBtn.getX(), menuRestartBtn.getY(), menuRestartBtn.getWidth(),
                         menuRestartBtn.getHeight());
             } else if (player.getNumMen() <= 0) {
-                sr.rect(Config.WINDOW_WIDTH / 2 - 63, Config.WINDOW_HEIGHT / 2 - 45, 58, 28);
-                sr.rect(Config.WINDOW_WIDTH / 2 + 5, Config.WINDOW_HEIGHT / 2 - 45, 57, 28);
+                sr.rect(WINDOW_WIDTH / 2 - 63, WINDOW_HEIGHT / 2 - 45, 58, 28);
+                sr.rect(WINDOW_WIDTH / 2 + 5, WINDOW_HEIGHT / 2 - 45, 57, 28);
             } else {
                 sr.setColor(Color.RED);
                 sr.rect(enemyField.x, enemyField.y, enemyField.width, enemyField.height);
@@ -461,7 +477,7 @@ public class Game {
     }
 
     public String getCurrentJewelName() {
-        return Config.levels[currentLevel].getJewelClass().getSimpleName();
+        return levels[currentLevel].getJewelClass().getSimpleName();
     }
 
     public int getGameDuration() {

@@ -17,13 +17,34 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.JewelThief;
-import at.therefactory.jewelthief.constants.Config;
-import at.therefactory.jewelthief.constants.I18NKeys;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.input.MenuScreenInputAdapter;
 import at.therefactory.jewelthief.misc.Util;
 import at.therefactory.jewelthief.ui.buttons.GrayButton;
 import at.therefactory.jewelthief.ui.buttons.GrayStateButton;
+
+import static at.therefactory.jewelthief.constants.Config.HIGHSCORES_LINE_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.INITIAL_SCROLLBAR_POSITION_Y;
+import static at.therefactory.jewelthief.constants.Config.MENU_SCREEN_NUM_STARS;
+import static at.therefactory.jewelthief.constants.Config.PLUS_ONE_MAN_INTERVAL;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
+import static at.therefactory.jewelthief.constants.I18NKeys.ABOUT;
+import static at.therefactory.jewelthief.constants.I18NKeys.ABOUT_TEXT;
+import static at.therefactory.jewelthief.constants.I18NKeys.FETCHING;
+import static at.therefactory.jewelthief.constants.I18NKeys.HIGHSCORES;
+import static at.therefactory.jewelthief.constants.I18NKeys.IS;
+import static at.therefactory.jewelthief.constants.I18NKeys.LICENSE;
+import static at.therefactory.jewelthief.constants.I18NKeys.LICENSE_TEXT;
+import static at.therefactory.jewelthief.constants.I18NKeys.MUSIC;
+import static at.therefactory.jewelthief.constants.I18NKeys.OFF;
+import static at.therefactory.jewelthief.constants.I18NKeys.ON;
+import static at.therefactory.jewelthief.constants.I18NKeys.PLAYERNAME;
+import static at.therefactory.jewelthief.constants.I18NKeys.RESET_HIGHSCORE;
+import static at.therefactory.jewelthief.constants.I18NKeys.SETTINGS;
+import static at.therefactory.jewelthief.constants.I18NKeys.SINGLEPLAYER;
+import static at.therefactory.jewelthief.constants.I18NKeys.SOUND;
+import static at.therefactory.jewelthief.constants.I18NKeys.UPDATE;
 
 public class MenuScreen extends ScreenAdapter {
 
@@ -78,8 +99,8 @@ public class MenuScreen extends ScreenAdapter {
         font = JewelThief.getInstance().getFont();
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT, camera);
-        camera.position.set(Config.WINDOW_WIDTH / 2, Config.WINDOW_HEIGHT / 2, 0);
+        viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
+        camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
         camera.update();
 
         // sprites
@@ -87,7 +108,7 @@ public class MenuScreen extends ScreenAdapter {
         skyline = new Sprite(new Texture("skyline.png"));
         therefactory = new Sprite(new Texture("therefactory.png"));
 
-        borderSize = (Config.WINDOW_WIDTH - skyline.getWidth()) / 2;
+        borderSize = (WINDOW_WIDTH - skyline.getWidth()) / 2;
         skyline.setPosition(borderSize, borderSize);
 
         player = JewelThief.getInstance().getTextureAtlas().createSprite("WhitePlayer");
@@ -103,48 +124,48 @@ public class MenuScreen extends ScreenAdapter {
         blueplayer.setFlip(true, false);
 
         // stars
-        stars = new Sprite[Config.MENU_SCREEN_NUM_STARS];
-        starSpeeds = new float[Config.MENU_SCREEN_NUM_STARS];
-        for (int i = 0; i < Config.MENU_SCREEN_NUM_STARS; i++) {
+        stars = new Sprite[MENU_SCREEN_NUM_STARS];
+        starSpeeds = new float[MENU_SCREEN_NUM_STARS];
+        for (int i = 0; i < MENU_SCREEN_NUM_STARS; i++) {
             Sprite star = JewelThief.getInstance().getTextureAtlas().createSprite("star");
             star.setPosition(
-                    Util.randomWithin(borderSize + star.getWidth(), Config.WINDOW_WIDTH - borderSize - star.getWidth()),
-                    Util.randomWithin(borderSize, Config.WINDOW_HEIGHT - star.getHeight()));
+                    Util.randomWithin(borderSize + star.getWidth(), WINDOW_WIDTH - borderSize - star.getWidth()),
+                    Util.randomWithin(borderSize, WINDOW_HEIGHT - star.getHeight()));
             stars[i] = star;
             starSpeeds[i] = Util.randomWithin(0.01f, 0.2f);
         }
 
         // buttons in settings submenu
         soundSettingButton = new GrayStateButton(new String[]{
-                bundle.get(I18NKeys.SOUND) + " " + bundle.get(I18NKeys.IS) + " " + bundle.get(I18NKeys.OFF),
-                bundle.get(I18NKeys.SOUND) + " " + bundle.get(I18NKeys.IS) + " " + bundle.get(I18NKeys.ON)},
+                bundle.get(SOUND) + " " + bundle.get(IS) + " " + bundle.get(OFF),
+                bundle.get(SOUND) + " " + bundle.get(IS) + " " + bundle.get(ON)},
                 new String[]{"checkbox_unchecked", "checkbox_checked"}, prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? 1 : 0,
                 false, 16, 66, 130, 40);
         musicSettingButton = new GrayStateButton(new String[]{
-                bundle.get(I18NKeys.MUSIC) + " " + bundle.get(I18NKeys.IS) + " " + bundle.get(I18NKeys.OFF),
-                bundle.get(I18NKeys.MUSIC) + " " + bundle.get(I18NKeys.IS) + " " + bundle.get(I18NKeys.ON)},
+                bundle.get(MUSIC) + " " + bundle.get(IS) + " " + bundle.get(OFF),
+                bundle.get(MUSIC) + " " + bundle.get(IS) + " " + bundle.get(ON)},
                 new String[]{"checkbox_unchecked", "checkbox_checked"}, prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? 1 : 0,
                 false, soundSettingButton.getX(), 16, soundSettingButton.getWidth(), soundSettingButton.getHeight());
-        playernameSettingButton = new GrayButton(bundle.get(I18NKeys.PLAYERNAME), 155, soundSettingButton.getY(), 100,
+        playernameSettingButton = new GrayButton(bundle.get(PLAYERNAME), 155, soundSettingButton.getY(), 100,
                 soundSettingButton.getHeight(), true);
         languageSettingButton = new GrayStateButton(new String[]{"English", "Deutsch"}, new String[]{"flag_usa",
                 "flag_germany"}, prefs.getString("language").equals("en") ? 0 : 1, true,
                 playernameSettingButton.getX(), 16, 100, 40);
-        resetHighscoreSettingButton = new GrayButton(bundle.get(I18NKeys.RESET_HIGHSCORE), 264, 16, 100, 40, true);
+        resetHighscoreSettingButton = new GrayButton(bundle.get(RESET_HIGHSCORE), 264, 16, 100, 40, true);
 
         // buttons in main menu
         int spaceBetweenButtons = 13; // in pixels
         int buttonWidth = 110, buttonHeight = 90;
-        int borderDist = (Config.WINDOW_WIDTH - 4 * buttonWidth - 3 * spaceBetweenButtons) / 2;
-        singlePlayerButton = new GrayButton(bundle.get(I18NKeys.SINGLEPLAYER), borderDist, borderDist, buttonWidth,
+        int borderDist = (WINDOW_WIDTH - 4 * buttonWidth - 3 * spaceBetweenButtons) / 2;
+        singlePlayerButton = new GrayButton(bundle.get(SINGLEPLAYER), borderDist, borderDist, buttonWidth,
                 buttonHeight);
-        highscoresButton = new GrayButton(bundle.get(I18NKeys.HIGHSCORES), singlePlayerButton.getX()
+        highscoresButton = new GrayButton(bundle.get(HIGHSCORES), singlePlayerButton.getX()
                 + singlePlayerButton.getWidth() + spaceBetweenButtons, singlePlayerButton.getY(), buttonWidth,
                 buttonHeight);
-        settingsButton = new GrayButton(bundle.get(I18NKeys.SETTINGS), highscoresButton.getX()
+        settingsButton = new GrayButton(bundle.get(SETTINGS), highscoresButton.getX()
                 + highscoresButton.getWidth() + spaceBetweenButtons, singlePlayerButton.getY(), buttonWidth,
                 buttonHeight);
-        aboutButton = new GrayButton(bundle.get(I18NKeys.ABOUT), settingsButton.getX() + settingsButton.getWidth()
+        aboutButton = new GrayButton(bundle.get(ABOUT), settingsButton.getX() + settingsButton.getWidth()
                 + spaceBetweenButtons, singlePlayerButton.getY(), buttonWidth, buttonHeight);
         singlePlayerButton.setCaptionOffsetY(25);
         highscoresButton.setCaptionOffsetY(singlePlayerButton.getCaptionOffsetY());
@@ -152,15 +173,15 @@ public class MenuScreen extends ScreenAdapter {
         aboutButton.setCaptionOffsetY(singlePlayerButton.getCaptionOffsetY());
 
         // button for returning back to main menu when in submenu
-        returnToMainMenuButton = new GrayButton("X", Config.WINDOW_WIDTH - buttonWidth / 2 - borderDist,
-                Config.WINDOW_HEIGHT - buttonHeight / 2 - borderDist, buttonWidth / 2, buttonHeight / 2);
+        returnToMainMenuButton = new GrayButton("X", WINDOW_WIDTH - buttonWidth / 2 - borderDist,
+                WINDOW_HEIGHT - buttonHeight / 2 - borderDist, buttonWidth / 2, buttonHeight / 2);
 
         // button for fetching highscores
-        updateHighscoresButton = new GrayButton(bundle.get(I18NKeys.UPDATE), borderDist, Config.WINDOW_HEIGHT
+        updateHighscoresButton = new GrayButton(bundle.get(UPDATE), borderDist, WINDOW_HEIGHT
                 - buttonHeight / 2 - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
 
         // button for showing license
-        licenseButton = new GrayButton(bundle.get(I18NKeys.LICENSE), borderDist, Config.WINDOW_HEIGHT - buttonHeight
+        licenseButton = new GrayButton(bundle.get(LICENSE), borderDist, WINDOW_HEIGHT - buttonHeight
                 / 2 - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
     }
 
@@ -169,7 +190,7 @@ public class MenuScreen extends ScreenAdapter {
         inputHandler = new MenuScreenInputAdapter(this, viewport);
         Gdx.input.setInputProcessor(inputHandler);
         Gdx.input.setCatchBackKey(true);
-        scrollbarPositionY = Config.INITIAL_SCROLLBAR_POSITION_Y;
+        scrollbarPositionY = INITIAL_SCROLLBAR_POSITION_Y;
 
         // play background music
         if (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC)) {
@@ -195,7 +216,7 @@ public class MenuScreen extends ScreenAdapter {
         for (int i = 0; i < stars.length; i++) {
             Sprite star = stars[i];
             if (star.getY() < borderSize) {
-                star.setY(Config.WINDOW_HEIGHT - star.getHeight());
+                star.setY(WINDOW_HEIGHT - star.getHeight());
             } else {
                 star.setY(star.getY() - starSpeeds[i]);
             }
@@ -231,7 +252,7 @@ public class MenuScreen extends ScreenAdapter {
         sr.setProjectionMatrix(camera.combined);
         sr.begin(ShapeType.Filled);
         sr.setColor(0, 0, 0.7f, 1); // dark blue background color
-        sr.rect(0, skyline.getY(), Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT - skyline.getY());
+        sr.rect(0, skyline.getY(), WINDOW_WIDTH, WINDOW_HEIGHT - skyline.getY());
         sr.end();
 
         batch.setProjectionMatrix(camera.combined);
@@ -242,7 +263,7 @@ public class MenuScreen extends ScreenAdapter {
 
         skyline.draw(batch);
         skyline.setPosition(borderSize, 115);
-        title.setPosition(Config.WINDOW_WIDTH / 2 - title.getWidth() / 2, Config.WINDOW_HEIGHT / 2 + 70
+        title.setPosition(WINDOW_WIDTH / 2 - title.getWidth() / 2, WINDOW_HEIGHT / 2 + 70
                 + showLicenseYOffset);
 
         if (menuState != MenuState.ShowHighscores)
@@ -252,7 +273,7 @@ public class MenuScreen extends ScreenAdapter {
         sr.setProjectionMatrix(camera.combined);
         sr.begin(ShapeType.Filled);
         sr.setColor(Color.BLACK);
-        sr.rect(0, 0, Config.WINDOW_WIDTH, menuState == MenuState.ShowHighscores ? Config.WINDOW_HEIGHT - 70 : skyline.getY()
+        sr.rect(0, 0, WINDOW_WIDTH, menuState == MenuState.ShowHighscores ? WINDOW_HEIGHT - 70 : skyline.getY()
                 + showLicenseYOffset);
 
         if (menuState == MenuState.ShowPromo) {
@@ -293,21 +314,21 @@ public class MenuScreen extends ScreenAdapter {
             batch.begin();
             if (menuState == MenuState.ShowAbout || menuState == MenuState.ShowHighscores || menuState == MenuState.ShowSettings) {
                 returnToMainMenuButton.renderCaption(batch);
-                skyline.setY(Config.WINDOW_HEIGHT - 173 + showLicenseYOffset);
+                skyline.setY(WINDOW_HEIGHT - 173 + showLicenseYOffset);
             }
             switch (getState()) {
                 case ShowHighscores:
-                    updateHighscoresButton.setCaption(bundle.get(I18NKeys.UPDATE));
+                    updateHighscoresButton.setCaption(bundle.get(UPDATE));
                     updateHighscoresButton.renderCaption(batch);
-                    skyline.setY(Config.WINDOW_HEIGHT - 75);
+                    skyline.setY(WINDOW_HEIGHT - 75);
                     if (fetchingHighscores) {
                         font.setColor(Color.WHITE);
-                        font.draw(batch, bundle.get(I18NKeys.FETCHING) + "...", 15, 205);
+                        font.draw(batch, bundle.get(FETCHING) + "...", 15, 205);
                     } else {
                         if (highscores != null) {
                             for (int i = 0; i < highscores.length; i++) {
                                 font.setColor(i == getMyRank() ? Color.GREEN : Color.WHITE);
-                                float posY = (205 - i * Config.HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
+                                float posY = (205 - i * HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
                                 if (posY < skyline.getY()) { // lines disappear when over skyline sprite
                                     font.draw(batch, highscores[i], 15, posY);
                                 }
@@ -315,10 +336,10 @@ public class MenuScreen extends ScreenAdapter {
 
                             // scrollbar
                             if (highscores.length > 0) {
-                                font.draw(batch, "^", Config.WINDOW_WIDTH - 20, Config.INITIAL_SCROLLBAR_POSITION_Y + 5);
-                                font.draw(batch, "#", Config.WINDOW_WIDTH - 20, Math.min(Config.INITIAL_SCROLLBAR_POSITION_Y, scrollbarPositionY));
+                                font.draw(batch, "^", WINDOW_WIDTH - 20, INITIAL_SCROLLBAR_POSITION_Y + 5);
+                                font.draw(batch, "#", WINDOW_WIDTH - 20, Math.min(INITIAL_SCROLLBAR_POSITION_Y, scrollbarPositionY));
                                 font.getData().setScale(1, -1);
-                                font.draw(batch, "^", Config.WINDOW_WIDTH - 20, 10);
+                                font.draw(batch, "^", WINDOW_WIDTH - 20, 10);
                                 font.getData().setScale(1, 1);
                             }
                         }
@@ -327,36 +348,36 @@ public class MenuScreen extends ScreenAdapter {
                 case ShowSettings:
                     // playername
                     playernameSettingButton.setCaption(prefs.getString(PrefsKeys.PLAYER_NAME).trim().length() == 0 ? "<"
-                            + bundle.get(I18NKeys.PLAYERNAME) + ">" : bundle.get(I18NKeys.PLAYERNAME) + ": " + prefs.getString(PrefsKeys.PLAYER_NAME));
+                            + bundle.get(PLAYERNAME) + ">" : bundle.get(PLAYERNAME) + ": " + prefs.getString(PrefsKeys.PLAYER_NAME));
                     playernameSettingButton.renderCaption(batch);
                     font.setColor(Color.WHITE);
 
                     // sound
-                    soundSettingButton.setCaption(bundle.get(I18NKeys.SOUND) + " " + bundle.get(I18NKeys.IS) + " "
-                            + (prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? bundle.get(I18NKeys.ON) : bundle.get(I18NKeys.OFF)));
+                    soundSettingButton.setCaption(bundle.get(SOUND) + " " + bundle.get(IS) + " "
+                            + (prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? bundle.get(ON) : bundle.get(OFF)));
                     soundSettingButton.renderCaption(batch);
 
                     // music
-                    musicSettingButton.setCaption(bundle.get(I18NKeys.MUSIC) + " " + bundle.get(I18NKeys.IS) + " "
-                            + (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? bundle.get(I18NKeys.ON) : bundle.get(I18NKeys.OFF)));
+                    musicSettingButton.setCaption(bundle.get(MUSIC) + " " + bundle.get(IS) + " "
+                            + (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? bundle.get(ON) : bundle.get(OFF)));
                     musicSettingButton.renderCaption(batch);
 
                     // language
                     languageSettingButton.renderCaption(batch);
 
                     // reset highscore
-                    resetHighscoreSettingButton.setCaption(bundle.get(I18NKeys.RESET_HIGHSCORE));
+                    resetHighscoreSettingButton.setCaption(bundle.get(RESET_HIGHSCORE));
                     resetHighscoreSettingButton.renderCaption(batch);
                     break;
                 case ShowAbout:
                     font.setColor(Color.WHITE);
-                    font.draw(batch, bundle.format(I18NKeys.ABOUT_TEXT, Config.PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()), 15,
+                    font.draw(batch, bundle.format(ABOUT_TEXT, PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()), 15,
                             100 + showLicenseYOffset);
                     if (showLicenseYOffset > 0) {
-                        font.draw(batch, bundle.get(I18NKeys.LICENSE_TEXT), 15, showLicenseYOffset + 2);
+                        font.draw(batch, bundle.get(LICENSE_TEXT), 15, showLicenseYOffset + 2);
                     }
                     batch.draw(therefactory, 144, showLicenseYOffset + 19, 135, 11);
-                    licenseButton.setCaption(bundle.get(I18NKeys.LICENSE));
+                    licenseButton.setCaption(bundle.get(LICENSE));
                     licenseButton.renderCaption(batch);
                     break;
                 default:
@@ -369,10 +390,10 @@ public class MenuScreen extends ScreenAdapter {
                     settings.draw(batch);
 
                     // buttons themselves
-                    singlePlayerButton.setCaption(bundle.get(I18NKeys.SINGLEPLAYER));
-                    highscoresButton.setCaption(bundle.get(I18NKeys.HIGHSCORES));
-                    settingsButton.setCaption(bundle.get(I18NKeys.SETTINGS));
-                    aboutButton.setCaption(bundle.get(I18NKeys.ABOUT));
+                    singlePlayerButton.setCaption(bundle.get(SINGLEPLAYER));
+                    highscoresButton.setCaption(bundle.get(HIGHSCORES));
+                    settingsButton.setCaption(bundle.get(SETTINGS));
+                    aboutButton.setCaption(bundle.get(ABOUT));
                     singlePlayerButton.renderCaption(batch);
                     highscoresButton.renderCaption(batch);
                     settingsButton.renderCaption(batch);
@@ -448,7 +469,7 @@ public class MenuScreen extends ScreenAdapter {
                 if (Util.within(touchCoordinates.x, star.getX(), star.getX() + star.getWidth())
                         && Util.within(touchCoordinates.y, star.getY(), star.getY() + star.getHeight())) {
                     JewelThief.getInstance().playCymbalSound();
-                    star.setPosition(star.getX(), Config.WINDOW_HEIGHT + star.getHeight() * 3);
+                    star.setPosition(star.getX(), WINDOW_HEIGHT + star.getHeight() * 3);
                 }
             }
         }

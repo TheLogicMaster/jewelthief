@@ -14,7 +14,7 @@ public interface AndroidInterface {
 
     /**
      * Tries to return the version name set by the build.gradle.
-     * If that fails the Config.VERSION_NAME is returned.
+     * If that fails the VERSION_NAME is returned.
      * @return
      */
     String getVersionName();

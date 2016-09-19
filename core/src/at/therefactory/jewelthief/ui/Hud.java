@@ -9,14 +9,15 @@ import com.badlogic.gdx.utils.I18NBundle;
 
 import at.therefactory.jewelthief.Game;
 import at.therefactory.jewelthief.JewelThief;
-import at.therefactory.jewelthief.constants.Colors;
-import at.therefactory.jewelthief.ui.buttons.GrayButton;
-import at.therefactory.jewelthief.constants.Config;
-import at.therefactory.jewelthief.constants.I18NKeys;
 import at.therefactory.jewelthief.jewels.Jewel;
 import at.therefactory.jewelthief.misc.Util;
+import at.therefactory.jewelthief.ui.buttons.GrayButton;
 
+import static at.therefactory.jewelthief.constants.Colors.WINDOWS_GRAY;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
 import static at.therefactory.jewelthief.constants.Config.levels;
+import static at.therefactory.jewelthief.constants.I18NKeys.MAN;
+import static at.therefactory.jewelthief.constants.I18NKeys.MEN;
 
 public class Hud {
 
@@ -31,8 +32,8 @@ public class Hud {
         this.game = game;
         bundle = JewelThief.getInstance().getBundle();
         font = JewelThief.getInstance().getFont();
-        hud = new Rectangle((Config.WINDOW_WIDTH - game.getBackground().getWidth()) / 2,
-                game.getBackground().getHeight() + game.getBackground().getY(), Config.WINDOW_WIDTH, 31);
+        hud = new Rectangle((WINDOW_WIDTH - game.getBackground().getWidth()) / 2,
+                game.getBackground().getHeight() + game.getBackground().getY(), WINDOW_WIDTH, 31);
         jewelsToDisplay = new Jewel[levels.length];
         for (int i = 0; i < jewelsToDisplay.length; i++) {
             try {
@@ -48,7 +49,7 @@ public class Hud {
     }
 
     public void render(ShapeRenderer sr) {
-        sr.setColor(Colors.WINDOWS_GRAY);
+        sr.setColor(WINDOWS_GRAY);
         sr.rect(hud.x, hud.y, hud.width, hud.height);
         showMenuButton.renderShape(sr);
     }
@@ -64,8 +65,8 @@ public class Hud {
         int yOffsetFromHudY = 19;
         font.draw(batch, bundle.get(game.getCurrentJewelName()), hud.getX() + 15, hud.getY() + yOffsetFromHudY);
         font.draw(batch, Util.secondsToTimeString(game.getGameDuration()), hud.getX() + 370, hud.getY() + yOffsetFromHudY);
-        font.draw(batch, Math.max(0, game.getPlayer().getNumMen()) + " " + (game.getPlayer().getNumMen() == 1 ? bundle.get(I18NKeys.MAN) :
-                bundle.get(I18NKeys.MEN)), hud.getX() + 415, hud.getY() + yOffsetFromHudY);
+        font.draw(batch, Math.max(0, game.getPlayer().getNumMen()) + " " + (game.getPlayer().getNumMen() == 1 ? bundle.get(MAN) :
+                bundle.get(MEN)), hud.getX() + 415, hud.getY() + yOffsetFromHudY);
         int currWidth = 0;
         int indexOfFirstJewelToShow = Util.within(game.getCurrentLevel(), 0, 13) ? 0 : 13;
         for (int i = indexOfFirstJewelToShow; i <= game.getCurrentLevel(); i++) {

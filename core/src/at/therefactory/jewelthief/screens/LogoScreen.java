@@ -1,8 +1,5 @@
 package at.therefactory.jewelthief.screens;
 
-import at.therefactory.jewelthief.JewelThief;
-import at.therefactory.jewelthief.constants.Config;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
@@ -17,6 +14,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import at.therefactory.jewelthief.JewelThief;
+
+import static at.therefactory.jewelthief.constants.Config.DEBUG_MODE;
+import static at.therefactory.jewelthief.constants.Config.FADING_SPEED;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
 
 public class LogoScreen extends ScreenAdapter {
 
@@ -44,8 +48,8 @@ public class LogoScreen extends ScreenAdapter {
         this.sr = sr;
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT, camera);
-        camera.position.set(Config.WINDOW_WIDTH / 2, Config.WINDOW_HEIGHT / 2, 0);
+        viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
+        camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
         camera.update();
 
         there = new Sprite(new Texture("there.png"));
@@ -89,8 +93,8 @@ public class LogoScreen extends ScreenAdapter {
 
         //JewelThief.getInstance().getFont().setColor(Color.BLACK);
         //JewelThief.getInstance().getFont().draw(batch, "built with", 225, 180);
-        batch.draw(libGdxLogo, Config.WINDOW_WIDTH/2 - libGdxLogo.getWidth()/4,
-                Config.WINDOW_HEIGHT/2 - libGdxLogo.getHeight()/4,
+        batch.draw(libGdxLogo, WINDOW_WIDTH/2 - libGdxLogo.getWidth()/4,
+                WINDOW_HEIGHT/2 - libGdxLogo.getHeight()/4,
                 libGdxLogo.getWidth()/2,
                 libGdxLogo.getHeight()/2);
 
@@ -112,7 +116,7 @@ public class LogoScreen extends ScreenAdapter {
 
         // fade in
         if (timestamp == 0 && alpha > 0) {
-            alpha = Math.max(0, alpha - Config.FADING_SPEED/4);
+            alpha = Math.max(0, alpha - FADING_SPEED/4);
         } else {
 
             // wait a bit
@@ -121,7 +125,7 @@ public class LogoScreen extends ScreenAdapter {
             if (System.currentTimeMillis() - 1200 > timestamp) {
                 
                 // fade out
-                alpha = Math.min(1, alpha + Config.FADING_SPEED/4);
+                alpha = Math.min(1, alpha + FADING_SPEED/4);
 
                 if (alpha == 1) {
                     libGdxLogoFinished = true;
@@ -136,8 +140,8 @@ public class LogoScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        there.setX((Config.WINDOW_WIDTH - there.getWidth() - factory.getWidth()) / 2);
-        there.setY(Config.WINDOW_HEIGHT / 2 - there.getHeight() / 2);
+        there.setX((WINDOW_WIDTH - there.getWidth() - factory.getWidth()) / 2);
+        there.setY(WINDOW_HEIGHT / 2 - there.getHeight() / 2);
         there.draw(batch);
 
         batch.end();
@@ -147,7 +151,7 @@ public class LogoScreen extends ScreenAdapter {
         sr.setColor(Color.BLACK);
 
         // black background of "factory" for overlaying the "there" sprite
-        sr.rect(factory.getX(), 0, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
+        sr.rect(factory.getX(), 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         sr.end();
 
@@ -163,12 +167,12 @@ public class LogoScreen extends ScreenAdapter {
         sr.begin(ShapeType.Filled);
 
         // hide letters
-        sr.rect(there.getX() + deltaXThere, 0, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
+        sr.rect(there.getX() + deltaXThere, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // cursor
         if (showCursor) {
             sr.setColor(Color.WHITE);
-            sr.rect(there.getX() + deltaXCursor, Config.WINDOW_HEIGHT / 2 - 50 / 2, 4, 50);
+            sr.rect(there.getX() + deltaXCursor, WINDOW_HEIGHT / 2 - 50 / 2, 4, 50);
         }
         sr.end();
     }
@@ -238,11 +242,11 @@ public class LogoScreen extends ScreenAdapter {
                 // fade out
                 else if (numFrames > 37 * typeSpeedForOneLetter) {
                     showCursor = false;
-                    alpha = Math.min(1, alpha + Config.FADING_SPEED/4);
+                    alpha = Math.min(1, alpha + FADING_SPEED/4);
                 }
 
                 if (alpha == 1) {
-                    if (Config.DEBUG_MODE) {
+                    if (DEBUG_MODE) {
                         resetAnimation();
                     } else {
                         JewelThief.getInstance().switchToMainMenu();

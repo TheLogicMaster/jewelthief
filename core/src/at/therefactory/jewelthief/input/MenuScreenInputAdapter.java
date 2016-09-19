@@ -9,12 +9,16 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.JewelThief;
-import at.therefactory.jewelthief.constants.Config;
-import at.therefactory.jewelthief.constants.I18NKeys;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.misc.Util;
 import at.therefactory.jewelthief.net.HTTP;
 import at.therefactory.jewelthief.screens.MenuScreen;
+
+import static at.therefactory.jewelthief.constants.Config.DEBUG_MODE;
+import static at.therefactory.jewelthief.constants.Config.HIGHSCORES_LINE_HEIGHT;
+import static at.therefactory.jewelthief.constants.I18NKeys.HIGHSCORE_IS_RESET;
+import static at.therefactory.jewelthief.constants.I18NKeys.PLEASE_ENTER_YOUR_NAME;
+import static at.therefactory.jewelthief.constants.I18NKeys.TAP_AGAIN_TO_RESET_HIGHSCORE;
 
 /**
  * Created by Christian on 18.09.2016.
@@ -64,7 +68,7 @@ public class MenuScreenInputAdapter extends InputAdapter {
         pressOrReleaseButtons(touchCoordinates);
         handleTouchOnStars(touchCoordinates);
         touchStartY = touchCoordinates.y;
-        if (Config.DEBUG_MODE && Util.within(touchCoordinates, menuScreen.getTitle())) {
+        if (DEBUG_MODE && Util.within(touchCoordinates, menuScreen.getTitle())) {
             menuScreen.setState(MenuScreen.MenuState.ShowPromo);
         } else if (menuScreen.getState() == MenuScreen.MenuState.ShowPromo) {
             menuScreen.setState(MenuScreen.MenuState.ShowMenu);
@@ -79,9 +83,9 @@ public class MenuScreenInputAdapter extends InputAdapter {
         handleTouchOnStars(touchCoordinates);
         if (numTouches == 1 && !menuScreen.updateHighscoresButton.isPressed() && !menuScreen.returnToMainMenuButton.isPressed()) {
             deltaY = lastDeltaY + (touchStartY - touchCoordinates.y);
-            deltaY = Math.max(deltaY, menuScreen.getHighscores() == null ? 0 : -Config.HIGHSCORES_LINE_HEIGHT * (menuScreen.getHighscores().length - 1)); // stop scrolling if only last line is visible
+            deltaY = Math.max(deltaY, menuScreen.getHighscores() == null ? 0 : -HIGHSCORES_LINE_HEIGHT * (menuScreen.getHighscores().length - 1)); // stop scrolling if only last line is visible
             deltaY = -deltaY; // invert vertical scrolling direction
-            menuScreen.setScrollbarPositionY((22f - 200f) / (Config.HIGHSCORES_LINE_HEIGHT * (menuScreen.getHighscores().length - 1)) * deltaY + 200);
+            menuScreen.setScrollbarPositionY((22f - 200f) / (HIGHSCORES_LINE_HEIGHT * (menuScreen.getHighscores().length - 1)) * deltaY + 200);
         }
         touchDragging = true;
         return true;
@@ -121,7 +125,7 @@ public class MenuScreenInputAdapter extends InputAdapter {
         } else if (menuScreen.getState() == MenuScreen.MenuState.ShowSettings) {
             if (menuScreen.playernameSettingButton.isPressed()) {
                 menuScreen.playernameSettingButton.release();
-                Gdx.input.getTextInput(listener, bundle.get(I18NKeys.PLEASE_ENTER_YOUR_NAME),
+                Gdx.input.getTextInput(listener, bundle.get(PLEASE_ENTER_YOUR_NAME),
                         prefs.getString(PrefsKeys.PLAYER_NAME), "");
             } else if (menuScreen.soundSettingButton.isPressed()) {
                 menuScreen.soundSettingButton.release();
@@ -151,10 +155,10 @@ public class MenuScreenInputAdapter extends InputAdapter {
                     prefs.remove(PrefsKeys.BEST_SCORE);
                     prefs.remove(PrefsKeys.BEST_SCORE_NUM_JEWELS);
                     prefs.remove(PrefsKeys.BEST_SCORE_NUM_SECONDS);
-                    JewelThief.getInstance().toast(bundle.get(I18NKeys.HIGHSCORE_IS_RESET), true);
+                    JewelThief.getInstance().toast(bundle.get(HIGHSCORE_IS_RESET), true);
                 } else {
                     timestampLastClickOnResetHighscoreSettingButton = System.currentTimeMillis();
-                    JewelThief.getInstance().toast(bundle.get(I18NKeys.TAP_AGAIN_TO_RESET_HIGHSCORE), false);
+                    JewelThief.getInstance().toast(bundle.get(TAP_AGAIN_TO_RESET_HIGHSCORE), false);
                 }
             }
         }

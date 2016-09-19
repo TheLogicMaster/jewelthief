@@ -10,9 +10,12 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.Game;
 import at.therefactory.jewelthief.actors.Player;
-import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.input.GameScreenInputAdapter;
 import at.therefactory.jewelthief.ui.Hud;
+
+import static at.therefactory.jewelthief.constants.Config.DEBUG_MODE;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
 
 public class GameScreen extends ScreenAdapter {
 
@@ -31,8 +34,8 @@ public class GameScreen extends ScreenAdapter {
         hud = new Hud(game);
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT, camera);
-        camera.position.set(Config.WINDOW_WIDTH / 2, Config.WINDOW_HEIGHT / 2, 0);
+        viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
+        camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
         camera.update();
     }
 
@@ -95,7 +98,7 @@ public class GameScreen extends ScreenAdapter {
         game.postRender(batch, delta);
         batch.end();
 
-        if (Config.DEBUG_MODE) {
+        if (DEBUG_MODE) {
             sr.setProjectionMatrix(camera.combined);
             game.debug(sr);
             batch.setProjectionMatrix(camera.combined);

@@ -4,7 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Polygon;
 
 import at.therefactory.jewelthief.JewelThief;
-import at.therefactory.jewelthief.constants.Config;
+
+import static at.therefactory.jewelthief.constants.Config.INITIAL_NUM_MEN;
+import static at.therefactory.jewelthief.constants.Config.TIME_PLAYER_STAYS_RED_WHEN_HURT;
 
 public class Player extends Actor {
 
@@ -44,7 +46,7 @@ public class Player extends Actor {
             facingRight = position.x - lastX > 0;
         }
         if (isHurt) {
-            if (isHurtStartTime < System.currentTimeMillis() - Config.TIME_PLAYER_STAYS_RED_WHEN_HURT) {
+            if (isHurtStartTime < System.currentTimeMillis() - TIME_PLAYER_STAYS_RED_WHEN_HURT) {
                 isHurt = false;
             }
             if (facingRight)
@@ -121,7 +123,7 @@ public class Player extends Actor {
     }
 
     public void reset() {
-        numMen = Config.INITIAL_NUM_MEN;
+        numMen = INITIAL_NUM_MEN;
         numCollectedJewels = 0;
         lastX = 0;
         isHurt = false;

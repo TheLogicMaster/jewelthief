@@ -6,9 +6,14 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import at.therefactory.jewelthief.constants.Colors;
 import at.therefactory.jewelthief.JewelThief;
-import at.therefactory.jewelthief.constants.Config;
+
+import static at.therefactory.jewelthief.constants.Colors.BUTTON;
+import static at.therefactory.jewelthief.constants.Colors.BUTTON_BORDER_DARK;
+import static at.therefactory.jewelthief.constants.Colors.BUTTON_BORDER_LIGHT;
+import static at.therefactory.jewelthief.constants.Colors.BUTTON_PRESSED;
+import static at.therefactory.jewelthief.constants.Colors.BUTTON_PRESSED_BORDER_DARK;
+import static at.therefactory.jewelthief.constants.Config.FONT_OFFSET_ON_BUTTON_PRESS;
 
 /**
  * Created by Christian on 08.06.2016.
@@ -69,18 +74,18 @@ public class GrayButton {
 
     public void renderShape(ShapeRenderer sr) {
         if (isPressed()) {
-            sr.setColor(Colors.BUTTON_PRESSED_BORDER_DARK);
+            sr.setColor(BUTTON_PRESSED_BORDER_DARK);
             sr.rect(x, y, borderSize, height);
             sr.rect(x + borderSize, y + height - borderSize, width - borderSize, borderSize);
-            sr.setColor(Colors.BUTTON_PRESSED);
+            sr.setColor(BUTTON_PRESSED);
             sr.rect(x + borderSize, y, width - borderSize, height - borderSize);
         } else {
-            sr.setColor(Colors.BUTTON_BORDER_LIGHT);
+            sr.setColor(BUTTON_BORDER_LIGHT);
             sr.rect(x, y, borderSize, height);
             sr.rect(x + borderSize, y + height - borderSize, width - borderSize, borderSize);
-            sr.setColor(Colors.BUTTON);
+            sr.setColor(BUTTON);
             sr.rect(x + borderSize, y + borderSize, width - borderSize * 2, height - borderSize * 2);
-            sr.setColor(Colors.BUTTON_BORDER_DARK);
+            sr.setColor(BUTTON_BORDER_DARK);
             sr.rect(x + borderSize, y, width - borderSize, borderSize);
             sr.rect(x + width - borderSize, y + borderSize, borderSize, height - borderSize * 2);
         }
@@ -96,11 +101,11 @@ public class GrayButton {
     }
 
     public void press() {
-        pressedOffset = Config.FONT_OFFSET_ON_BUTTON_PRESS;
+        pressedOffset = FONT_OFFSET_ON_BUTTON_PRESS;
     }
 
     public boolean isPressed() {
-        return pressedOffset == Config.FONT_OFFSET_ON_BUTTON_PRESS;
+        return pressedOffset == FONT_OFFSET_ON_BUTTON_PRESS;
     }
 
     public int getBorderSize() {

@@ -10,8 +10,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.JewelThief;
-import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.constants.I18NKeys;
+
+import static at.therefactory.jewelthief.constants.Config.FADING_SPEED;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
 
 public class GameIntroScreen extends ScreenAdapter {
 
@@ -27,8 +30,8 @@ public class GameIntroScreen extends ScreenAdapter {
 		this.batch = batch;
 
 		camera = new OrthographicCamera();
-		viewport = new FitViewport(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT, camera);
-		camera.position.set(Config.WINDOW_WIDTH / 2, Config.WINDOW_HEIGHT / 2, 0);
+		viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
+		camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
 		camera.update();
 
 		font = JewelThief.getInstance().getFont();
@@ -64,9 +67,9 @@ public class GameIntroScreen extends ScreenAdapter {
 			JewelThief.getInstance().startSinglePlayerGame();
 		}
 		if (touched)
-			alpha = Math.min(1, alpha + Config.FADING_SPEED);
+			alpha = Math.min(1, alpha + FADING_SPEED);
 		else
-			alpha = Math.max(0, alpha - Config.FADING_SPEED);
+			alpha = Math.max(0, alpha - FADING_SPEED);
 	}
 
 	@Override

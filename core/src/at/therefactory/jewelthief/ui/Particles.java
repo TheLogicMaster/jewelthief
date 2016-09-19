@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.misc.Util;
+
+import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
 
 /**
  * Created by Christian on 10.09.2016.
@@ -77,7 +79,6 @@ public class Particles {
         resetBlendFunction(batch);
     }
 
-
     /**
      * Resets the position, start color and duration of all firework effects to random values.
      */
@@ -95,7 +96,7 @@ public class Particles {
     public void resetFireworksEffect(ParticleEffect effect) {
         effect.reset();
         effect.setDuration(Util.randomWithin(180, 250));
-        effect.setPosition(Util.randomWithin(0, Config.WINDOW_WIDTH), Util.randomWithin(0, Config.WINDOW_HEIGHT));
+        effect.setPosition(Util.randomWithin(0, WINDOW_WIDTH), Util.randomWithin(0, WINDOW_HEIGHT));
         float[] colors = effect.getEmitters().get(0).getTint().getColors();
         int randomStartColor = Util.randomWithin(0, startColors.length - 1);
         for (int i = 0; i < 6; i++) {
