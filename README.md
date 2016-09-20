@@ -6,27 +6,34 @@ You can follow my development blog on http://goo.gl/KvKHze for the latest news o
 
 ***
 
-**DOWNLOAD THE APP**
+**DOWNLOAD**
 
-App now available on Google Play Store:
+The app is now available on Google Play Store.
 
-http://goo.gl/l1lngU
+<a href="http://goo.gl/l1lngU"><img src="http://therefactory.bplaced.net/img/google-play-badge.png" width="180"></a>
 
 ***
 
 **PROMOTION VIDEO**
 
-Watch our promotion video showing in-game footage on youtube here:
+Watch the promotion video showing in-game footage.
 
 https://youtu.be/RObU2xX5HiE
 
 ***
 
-![](http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png)
-![](http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png)
-![](http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png)
-![](http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png)
-![](http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png)
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png" align="left" height="40%" width="40%" ></a>
+
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png" align="left" height="40%" width="40%" ></a>
+
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png" align="left" height="40%" width="40%" ></a>
+
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png" align="left" height="40%" width="40%" ></a>
+
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png" align="left" height="40%" width="40%" ></a>
+
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-09-10-213255.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-09-10-213255.png" height="40%" width="40%" ></a>
+
 
 ***
 
@@ -40,17 +47,13 @@ Tip: Use only one finger to move around.
 
 **PROBLEMS, FEEDBACK?**
 
-The more you tell us, the better our apps get.
-
-Please use our Issuetracker: http://goo.gl/43AjJ9
-
-Or visit our webpage to post feedback: http://goo.gl/KvKHze
+The more you tell me, the better my apps get. Please use the <a href="http://goo.gl/43AjJ9">Issuetracker</a> or visit my <a href="http://goo.gl/KvKHze">website</a> to post feedback. 
 
 ***
 
 **PERMISSIONS**
 
-Your privacy is really important to us. The only permission that the app requires is access to the internet so the player's highscore and chosen username can be uploaded to our servers.
+Your privacy is really important to me. The only permission that this app requires is access to the internet so the player's highscore and chosen username can be uploaded to our servers.
 
 ***
 
@@ -64,8 +67,8 @@ Jewel Thief was a game made by Paul Ligeski from ServantWare in 1991. This app i
 * Mouse Click, Party Whistle and Cymbal Sound by www.freesfx.co.uk
 * Music by Chris Zabriskie (www.soundcloud.com/chriszabriskie), CC BY 3.0
 
+***
 
-Crafted with &hearts; in The Refactory in Barcelona 2016.
-The Refactory Website: http://goo.gl/KvKHze
+Crafted with &hearts; in <a href="http://goo.gl/KvKHze">The Refactory</a> in Barcelona 2016.
 
 (My software is and stays open source, free of charge and ad-free)
