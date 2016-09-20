@@ -2,7 +2,7 @@
 
 This project is a remake of the legendary Jewel Thief game from 1991 for Android and Desktop using the [libGDX framework](https://github.com/libgdx/libgdx).
 
-You can follow my development blog on http://goo.gl/KvKHze for the latest news on this and other projects of mine.
+You can follow my <a href="https://goo.gl/U0x1Fy">development blog</a> for the latest news on this and other projects of mine.
 
 ***
 
@@ -47,7 +47,7 @@ Tip: Use only one finger to move around.
 
 **PROBLEMS, FEEDBACK?**
 
-The more you tell me, the better my apps get. Please use the <a href="http://goo.gl/43AjJ9">Issuetracker</a> or visit my <a href="http://goo.gl/KvKHze">website</a> to post feedback. 
+The more you tell me, the better my apps get. Please use the comments on <a href="http://goo.gl/l1lngU">Google Play Store</a> or visit <a href="http://goo.gl/KvKHze">my website</a> to post feedback. 
 
 ***
 
