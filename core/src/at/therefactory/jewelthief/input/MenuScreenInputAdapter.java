@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.JewelThief;
+import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.misc.Util;
 import at.therefactory.jewelthief.net.HTTP;
@@ -169,6 +170,7 @@ public class MenuScreenInputAdapter extends InputAdapter {
                 menuScreen.singlePlayerButton.release();
             } else if (menuScreen.highscoresButton.isPressed()) {
                 deltaY = 0;
+                menuScreen.setScrollbarPositionY(Config.INITIAL_SCROLLBAR_POSITION_Y);
                 if (prefs.contains(PrefsKeys.CACHED_HIGHSCORES)) {
                     menuScreen.setHighscores(prefs.getString(PrefsKeys.CACHED_HIGHSCORES).split("\n"));
                     //Gdx.app.log(getClass().getName(), prefs.getString(PrefsKeys.CACHED_HIGHSCORES));
@@ -197,9 +199,8 @@ public class MenuScreenInputAdapter extends InputAdapter {
     }
 
     public void update(float delta) {
-        // scroll highscore list back to top if dragged down too far
-        if (!touchDragging && deltaY < 0) {
-            deltaY = Math.min(0, deltaY + 5);
+        if (!touchDragging && deltaY < 0) { // scroll highscore list back to top if dragged down too far
+            deltaY = Math.min(0, deltaY + Math.abs(deltaY) / 5);
             lastDeltaY = deltaY;
         }
     }
