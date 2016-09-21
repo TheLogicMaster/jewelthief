@@ -53,7 +53,7 @@ The more you tell me, the better my apps get. Please use the comments on <a href
 
 **PERMISSIONS**
 
-Your privacy is really important to me. The only permission that this app requires is access to the internet so the player's highscore and chosen username can be uploaded to our servers.
+Your privacy is really important to me. The only permission that this app requires is internet access. This is needed for the highscore list to function.
 
 ***
 
