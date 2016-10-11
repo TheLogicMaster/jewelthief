@@ -27,34 +27,33 @@ public class LogoScreen extends ScreenAdapter {
     private final FitViewport viewport;
     private final OrthographicCamera camera;
     private final SpriteBatch batch;
-    private final ShapeRenderer sr;
-    private final Music libGdxSound;
-    private Sprite there, factory, libGdxLogo;
-    private int numFrames, deltaXThere, deltaXCursor, deltaXFactory = 64;
+    private final ShapeRenderer shapeRenderer;
+    private final Music musicLibGdxJingle;
+    private final Sprite spriteThere;
+    private final Sprite spriteFactory;
+    private final Sprite spriteLibGdxLogo;
+    private short numFrames, deltaXThere, deltaXCursor, deltaXFactory = 64;
     private boolean showCursor = true;
     private float alpha;
 
     // flags for states in the animation
-    private boolean writeThefactory = true;
+    private boolean writeTheFactory = true;
     private boolean writeRe = false;
-    private Sound thefactorySound;
-    private Sound goBackSound;
-    private Sound reSound;
+    private final Sound soundTypeTheRefactory;
+    private final Sound soundGoBackOnKeyboard;
+    private final Sound soundTypeRe;
     private long timestamp;
     private boolean libGdxLogoFinished;
 
-    public LogoScreen(SpriteBatch batch, ShapeRenderer sr) {
+    public LogoScreen(SpriteBatch batch, ShapeRenderer shapeRenderer, FitViewport viewport, OrthographicCamera camera) {
         this.batch = batch;
-        this.sr = sr;
+        this.shapeRenderer = shapeRenderer;
+        this.viewport = viewport;
+        this.camera = camera;
 
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
-        camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
-        camera.update();
-
-        there = new Sprite(new Texture("there.png"));
-        factory = new Sprite(new Texture("factory.png"));
-        libGdxLogo = new Sprite(new Texture("libgdx.png"));
+        spriteThere = new Sprite(new Texture("there.png"));
+        spriteFactory = new Sprite(new Texture("factory.png"));
+        spriteLibGdxLogo = new Sprite(new Texture("libgdx.png"));
 
         AssetManager am = JewelThief.getInstance().getAssetManager();
         am.load("audio/sounds/keyboard.ogg", Sound.class);
@@ -63,11 +62,10 @@ public class LogoScreen extends ScreenAdapter {
         am.load("audio/sounds/libgdx.ogg", Music.class);
         am.finishLoading();
 
-        thefactorySound = am.get("audio/sounds/keyboard.ogg", Sound.class);
-        goBackSound = am.get("audio/sounds/keyboard_go_back.ogg", Sound.class);
-        reSound = am.get("audio/sounds/re.ogg", Sound.class);
-
-        libGdxSound =  am.get("audio/sounds/libgdx.ogg", Music.class);
+        soundTypeTheRefactory = am.get("audio/sounds/keyboard.ogg", Sound.class);
+        soundGoBackOnKeyboard = am.get("audio/sounds/keyboard_go_back.ogg", Sound.class);
+        soundTypeRe = am.get("audio/sounds/re.ogg", Sound.class);
+        musicLibGdxJingle = am.get("audio/sounds/libgdx.ogg", Music.class);
 
         resetAnimation();
     }
@@ -91,12 +89,10 @@ public class LogoScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        //JewelThief.getInstance().getFont().setColor(Color.BLACK);
-        //JewelThief.getInstance().getFont().draw(batch, "built with", 225, 180);
-        batch.draw(libGdxLogo, WINDOW_WIDTH/2 - libGdxLogo.getWidth()/4,
-                WINDOW_HEIGHT/2 - libGdxLogo.getHeight()/4,
-                libGdxLogo.getWidth()/2,
-                libGdxLogo.getHeight()/2);
+        batch.draw(spriteLibGdxLogo, WINDOW_WIDTH/2 - spriteLibGdxLogo.getWidth()/4,
+                WINDOW_HEIGHT/2 - spriteLibGdxLogo.getHeight()/4,
+                spriteLibGdxLogo.getWidth()/2,
+                spriteLibGdxLogo.getHeight()/2);
 
         JewelThief.getInstance().getFadeSprite().setAlpha(alpha);
         JewelThief.getInstance().getFadeSprite().draw(batch);
@@ -108,7 +104,7 @@ public class LogoScreen extends ScreenAdapter {
 
         // go to next screen as soon as user taps the screen
         if (Gdx.input.justTouched()) {
-            libGdxSound.stop();
+            musicLibGdxJingle.stop();
             alpha = 1;
             libGdxLogoFinished = true;
             return;
@@ -140,41 +136,41 @@ public class LogoScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        there.setX((WINDOW_WIDTH - there.getWidth() - factory.getWidth()) / 2);
-        there.setY(WINDOW_HEIGHT / 2 - there.getHeight() / 2);
-        there.draw(batch);
+        spriteThere.setX((WINDOW_WIDTH - spriteThere.getWidth() - spriteFactory.getWidth()) / 2);
+        spriteThere.setY(WINDOW_HEIGHT / 2 - spriteThere.getHeight() / 2);
+        spriteThere.draw(batch);
 
         batch.end();
 
-        sr.setProjectionMatrix(camera.combined);
-        sr.begin(ShapeType.Filled);
-        sr.setColor(Color.BLACK);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
 
-        // black background of "factory" for overlaying the "there" sprite
-        sr.rect(factory.getX(), 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        // black background of "spriteFactory" for overlaying the "spriteThere" sprite
+        shapeRenderer.rect(spriteFactory.getX(), 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        sr.end();
+        shapeRenderer.end();
 
         batch.begin();
-        factory.setX(there.getX() + there.getWidth() + 1 - deltaXFactory);
-        factory.setY(there.getY());
-        factory.draw(batch);
+        spriteFactory.setX(spriteThere.getX() + spriteThere.getWidth() + 1 - deltaXFactory);
+        spriteFactory.setY(spriteThere.getY());
+        spriteFactory.draw(batch);
         
         JewelThief.getInstance().getFadeSprite().setAlpha(alpha);
         JewelThief.getInstance().getFadeSprite().draw(batch);
         batch.end();
 
-        sr.begin(ShapeType.Filled);
+        shapeRenderer.begin(ShapeType.Filled);
 
         // hide letters
-        sr.rect(there.getX() + deltaXThere, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        shapeRenderer.rect(spriteThere.getX() + deltaXThere, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // cursor
         if (showCursor) {
-            sr.setColor(Color.WHITE);
-            sr.rect(there.getX() + deltaXCursor, WINDOW_HEIGHT / 2 - 50 / 2, 4, 50);
+            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.rect(spriteThere.getX() + deltaXCursor, WINDOW_HEIGHT / 2 - 50 / 2, 4, 50);
         }
-        sr.end();
+        shapeRenderer.end();
     }
 
     private void updateTheRefactory(float delta) {
@@ -190,11 +186,11 @@ public class LogoScreen extends ScreenAdapter {
         if (numFrames < 0) {
             blinkCursor();
         } else {
-            if (writeThefactory) {
+            if (writeTheFactory) {
                 if (numFrames == 1) {
                     alpha = 0;
                     showCursor = true;
-                    thefactorySound.play();
+                    soundTypeTheRefactory.play();
                 }
                 if (numFrames == 9 * typeSpeedForOneLetter) {
                     deltaXThere += 41;
@@ -205,10 +201,10 @@ public class LogoScreen extends ScreenAdapter {
                 if (numFrames > 10 * typeSpeedForOneLetter) {
                     blinkCursor();
                     if (numFrames > 17 * typeSpeedForOneLetter) {
-                        writeThefactory = false;
+                        writeTheFactory = false;
                         writeRe = true;
                         deltaXCursor -= 41;
-                        goBackSound.play();
+                        soundGoBackOnKeyboard.play();
                         showCursor = true;
                     }
                 }
@@ -221,7 +217,7 @@ public class LogoScreen extends ScreenAdapter {
 
                 // insert letter "R"
                 else if (numFrames == 26 * typeSpeedForOneLetter) {
-                    reSound.play();
+                    soundTypeRe.play();
                     showCursor = true;
                     deltaXFactory -= 33;
                     deltaXCursor += 33;
@@ -265,9 +261,9 @@ public class LogoScreen extends ScreenAdapter {
         deltaXCursor = 0;
         deltaXFactory = 64;
         showCursor = true;
-        writeThefactory = true;
+        writeTheFactory = true;
         writeRe = false;
-        libGdxSound.play();
+        musicLibGdxJingle.play();
     }
 
     private void blinkCursor() {
@@ -284,19 +280,19 @@ public class LogoScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         super.dispose();
-        goBackSound.dispose();
-        thefactorySound.dispose();
-        reSound.dispose();
-        libGdxSound.dispose();
+        soundGoBackOnKeyboard.dispose();
+        soundTypeTheRefactory.dispose();
+        soundTypeRe.dispose();
+        musicLibGdxJingle.dispose();
     }
 
     @Override
     public void hide() {
         super.hide();
-        goBackSound.stop();
-        thefactorySound.stop();
-        reSound.stop();
-        libGdxSound.stop();
+        soundGoBackOnKeyboard.stop();
+        soundTypeTheRefactory.stop();
+        soundTypeRe.stop();
+        musicLibGdxJingle.stop();
     }
 
 }

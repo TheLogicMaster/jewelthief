@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import at.therefactory.jewelthief.JewelThief;
 
-public abstract class Actor {
+abstract class Actor {
 
 	protected Sprite sprite;
 	protected final Vector2 position = new Vector2();

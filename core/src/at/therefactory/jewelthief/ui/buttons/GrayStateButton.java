@@ -13,9 +13,9 @@ public class GrayStateButton extends GrayButton {
 
     private final Sprite[] sprites;
     private final String[] captions;
-    private int state;
+    private short state;
 
-    public GrayStateButton(String[] captions, String[] spriteIds, int initState, boolean adaptWidthToCaption,
+    public GrayStateButton(String[] captions, String[] spriteIds, short initState, boolean adaptWidthToCaption,
                            float x, float y, float width, float height) {
         super(captions[0], x, y, width, height, adaptWidthToCaption);
         this.state = initState;
@@ -41,7 +41,7 @@ public class GrayStateButton extends GrayButton {
     }
     
     public void nextState() {
-    	state = (state + 1) % sprites.length;
+    	state = (short) ((state + 1) % sprites.length);
     }
 
     public int getState() {

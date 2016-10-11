@@ -1,6 +1,12 @@
 Jewel Thief - Changelog
 =========
 
+### Version 1.1.0 - October 11, 2016
+
+* Fixed memory leak in about screen
+* Improved overall performance and memory efficiency
+* Improved readability and maintainability of source code
+
 ### Version 1.0.9 - September 19, 2016
 
 * Fixed language not being changeable

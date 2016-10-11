@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import at.therefactory.jewelthief.JewelThief;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.input.MenuScreenInputAdapter;
-import at.therefactory.jewelthief.misc.Util;
+import at.therefactory.jewelthief.misc.Utils;
 import at.therefactory.jewelthief.ui.buttons.GrayButton;
 import at.therefactory.jewelthief.ui.buttons.GrayStateButton;
 
@@ -48,141 +48,166 @@ import static at.therefactory.jewelthief.constants.I18NKeys.UPDATE;
 
 public class MenuScreen extends ScreenAdapter {
 
-    public final GrayStateButton soundSettingButton;
-    public final GrayStateButton musicSettingButton;
-    public final GrayStateButton languageSettingButton;
-    public final GrayButton resetHighscoreSettingButton;
-    public final GrayButton playernameSettingButton;
-    public final GrayButton singlePlayerButton;
-    public final GrayButton highscoresButton;
-    public final GrayButton settingsButton;
-    public final GrayButton aboutButton;
-    public final GrayButton updateHighscoresButton;
-    public final GrayButton returnToMainMenuButton;
-    public final GrayButton licenseButton;
+    public GrayStateButton buttonToggleSound;
+    public GrayStateButton buttonToggleMusic;
+    public GrayStateButton buttonChangeLanguage;
+    public GrayButton buttonResetHighscore;
+    public GrayButton buttonChangePlayername;
+    public GrayButton buttonStartSinglePlayerGame;
+    public GrayButton buttonShowHighscores;
+    public GrayButton buttonShowSettings;
+    public GrayButton buttonShowAbout;
+    public GrayButton buttonUpdateHighscores;
+    public final GrayButton buttonExitToMainMenu;
+    public GrayButton buttonShowLicense;
+
     private final SpriteBatch batch;
-    private final ShapeRenderer sr;
-    private final Sprite title;
-    private final Sprite player;
-    private final Sprite redplayer;
-    private final Sprite blueplayer;
-    private final Sprite pearl;
-    private final Sprite soldier;
-    private final Sprite settings;
-    private final Sprite skyline;
-    private final Sprite therefactory;
-    private final Sprite badge;
-    private final Sprite[] stars;
+    private final ShapeRenderer shapeRenderer;
+    private final float borderSize;
+    private final BitmapFont font;
+    private int showLicenseYOffset = 0;
+    private float scrollbarPositionY;
+
+    private Sprite spriteTitle;
+    private Sprite spritePlayer;
+    private Sprite spriteRedPlayer;
+    private Sprite spriteBluePlayer;
+    private Sprite spritePearl;
+    private Sprite spriteSoldier;
+    private Sprite spriteSettings;
+    private Sprite spriteSkyline;
+    private Sprite spriteThere;
+    private Sprite spriteFactory;
+//    private Sprite spriteBadge;
+
+    private Sprite[] spritesStars;
+    private float[] starSpeeds;
+
     private final OrthographicCamera camera;
     private final FitViewport viewport;
-    private final BitmapFont font;
-    private final float[] starSpeeds;
-    private final float borderSize;
+
     private final Preferences prefs;
-    private MenuState menuState;
+    private MenuState state;
     private MenuScreenInputAdapter inputHandler;
-    private float scrollbarPositionY;
+    private I18NBundle bundle;
+
     private String[] highscores;
     private boolean fetchingHighscores;
-    private I18NBundle bundle;
-    private int showLicenseYOffset = 0;
+    private final String aboutText;
 
-    public MenuScreen(SpriteBatch batch, ShapeRenderer sr) {
+    public MenuScreen(SpriteBatch batch, ShapeRenderer shapeRenderer, FitViewport viewport, OrthographicCamera camera) {
 
         // initialize member variables
-        menuState = MenuState.ShowMenu;
         prefs = JewelThief.getInstance().getPreferences();
         this.batch = batch;
-        this.sr = sr;
+        this.shapeRenderer = shapeRenderer;
+        this.viewport = viewport;
+        this.camera = camera;
         this.bundle = JewelThief.getInstance().getBundle();
         this.highscores = new String[0];
         font = JewelThief.getInstance().getFont();
+        aboutText = bundle.format(ABOUT_TEXT, PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()); // calls to format in update method cause memory leak
 
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
-        camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
-        camera.update();
+        initSprites();
+        initStars();
+        borderSize = (WINDOW_WIDTH - spriteSkyline.getWidth()) / 2;
 
-        // sprites
-        title = new Sprite(new Texture("title.png"));
-        skyline = new Sprite(new Texture("skyline.png"));
-        therefactory = new Sprite(new Texture("therefactory.png"));
+        short spaceBetweenButtons = 13; // in pixels
+        short buttonWidth = 110, buttonHeight = 90;
+        int borderDistance = (WINDOW_WIDTH - 4 * buttonWidth - 3 * spaceBetweenButtons) / 2;
+        initButtonsSettings();
+        initButtonsMainMenu(buttonWidth, buttonHeight, borderDistance, spaceBetweenButtons);
+        initButtonsHighscores(buttonWidth, buttonHeight, borderDistance);
 
-        borderSize = (WINDOW_WIDTH - skyline.getWidth()) / 2;
-        skyline.setPosition(borderSize, borderSize);
+        // button for returning back to main menu when in submenu
+        buttonExitToMainMenu = new GrayButton("X", WINDOW_WIDTH - buttonWidth / 2 - borderDistance,
+                WINDOW_HEIGHT - buttonHeight / 2 - borderDistance, buttonWidth / 2, buttonHeight / 2);
 
-        player = JewelThief.getInstance().getTextureAtlas().createSprite("WhitePlayer");
-        redplayer = JewelThief.getInstance().getTextureAtlas().createSprite("RedPlayer");
-        blueplayer = JewelThief.getInstance().getTextureAtlas().createSprite("BluePlayer");
-        pearl = JewelThief.getInstance().getTextureAtlas().createSprite("Pearl");
-        soldier = JewelThief.getInstance().getTextureAtlas().createSprite("Soldier");
-        settings = JewelThief.getInstance().getTextureAtlas().createSprite("settings");
-        badge = new Sprite(new Texture("google-play-badge.png"));
+        positionImagesOnButtons();
+        setState(MenuState.ShowMenu);
+    }
 
-        player.setFlip(true, false);
-        redplayer.setFlip(true, false);
-        blueplayer.setFlip(true, false);
+    private void initButtonsHighscores(short buttonWidth, short buttonHeight, int borderDist) {
+        // button for fetching highscores
+        buttonUpdateHighscores = new GrayButton(bundle.get(UPDATE), borderDist, WINDOW_HEIGHT
+                - buttonHeight / 2 - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
 
-        // stars
-        stars = new Sprite[MENU_SCREEN_NUM_STARS];
+        // button for showing license
+        buttonShowLicense = new GrayButton(bundle.get(LICENSE), borderDist, WINDOW_HEIGHT - buttonHeight
+                / 2 - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
+    }
+
+    private void initButtonsMainMenu(short buttonWidth, short buttonHeight, int borderDist, short spaceBetweenButtons) {
+        buttonStartSinglePlayerGame = new GrayButton(bundle.get(SINGLEPLAYER), borderDist, borderDist, buttonWidth,
+                buttonHeight);
+        buttonShowHighscores = new GrayButton(bundle.get(HIGHSCORES), buttonStartSinglePlayerGame.getX()
+                + buttonStartSinglePlayerGame.getWidth() + spaceBetweenButtons, buttonStartSinglePlayerGame.getY(), buttonWidth,
+                buttonHeight);
+        buttonShowSettings = new GrayButton(bundle.get(SETTINGS), buttonShowHighscores.getX()
+                + buttonShowHighscores.getWidth() + spaceBetweenButtons, buttonStartSinglePlayerGame.getY(), buttonWidth,
+                buttonHeight);
+        buttonShowAbout = new GrayButton(bundle.get(ABOUT), buttonShowSettings.getX() + buttonShowSettings.getWidth()
+                + spaceBetweenButtons, buttonStartSinglePlayerGame.getY(), buttonWidth, buttonHeight);
+        buttonStartSinglePlayerGame.setCaptionOffsetY(25);
+        buttonShowHighscores.setCaptionOffsetY(buttonStartSinglePlayerGame.getCaptionOffsetY());
+        buttonShowSettings.setCaptionOffsetY(buttonStartSinglePlayerGame.getCaptionOffsetY());
+        buttonShowAbout.setCaptionOffsetY(buttonStartSinglePlayerGame.getCaptionOffsetY());
+    }
+
+    private void initButtonsSettings() {
+        buttonToggleSound = new GrayStateButton(new String[]{
+                bundle.get(SOUND) + " " + bundle.get(IS) + " " + bundle.get(OFF),
+                bundle.get(SOUND) + " " + bundle.get(IS) + " " + bundle.get(ON)},
+                new String[]{"checkbox_unchecked", "checkbox_checked"}, (short) (prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? 1 : 0),
+                false, 16, 66, 130, 40);
+        buttonToggleMusic = new GrayStateButton(new String[]{
+                bundle.get(MUSIC) + " " + bundle.get(IS) + " " + bundle.get(OFF),
+                bundle.get(MUSIC) + " " + bundle.get(IS) + " " + bundle.get(ON)},
+                new String[]{"checkbox_unchecked", "checkbox_checked"}, (short) (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? 1 : 0),
+                false, buttonToggleSound.getX(), 16, buttonToggleSound.getWidth(), buttonToggleSound.getHeight());
+        buttonChangePlayername = new GrayButton(bundle.get(PLAYERNAME), 155, buttonToggleSound.getY(), 100,
+                buttonToggleSound.getHeight(), true);
+        buttonChangeLanguage = new GrayStateButton(new String[]{"English", "Deutsch"}, new String[]{"flag_usa",
+                "flag_germany"}, (short) (prefs.getString("language").equals("en") ? 0 : 1), true,
+                buttonChangePlayername.getX(), 16, 100, 40);
+        buttonResetHighscore = new GrayButton(bundle.get(RESET_HIGHSCORE), 264, 16, 100, 40, true);
+    }
+
+    private void initStars() {
+        spritesStars = new Sprite[MENU_SCREEN_NUM_STARS];
         starSpeeds = new float[MENU_SCREEN_NUM_STARS];
         for (int i = 0; i < MENU_SCREEN_NUM_STARS; i++) {
             Sprite star = JewelThief.getInstance().getTextureAtlas().createSprite("star");
             star.setPosition(
-                    Util.randomWithin(borderSize + star.getWidth(), WINDOW_WIDTH - borderSize - star.getWidth()),
-                    Util.randomWithin(borderSize, WINDOW_HEIGHT - star.getHeight()));
-            stars[i] = star;
-            starSpeeds[i] = Util.randomWithin(0.01f, 0.2f);
+                    Utils.randomWithin(borderSize + star.getWidth(), WINDOW_WIDTH - borderSize - star.getWidth()),
+                    Utils.randomWithin(borderSize, WINDOW_HEIGHT - star.getHeight()));
+            spritesStars[i] = star;
+            starSpeeds[i] = Utils.randomWithin(.01f, .2f);
         }
+    }
 
-        // buttons in settings submenu
-        soundSettingButton = new GrayStateButton(new String[]{
-                bundle.get(SOUND) + " " + bundle.get(IS) + " " + bundle.get(OFF),
-                bundle.get(SOUND) + " " + bundle.get(IS) + " " + bundle.get(ON)},
-                new String[]{"checkbox_unchecked", "checkbox_checked"}, prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? 1 : 0,
-                false, 16, 66, 130, 40);
-        musicSettingButton = new GrayStateButton(new String[]{
-                bundle.get(MUSIC) + " " + bundle.get(IS) + " " + bundle.get(OFF),
-                bundle.get(MUSIC) + " " + bundle.get(IS) + " " + bundle.get(ON)},
-                new String[]{"checkbox_unchecked", "checkbox_checked"}, prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? 1 : 0,
-                false, soundSettingButton.getX(), 16, soundSettingButton.getWidth(), soundSettingButton.getHeight());
-        playernameSettingButton = new GrayButton(bundle.get(PLAYERNAME), 155, soundSettingButton.getY(), 100,
-                soundSettingButton.getHeight(), true);
-        languageSettingButton = new GrayStateButton(new String[]{"English", "Deutsch"}, new String[]{"flag_usa",
-                "flag_germany"}, prefs.getString("language").equals("en") ? 0 : 1, true,
-                playernameSettingButton.getX(), 16, 100, 40);
-        resetHighscoreSettingButton = new GrayButton(bundle.get(RESET_HIGHSCORE), 264, 16, 100, 40, true);
+    private void initSprites() {
+        spriteThere = new Sprite(new Texture("there.png"));
+        spriteFactory = new Sprite(new Texture("factory.png"));
 
-        // buttons in main menu
-        int spaceBetweenButtons = 13; // in pixels
-        int buttonWidth = 110, buttonHeight = 90;
-        int borderDist = (WINDOW_WIDTH - 4 * buttonWidth - 3 * spaceBetweenButtons) / 2;
-        singlePlayerButton = new GrayButton(bundle.get(SINGLEPLAYER), borderDist, borderDist, buttonWidth,
-                buttonHeight);
-        highscoresButton = new GrayButton(bundle.get(HIGHSCORES), singlePlayerButton.getX()
-                + singlePlayerButton.getWidth() + spaceBetweenButtons, singlePlayerButton.getY(), buttonWidth,
-                buttonHeight);
-        settingsButton = new GrayButton(bundle.get(SETTINGS), highscoresButton.getX()
-                + highscoresButton.getWidth() + spaceBetweenButtons, singlePlayerButton.getY(), buttonWidth,
-                buttonHeight);
-        aboutButton = new GrayButton(bundle.get(ABOUT), settingsButton.getX() + settingsButton.getWidth()
-                + spaceBetweenButtons, singlePlayerButton.getY(), buttonWidth, buttonHeight);
-        singlePlayerButton.setCaptionOffsetY(25);
-        highscoresButton.setCaptionOffsetY(singlePlayerButton.getCaptionOffsetY());
-        settingsButton.setCaptionOffsetY(singlePlayerButton.getCaptionOffsetY());
-        aboutButton.setCaptionOffsetY(singlePlayerButton.getCaptionOffsetY());
+        spriteTitle = new Sprite(new Texture("title.png"));
+        spriteTitle.setPosition(WINDOW_WIDTH / 2 - spriteTitle.getWidth() / 2, WINDOW_HEIGHT / 2 + 70
+                + showLicenseYOffset);
 
-        // button for returning back to main menu when in submenu
-        returnToMainMenuButton = new GrayButton("X", WINDOW_WIDTH - buttonWidth / 2 - borderDist,
-                WINDOW_HEIGHT - buttonHeight / 2 - borderDist, buttonWidth / 2, buttonHeight / 2);
+        spriteSkyline = new Sprite(new Texture("skyline.png"));
+        spriteSkyline.setPosition(borderSize, 115);
 
-        // button for fetching highscores
-        updateHighscoresButton = new GrayButton(bundle.get(UPDATE), borderDist, WINDOW_HEIGHT
-                - buttonHeight / 2 - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
+        spritePlayer = JewelThief.getInstance().getTextureAtlas().createSprite("WhitePlayer");
+        spriteRedPlayer = JewelThief.getInstance().getTextureAtlas().createSprite("RedPlayer");
+        spriteBluePlayer = JewelThief.getInstance().getTextureAtlas().createSprite("BluePlayer");
+        spritePearl = JewelThief.getInstance().getTextureAtlas().createSprite("Pearl");
+        spriteSoldier = JewelThief.getInstance().getTextureAtlas().createSprite("Soldier");
+        spriteSettings = JewelThief.getInstance().getTextureAtlas().createSprite("settings");
+//        spriteBadge = new Sprite(new Texture("google-play-badge.png"));
 
-        // button for showing license
-        licenseButton = new GrayButton(bundle.get(LICENSE), borderDist, WINDOW_HEIGHT - buttonHeight
-                / 2 - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
+        spritePlayer.setFlip(true, false);
+        spriteRedPlayer.setFlip(true, false);
+        spriteBluePlayer.setFlip(true, false);
     }
 
     @Override
@@ -206,38 +231,37 @@ public class MenuScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         super.dispose();
-        sr.dispose();
+        shapeRenderer.dispose();
     }
 
     private void update(float delta) {
         inputHandler.update(delta);
 
-        // stars
-        for (int i = 0; i < stars.length; i++) {
-            Sprite star = stars[i];
+        // move spritesStars
+        for (int i = 0; i < spritesStars.length; i++) {
+            Sprite star = spritesStars[i];
             if (star.getY() < borderSize) {
                 star.setY(WINDOW_HEIGHT - star.getHeight());
             } else {
                 star.setY(star.getY() - starSpeeds[i]);
             }
         }
+    }
 
-        // images on buttons
-        player.setPosition(singlePlayerButton.getX() + singlePlayerButton.getWidth() / 2 - player.getWidth() / 2
-                + singlePlayerButton.getPressedOffset(), singlePlayerButton.getY() + singlePlayerButton.getHeight() / 2
-                - 5 - singlePlayerButton.getPressedOffset());
-        redplayer.setPosition(highscoresButton.getX() + highscoresButton.getWidth() / 2 - redplayer.getWidth() / 2
-                + highscoresButton.getPressedOffset(), highscoresButton.getY() + highscoresButton.getHeight() / 2 - 3
-                - highscoresButton.getPressedOffset());
-        blueplayer.setPosition(redplayer.getX() - 5, redplayer.getY() - 5);
-        settings.setPosition(settingsButton.getX() + settingsButton.getWidth() / 2 - settings.getWidth() / 2
-                + settingsButton.getPressedOffset(), 52 - settingsButton.getPressedOffset());
-        soldier.setPosition(
-                aboutButton.getX() + aboutButton.getWidth() / 2 - soldier.getWidth() / 2
-                        + aboutButton.getPressedOffset() - 1, 63 - aboutButton.getPressedOffset());
-        pearl.setPosition(
-                aboutButton.getX() + aboutButton.getWidth() / 2 - soldier.getWidth() / 2
-                        + aboutButton.getPressedOffset(), 50 - aboutButton.getPressedOffset());
+    private void positionImagesOnButtons() {
+        spritePlayer.setPosition(buttonStartSinglePlayerGame.getX() + buttonStartSinglePlayerGame.getWidth() / 2 - spritePlayer.getWidth() / 2
+                + buttonStartSinglePlayerGame.getPressedOffset(), buttonStartSinglePlayerGame.getY() + buttonStartSinglePlayerGame.getHeight() / 2
+                - 5 - buttonStartSinglePlayerGame.getPressedOffset());
+        spriteRedPlayer.setPosition(buttonShowHighscores.getX() + buttonShowHighscores.getWidth() / 2 - spriteRedPlayer.getWidth() / 2
+                + buttonShowHighscores.getPressedOffset(), buttonShowHighscores.getY() + buttonShowHighscores.getHeight() / 2 - 3
+                - buttonShowHighscores.getPressedOffset());
+        spriteBluePlayer.setPosition(spriteRedPlayer.getX() - 5, spriteRedPlayer.getY() - 5);
+        spriteSettings.setPosition(buttonShowSettings.getX() + buttonShowSettings.getWidth() / 2 - spriteSettings.getWidth() / 2
+                + buttonShowSettings.getPressedOffset(), 52 - buttonShowSettings.getPressedOffset());
+        spriteSoldier.setPosition(buttonShowAbout.getX() + buttonShowAbout.getWidth() / 2 - spriteSoldier.getWidth() / 2
+                        + buttonShowAbout.getPressedOffset() - 1, 63 - buttonShowAbout.getPressedOffset());
+        spritePearl.setPosition(buttonShowAbout.getX() + buttonShowAbout.getWidth() / 2 - spriteSoldier.getWidth() / 2
+                        + buttonShowAbout.getPressedOffset(), 50 - buttonShowAbout.getPressedOffset());
     }
 
     @Override
@@ -249,88 +273,85 @@ public class MenuScreen extends ScreenAdapter {
         // simulate world
         update(delta);
 
-        sr.setProjectionMatrix(camera.combined);
-        sr.begin(ShapeType.Filled);
-        sr.setColor(0, 0, 0.7f, 1); // dark blue background color
-        sr.rect(0, skyline.getY(), WINDOW_WIDTH, WINDOW_HEIGHT - skyline.getY());
-        sr.end();
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeType.Filled);
+        shapeRenderer.setColor(0, 0, 0.7f, 1); // dark blue background color
+//        shapeRenderer.rect(0, spriteSkyline.getY(), WINDOW_WIDTH, WINDOW_HEIGHT - spriteSkyline.getY());
+        shapeRenderer.rect(0, spriteSkyline.getY(), WINDOW_WIDTH, WINDOW_HEIGHT - spriteSkyline.getY());
+        shapeRenderer.end();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        for (Sprite star : stars) {
+        for (Sprite star : spritesStars) {
             star.draw(batch);
         }
 
-        skyline.draw(batch);
-        skyline.setPosition(borderSize, 115);
-        title.setPosition(WINDOW_WIDTH / 2 - title.getWidth() / 2, WINDOW_HEIGHT / 2 + 70
-                + showLicenseYOffset);
+        spriteSkyline.draw(batch);
 
-        if (menuState != MenuState.ShowHighscores)
-            title.draw(batch);
+        if (!state.equals(MenuState.ShowHighscores) && showLicenseYOffset == 0)
+            spriteTitle.draw(batch);
         batch.end();
 
-        sr.setProjectionMatrix(camera.combined);
-        sr.begin(ShapeType.Filled);
-        sr.setColor(Color.BLACK);
-        sr.rect(0, 0, WINDOW_WIDTH, menuState == MenuState.ShowHighscores ? WINDOW_HEIGHT - 70 : skyline.getY()
-                + showLicenseYOffset);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.rect(0, 0, WINDOW_WIDTH, state.equals(MenuState.ShowHighscores) ? WINDOW_HEIGHT - 70 : spriteSkyline.getY());
 
-        if (menuState == MenuState.ShowPromo) {
-            sr.end();
-            batch.begin();
-            batch.draw(badge, 0, 0, (int) (646 / 2.1), (int) (250 / 2.1));
-            font.setColor(Color.WHITE);
-            font.draw(batch, "christian.detamble@outlook.com", 300, 45);
-            batch.draw(therefactory, 310, 70, 180, 14);
-            batch.end();
-        } else {
+//        if (state.equals(MenuState.ShowPromo)) {
+//            shapeRenderer.end();
+//            batch.begin();
+//            batch.draw(spriteBadge, 0, 0, (int) (646 / 2.1), (int) (250 / 2.1));
+//            font.setColor(Color.WHITE);
+//            font.draw(batch, Config.EMAIL, 300, 45);
+//            batch.draw(spriteTheRefactory, 310, 70, 180, 14);
+//            batch.end();
+//        } else {
             // buttons
-            if (menuState == MenuState.ShowAbout || menuState == MenuState.ShowHighscores || menuState == MenuState.ShowSettings) {
-                returnToMainMenuButton.renderShape(sr);
+            if (state.equals(MenuState.ShowAbout) || state.equals(MenuState.ShowHighscores) || state.equals(MenuState.ShowSettings)) {
+                buttonExitToMainMenu.renderShape(shapeRenderer);
                 switch (getState()) {
                     case ShowHighscores:
-                        updateHighscoresButton.renderShape(sr);
+                        buttonUpdateHighscores.renderShape(shapeRenderer);
                         break;
                     case ShowSettings:
-                        soundSettingButton.renderShape(sr);
-                        musicSettingButton.renderShape(sr);
-                        playernameSettingButton.renderShape(sr);
-                        languageSettingButton.renderShape(sr);
-                        resetHighscoreSettingButton.renderShape(sr);
+                        buttonToggleSound.renderShape(shapeRenderer);
+                        buttonToggleMusic.renderShape(shapeRenderer);
+                        buttonChangePlayername.renderShape(shapeRenderer);
+                        buttonChangeLanguage.renderShape(shapeRenderer);
+                        buttonResetHighscore.renderShape(shapeRenderer);
                         break;
                     case ShowAbout:
-                        licenseButton.renderShape(sr);
+                        buttonShowLicense.renderShape(shapeRenderer);
                         break;
                 }
             } else {
-                singlePlayerButton.renderShape(sr);
-                highscoresButton.renderShape(sr);
-                settingsButton.renderShape(sr);
-                aboutButton.renderShape(sr);
+                buttonStartSinglePlayerGame.renderShape(shapeRenderer);
+                buttonShowHighscores.renderShape(shapeRenderer);
+                buttonShowSettings.renderShape(shapeRenderer);
+                buttonShowAbout.renderShape(shapeRenderer);
             }
-            sr.end();
+            shapeRenderer.end();
 
             batch.begin();
-            if (menuState == MenuState.ShowAbout || menuState == MenuState.ShowHighscores || menuState == MenuState.ShowSettings) {
-                returnToMainMenuButton.renderCaption(batch);
-                skyline.setY(WINDOW_HEIGHT - 173 + showLicenseYOffset);
+            if (state.equals(MenuState.ShowAbout) || state.equals(MenuState.ShowHighscores) ||state.equals(MenuState.ShowSettings)) {
+                buttonExitToMainMenu.renderCaption(batch);
             }
             switch (getState()) {
                 case ShowHighscores:
-                    updateHighscoresButton.setCaption(bundle.get(UPDATE));
-                    updateHighscoresButton.renderCaption(batch);
-                    skyline.setY(WINDOW_HEIGHT - 75);
+                    buttonUpdateHighscores.setCaption(bundle.get(UPDATE));
+                    buttonUpdateHighscores.renderCaption(batch);
                     if (fetchingHighscores) {
                         font.setColor(Color.WHITE);
                         font.draw(batch, bundle.get(FETCHING) + "...", 15, 205);
                     } else {
                         if (highscores != null) {
+
+                            // lines of highscores
                             for (int i = 0; i < highscores.length; i++) {
                                 font.setColor(i == getMyRank() ? Color.GREEN : Color.WHITE);
-                                float posY = (205 - i * HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
-                                if (posY < skyline.getY()) { // lines disappear when over skyline sprite
-                                    font.draw(batch, highscores[i], 15, posY);
+                                float yOfHighscoreLine = (205 - i * HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
+                                if (yOfHighscoreLine < spriteSkyline.getY()) { // lines disappear when above spriteSkyline sprite
+                                    font.draw(batch, highscores[i], 15, yOfHighscoreLine);
                                 }
                             }
 
@@ -347,75 +368,75 @@ public class MenuScreen extends ScreenAdapter {
                     break;
                 case ShowSettings:
                     // playername
-                    playernameSettingButton.setCaption(prefs.getString(PrefsKeys.PLAYER_NAME).trim().length() == 0 ? "<"
+                    buttonChangePlayername.setCaption(prefs.getString(PrefsKeys.PLAYER_NAME).trim().length() == 0 ? "<"
                             + bundle.get(PLAYERNAME) + ">" : bundle.get(PLAYERNAME) + ": " + prefs.getString(PrefsKeys.PLAYER_NAME));
-                    playernameSettingButton.renderCaption(batch);
+                    buttonChangePlayername.renderCaption(batch);
                     font.setColor(Color.WHITE);
 
                     // sound
-                    soundSettingButton.setCaption(bundle.get(SOUND) + " " + bundle.get(IS) + " "
+                    buttonToggleSound.setCaption(bundle.get(SOUND) + " " + bundle.get(IS) + " "
                             + (prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? bundle.get(ON) : bundle.get(OFF)));
-                    soundSettingButton.renderCaption(batch);
+                    buttonToggleSound.renderCaption(batch);
 
                     // music
-                    musicSettingButton.setCaption(bundle.get(MUSIC) + " " + bundle.get(IS) + " "
+                    buttonToggleMusic.setCaption(bundle.get(MUSIC) + " " + bundle.get(IS) + " "
                             + (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? bundle.get(ON) : bundle.get(OFF)));
-                    musicSettingButton.renderCaption(batch);
+                    buttonToggleMusic.renderCaption(batch);
 
                     // language
-                    languageSettingButton.renderCaption(batch);
+                    buttonChangeLanguage.renderCaption(batch);
 
                     // reset highscore
-                    resetHighscoreSettingButton.setCaption(bundle.get(RESET_HIGHSCORE));
-                    resetHighscoreSettingButton.renderCaption(batch);
+                    buttonResetHighscore.setCaption(bundle.get(RESET_HIGHSCORE));
+                    buttonResetHighscore.renderCaption(batch);
                     break;
                 case ShowAbout:
                     font.setColor(Color.WHITE);
-                    font.draw(batch, bundle.format(ABOUT_TEXT, PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()), 15,
-                            100 + showLicenseYOffset);
+                    font.draw(batch, aboutText, 15, 100 + showLicenseYOffset);
                     if (showLicenseYOffset > 0) {
                         font.draw(batch, bundle.get(LICENSE_TEXT), 15, showLicenseYOffset + 2);
                     }
-                    batch.draw(therefactory, 144, showLicenseYOffset + 19, 135, 11);
-                    licenseButton.setCaption(bundle.get(LICENSE));
-                    licenseButton.renderCaption(batch);
+                    batch.draw(spriteThere, 145, showLicenseYOffset + 19, spriteThere.getWidth()/3, spriteThere.getHeight()/3);
+                    batch.draw(spriteFactory, 200, showLicenseYOffset + 19, spriteFactory.getWidth()/3, spriteFactory.getHeight()/3);
+                    buttonShowLicense.setCaption(bundle.get(LICENSE));
+                    buttonShowLicense.renderCaption(batch);
                     break;
                 default:
                     // buttons' icons
-                    player.draw(batch);
-                    redplayer.draw(batch);
-                    blueplayer.draw(batch);
-                    pearl.draw(batch);
-                    soldier.draw(batch);
-                    settings.draw(batch);
+                    spritePlayer.draw(batch);
+                    spriteRedPlayer.draw(batch);
+                    spriteBluePlayer.draw(batch);
+                    spritePearl.draw(batch);
+                    spriteSoldier.draw(batch);
+                    spriteSettings.draw(batch);
 
                     // buttons themselves
-                    singlePlayerButton.setCaption(bundle.get(SINGLEPLAYER));
-                    highscoresButton.setCaption(bundle.get(HIGHSCORES));
-                    settingsButton.setCaption(bundle.get(SETTINGS));
-                    aboutButton.setCaption(bundle.get(ABOUT));
-                    singlePlayerButton.renderCaption(batch);
-                    highscoresButton.renderCaption(batch);
-                    settingsButton.renderCaption(batch);
-                    aboutButton.renderCaption(batch);
+                    buttonStartSinglePlayerGame.setCaption(bundle.get(SINGLEPLAYER));
+                    buttonShowHighscores.setCaption(bundle.get(HIGHSCORES));
+                    buttonShowSettings.setCaption(bundle.get(SETTINGS));
+                    buttonShowAbout.setCaption(bundle.get(ABOUT));
+                    buttonStartSinglePlayerGame.renderCaption(batch);
+                    buttonShowHighscores.renderCaption(batch);
+                    buttonShowSettings.renderCaption(batch);
+                    buttonShowAbout.renderCaption(batch);
                     break;
             }
             batch.end();
-        }
+//        }
     }
 
     public void releaseAllButtons() {
-        singlePlayerButton.release();
-        highscoresButton.release();
-        settingsButton.release();
-        aboutButton.release();
-        returnToMainMenuButton.release();
-        updateHighscoresButton.release();
-        soundSettingButton.release();
-        musicSettingButton.release();
-        playernameSettingButton.release();
-        resetHighscoreSettingButton.release();
-        licenseButton.release();
+        buttonStartSinglePlayerGame.release();
+        buttonShowHighscores.release();
+        buttonShowSettings.release();
+        buttonShowAbout.release();
+        buttonExitToMainMenu.release();
+        buttonUpdateHighscores.release();
+        buttonToggleSound.release();
+        buttonToggleMusic.release();
+        buttonChangePlayername.release();
+        buttonResetHighscore.release();
+        buttonShowLicense.release();
     }
 
     public void setFetchingHighscores(boolean fetchingHighscores) {
@@ -435,16 +456,21 @@ public class MenuScreen extends ScreenAdapter {
         this.scrollbarPositionY = scrollbarPositionY;
     }
 
-    public Sprite getTitle() {
-        return title;
+    public Sprite getSpriteTitle() {
+        return spriteTitle;
     }
 
     public MenuState getState() {
-        return menuState;
+        return state;
     }
 
     public void setState(MenuState state) {
-        this.menuState = state;
+        this.state = state;
+        if (state.equals(MenuState.ShowMenu)) {
+            spriteSkyline.setY(115);
+        } else if (state.equals(MenuState.ShowHighscores)) {
+            spriteSkyline.setY(WINDOW_HEIGHT - 75);
+        }
     }
 
     public String[] getHighscores() {
@@ -461,13 +487,18 @@ public class MenuScreen extends ScreenAdapter {
 
     public void setShowLicenseYOffset(int showLicenseYOffset) {
         this.showLicenseYOffset = showLicenseYOffset;
+        if (showLicenseYOffset > 0) {
+            spriteSkyline.setY(WINDOW_HEIGHT - 173 + showLicenseYOffset);
+        } else {
+            spriteSkyline.setY(115);
+        }
     }
 
     public void handleTouchOnStars(Vector3 touchCoordinates) {
-        if (touchCoordinates.y > skyline.getY()) {
-            for (Sprite star : stars) {
-                if (Util.within(touchCoordinates.x, star.getX(), star.getX() + star.getWidth())
-                        && Util.within(touchCoordinates.y, star.getY(), star.getY() + star.getHeight())) {
+        if (touchCoordinates.y > spriteSkyline.getY()) {
+            for (Sprite star : spritesStars) {
+                if (Utils.within(touchCoordinates.x, star.getX(), star.getX() + star.getWidth())
+                        && Utils.within(touchCoordinates.y, star.getY(), star.getY() + star.getHeight())) {
                     JewelThief.getInstance().playCymbalSound();
                     star.setPosition(star.getX(), WINDOW_HEIGHT + star.getHeight() * 3);
                 }
@@ -478,19 +509,20 @@ public class MenuScreen extends ScreenAdapter {
     public void pressOrReleaseButtons(Vector3 screenCoord) {
         switch (getState()) {
             case ShowAbout:
-                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, licenseButton);
+                Utils.pressOrReleaseButtons(screenCoord, buttonExitToMainMenu, buttonShowLicense);
                 break;
             case ShowHighscores:
-                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, updateHighscoresButton);
+                Utils.pressOrReleaseButtons(screenCoord, buttonExitToMainMenu, buttonUpdateHighscores);
                 break;
             case ShowSettings:
-                Util.pressOrReleaseButtons(screenCoord, returnToMainMenuButton, soundSettingButton,
-                        musicSettingButton, playernameSettingButton, languageSettingButton, resetHighscoreSettingButton);
+                Utils.pressOrReleaseButtons(screenCoord, buttonExitToMainMenu, buttonToggleSound,
+                        buttonToggleMusic, buttonChangePlayername, buttonChangeLanguage, buttonResetHighscore);
                 break;
             default:
-                Util.pressOrReleaseButtons(screenCoord, singlePlayerButton, highscoresButton, settingsButton, aboutButton);
+                Utils.pressOrReleaseButtons(screenCoord, buttonStartSinglePlayerGame, buttonShowHighscores, buttonShowSettings, buttonShowAbout);
                 break;
         }
+        positionImagesOnButtons();
     }
 
     public void setBundle(I18NBundle bundle) {
@@ -502,7 +534,7 @@ public class MenuScreen extends ScreenAdapter {
         ShowSettings,
         ShowAbout,
         ShowHighscores,
-        ShowPromo
+        //ShowPromo
     }
 
 }

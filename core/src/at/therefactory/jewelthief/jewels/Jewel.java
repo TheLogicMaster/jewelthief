@@ -9,9 +9,10 @@ import at.therefactory.jewelthief.JewelThief;
 public abstract class Jewel {
 
     private final Sprite sprite;
-    private final Vector2 position = new Vector2();
+    private final Vector2 position;
 
     Jewel(String spriteId) {
+        position =  new Vector2();
         sprite = JewelThief.getInstance().getTextureAtlas().createSprite(spriteId);
 
         // initially hidden from visible screen

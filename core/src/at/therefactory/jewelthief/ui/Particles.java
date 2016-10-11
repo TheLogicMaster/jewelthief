@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-import at.therefactory.jewelthief.misc.Util;
+import at.therefactory.jewelthief.misc.Utils;
 
 import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
 import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
@@ -18,9 +18,9 @@ import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
  */
 public class Particles {
 
-    private ParticleEffectPool fireworksEffectPool;
-    private ParticleEffectPool.PooledEffect[] fireworkEffects;
-    private float[][] startColors; // start colors to choose from for the particle effects
+    private final ParticleEffectPool fireworksEffectPool;
+    private final ParticleEffectPool.PooledEffect[] fireworkEffects;
+    private final float[][] startColors; // start colors to choose from for the particle effects
 
     public Particles(TextureAtlas textureAtlas) {
         fireworkEffects = new ParticleEffectPool.PooledEffect[5];
@@ -93,12 +93,12 @@ public class Particles {
      *
      * @param effect
      */
-    public void resetFireworksEffect(ParticleEffect effect) {
+    private void resetFireworksEffect(ParticleEffect effect) {
         effect.reset();
-        effect.setDuration(Util.randomWithin(180, 250));
-        effect.setPosition(Util.randomWithin(0, WINDOW_WIDTH), Util.randomWithin(0, WINDOW_HEIGHT));
+        effect.setDuration(Utils.randomWithin(180, 250));
+        effect.setPosition(Utils.randomWithin(0, WINDOW_WIDTH), Utils.randomWithin(0, WINDOW_HEIGHT));
         float[] colors = effect.getEmitters().get(0).getTint().getColors();
-        int randomStartColor = Util.randomWithin(0, startColors.length - 1);
+        int randomStartColor = Utils.randomWithin(0, startColors.length - 1);
         for (int i = 0; i < 6; i++) {
             colors[i] = startColors[randomStartColor][i % 3];
         }

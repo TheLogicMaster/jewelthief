@@ -10,8 +10,8 @@ import static at.therefactory.jewelthief.constants.Config.TIME_PLAYER_STAYS_RED_
 
 public class Player extends Actor {
 
-    private int numMen;
-    private int numCollectedJewels;
+    private short numMen;
+    private short numCollectedJewels;
     private float lastX;
     private long isHurtStartTime;
 
@@ -82,7 +82,7 @@ public class Player extends Actor {
             isHurtStartTime = System.currentTimeMillis();
     }
 
-    public void setNumCollectedJewels(int numCollectedJewels) {
+    public void setNumCollectedJewels(short numCollectedJewels) {
         this.numCollectedJewels = numCollectedJewels;
     }
 

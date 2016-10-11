@@ -155,3 +155,5 @@ Security.java
 /excluded-resources/libgdx token.txt
 HTTP.java
 Security.java
+HttpServer.java
+/core/src/at/therefactory/jewelthief/net/HttpServer.java

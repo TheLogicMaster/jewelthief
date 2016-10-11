@@ -7,6 +7,7 @@ public interface AndroidInterface {
 
     /**
      * Shows a toast message on Android devices.
+     *
      * @param message The message to display.
      * @param longDuration If true message is shown for a long time, else a shorter time.
      */
@@ -15,6 +16,7 @@ public interface AndroidInterface {
     /**
      * Tries to return the version name set by the build.gradle.
      * If that fails the VERSION_NAME is returned.
+     *
      * @return
      */
     String getVersionName();

@@ -20,20 +20,20 @@ import static at.therefactory.jewelthief.constants.Config.FONT_OFFSET_ON_BUTTON_
  */
 public class GrayButton {
 
-    protected final float x;
-    protected final float y;
+    final float x;
+    final float y;
 
-    protected float width;
-    protected float height;
-    protected float pressedOffset;
-    protected float xCaptionOffset;
-    protected float yCaptionOffset;
+    private float width;
+    final float height;
+    float pressedOffset;
+    float xCaptionOffset;
+    float yCaptionOffset;
 
 	private boolean adaptWidthToCaption;
     private final GlyphLayout layout;
-    protected final BitmapFont font;
+    final BitmapFont font;
     private Color captionColor;
-    private int borderSize = 3;
+    private short borderSize;
     private String caption;
 
     public GrayButton(String caption, float x, float y, float width, float height) {
@@ -44,6 +44,7 @@ public class GrayButton {
         this.caption = caption;
         font = JewelThief.getInstance().getFont();
         captionColor = Color.DARK_GRAY;
+        borderSize = 3;
 
         // horizontally and vertically align to center
         layout = new GlyphLayout(font, caption);
@@ -105,15 +106,7 @@ public class GrayButton {
     }
 
     public boolean isPressed() {
-        return pressedOffset == FONT_OFFSET_ON_BUTTON_PRESS;
-    }
-
-    public int getBorderSize() {
-        return borderSize;
-    }
-
-    public String getCaption() {
-        return caption;
+        return (pressedOffset == FONT_OFFSET_ON_BUTTON_PRESS);
     }
 
     public void setCaption(String caption) {
@@ -129,7 +122,7 @@ public class GrayButton {
         return pressedOffset;
     }
 
-    public void setBorderSize(int borderSize) {
+    public void setBorderSize(short borderSize) {
         this.borderSize = borderSize;
     }
 
@@ -141,7 +134,4 @@ public class GrayButton {
         return yCaptionOffset;
     }
 
-    public void setCaptionColor(Color captionColor) {
-        this.captionColor = captionColor;
-    }
 }

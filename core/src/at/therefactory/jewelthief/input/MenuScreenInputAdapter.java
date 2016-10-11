@@ -11,11 +11,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import at.therefactory.jewelthief.JewelThief;
 import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.constants.PrefsKeys;
-import at.therefactory.jewelthief.misc.Util;
-import at.therefactory.jewelthief.net.HTTP;
+import at.therefactory.jewelthief.net.HttpServer;
 import at.therefactory.jewelthief.screens.MenuScreen;
 
-import static at.therefactory.jewelthief.constants.Config.DEBUG_MODE;
 import static at.therefactory.jewelthief.constants.Config.HIGHSCORES_LINE_HEIGHT;
 import static at.therefactory.jewelthief.constants.I18NKeys.HIGHSCORE_IS_RESET;
 import static at.therefactory.jewelthief.constants.I18NKeys.PLEASE_ENTER_YOUR_NAME;
@@ -50,9 +48,9 @@ public class MenuScreenInputAdapter extends InputAdapter {
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.BACK) {
-            if (menuScreen.getState() == MenuScreen.MenuState.ShowSettings
-                    || menuScreen.getState() == MenuScreen.MenuState.ShowHighscores
-                    || menuScreen.getState() == MenuScreen.MenuState.ShowAbout) {
+            if (menuScreen.getState().equals(MenuScreen.MenuState.ShowSettings)
+                    || menuScreen.getState().equals(MenuScreen.MenuState.ShowHighscores)
+                    || menuScreen.getState().equals(MenuScreen.MenuState.ShowAbout)) {
                 menuScreen.setState(MenuScreen.MenuState.ShowMenu);
             } else {
                 Gdx.app.exit();
@@ -64,25 +62,27 @@ public class MenuScreenInputAdapter extends InputAdapter {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        super.touchDown(screenX, screenY, pointer, button);
         numTouches++;
         Vector3 touchCoordinates = viewport.unproject(new Vector3(screenX, screenY, 0));
         pressOrReleaseButtons(touchCoordinates);
         handleTouchOnStars(touchCoordinates);
         touchStartY = touchCoordinates.y;
-        if (DEBUG_MODE && Util.within(touchCoordinates, menuScreen.getTitle())) {
-            menuScreen.setState(MenuScreen.MenuState.ShowPromo);
-        } else if (menuScreen.getState() == MenuScreen.MenuState.ShowPromo) {
-            menuScreen.setState(MenuScreen.MenuState.ShowMenu);
-        }
+//        if (DEBUG_MODE && Utils.within(touchCoordinates, menuScreen.getSpriteTitle())) {
+//            menuScreen.setState(MenuScreen.MenuState.ShowPromo);
+//        } else if (menuScreen.getState().equals(MenuScreen.MenuState.ShowPromo)) {
+//            menuScreen.setState(MenuScreen.MenuState.ShowMenu);
+//        }
         return true;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        super.touchDragged(screenX, screenY, pointer);
         Vector3 touchCoordinates = viewport.unproject(new Vector3(screenX, screenY, 0));
         pressOrReleaseButtons(touchCoordinates);
         handleTouchOnStars(touchCoordinates);
-        if (numTouches == 1 && !menuScreen.updateHighscoresButton.isPressed() && !menuScreen.returnToMainMenuButton.isPressed()) {
+        if (numTouches == 1 && !menuScreen.buttonUpdateHighscores.isPressed() && !menuScreen.buttonExitToMainMenu.isPressed()) {
             deltaY = lastDeltaY + (touchStartY - touchCoordinates.y);
             deltaY = Math.max(deltaY, menuScreen.getHighscores() == null ? 0 : -HIGHSCORES_LINE_HEIGHT * (menuScreen.getHighscores().length - 1)); // stop scrolling if only last line is visible
             deltaY = -deltaY; // invert vertical scrolling direction
@@ -100,42 +100,43 @@ public class MenuScreenInputAdapter extends InputAdapter {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        super.touchUp(screenX, screenY, pointer, button);
         Preferences prefs = JewelThief.getInstance().getPreferences();
         numTouches = Math.max(0, numTouches - 1);
 
-        if (menuScreen.returnToMainMenuButton.isPressed()) {
-            menuScreen.returnToMainMenuButton.release();
+        if (menuScreen.buttonExitToMainMenu.isPressed()) {
+            menuScreen.buttonExitToMainMenu.release();
             menuScreen.setShowLicenseYOffset(0);
             menuScreen.setState(MenuScreen.MenuState.ShowMenu);
-        } else if (menuScreen.getState() == MenuScreen.MenuState.ShowAbout) {
-            if (menuScreen.licenseButton.isPressed()) {
-                menuScreen.licenseButton.release();
+        } else if (menuScreen.getState().equals(MenuScreen.MenuState.ShowAbout)) {
+            if (menuScreen.buttonShowLicense.isPressed()) {
+                menuScreen.buttonShowLicense.release();
                 if (menuScreen.getShowLicenseYOffset() == 0) {
                     menuScreen.setShowLicenseYOffset(54);
                 } else {
                     menuScreen.setShowLicenseYOffset(0);
                 }
             }
-        } else if (menuScreen.getState() == MenuScreen.MenuState.ShowHighscores) {
-            if (menuScreen.updateHighscoresButton.isPressed()) {
-                menuScreen.updateHighscoresButton.release();
+        } else if (menuScreen.getState().equals(MenuScreen.MenuState.ShowHighscores)) {
+            if (menuScreen.buttonUpdateHighscores.isPressed()) {
+                menuScreen.buttonUpdateHighscores.release();
                 menuScreen.setFetchingHighscores(true);
-                HTTP.fetchHighscores(menuScreen, prefs.getString(PrefsKeys.ID), prefs.getString(PrefsKeys.PLAYER_NAME),
+                HttpServer.fetchHighscores(menuScreen, prefs.getString(PrefsKeys.ID), prefs.getString(PrefsKeys.PLAYER_NAME),
                         prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_JEWELS), prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_SECONDS));
             }
-        } else if (menuScreen.getState() == MenuScreen.MenuState.ShowSettings) {
-            if (menuScreen.playernameSettingButton.isPressed()) {
-                menuScreen.playernameSettingButton.release();
+        } else if (menuScreen.getState().equals(MenuScreen.MenuState.ShowSettings)) {
+            if (menuScreen.buttonChangePlayername.isPressed()) {
+                menuScreen.buttonChangePlayername.release();
                 Gdx.input.getTextInput(listener, bundle.get(PLEASE_ENTER_YOUR_NAME),
                         prefs.getString(PrefsKeys.PLAYER_NAME), "");
-            } else if (menuScreen.soundSettingButton.isPressed()) {
-                menuScreen.soundSettingButton.release();
-                menuScreen.soundSettingButton.nextState();
+            } else if (menuScreen.buttonToggleSound.isPressed()) {
+                menuScreen.buttonToggleSound.release();
+                menuScreen.buttonToggleSound.nextState();
                 prefs.putBoolean(PrefsKeys.ENABLE_SOUND, !prefs.getBoolean(PrefsKeys.ENABLE_SOUND));
                 prefs.flush();
-            } else if (menuScreen.musicSettingButton.isPressed()) {
-                menuScreen.musicSettingButton.release();
-                menuScreen.musicSettingButton.nextState();
+            } else if (menuScreen.buttonToggleMusic.isPressed()) {
+                menuScreen.buttonToggleMusic.release();
+                menuScreen.buttonToggleMusic.nextState();
                 prefs.putBoolean(PrefsKeys.ENABLE_MUSIC, !prefs.getBoolean(PrefsKeys.ENABLE_MUSIC));
                 prefs.flush();
                 if (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC)) {
@@ -143,13 +144,13 @@ public class MenuScreenInputAdapter extends InputAdapter {
                 } else {
                     JewelThief.getInstance().pauseMusic();
                 }
-            } else if (menuScreen.languageSettingButton.isPressed()) {
-                menuScreen.languageSettingButton.release();
-                menuScreen.languageSettingButton.nextState();
-                bundle = JewelThief.getInstance().setLocale(menuScreen.languageSettingButton.getState() == 0 ? "en" : "de");
+            } else if (menuScreen.buttonChangeLanguage.isPressed()) {
+                menuScreen.buttonChangeLanguage.release();
+                menuScreen.buttonChangeLanguage.nextState();
+                bundle = JewelThief.getInstance().setLocale(menuScreen.buttonChangeLanguage.getState() == 0 ? "en" : "de");
                 menuScreen.setBundle(bundle);
-            } else if (menuScreen.resetHighscoreSettingButton.isPressed()) {
-                menuScreen.resetHighscoreSettingButton.release();
+            } else if (menuScreen.buttonResetHighscore.isPressed()) {
+                menuScreen.buttonResetHighscore.release();
                 if (timestampLastClickOnResetHighscoreSettingButton > System.currentTimeMillis() - 1000) {
                     timestampLastClickOnResetHighscoreSettingButton = 0;
                     prefs.remove(PrefsKeys.MY_RANK);
@@ -165,24 +166,23 @@ public class MenuScreenInputAdapter extends InputAdapter {
         }
         // main menu
         else {
-            if (menuScreen.singlePlayerButton.isPressed()) {
+            if (menuScreen.buttonStartSinglePlayerGame.isPressed()) {
                 JewelThief.getInstance().showIntroScreen();
-                menuScreen.singlePlayerButton.release();
-            } else if (menuScreen.highscoresButton.isPressed()) {
+                menuScreen.buttonStartSinglePlayerGame.release();
+            } else if (menuScreen.buttonShowHighscores.isPressed()) {
                 deltaY = 0;
                 menuScreen.setScrollbarPositionY(Config.INITIAL_SCROLLBAR_POSITION_Y);
                 if (prefs.contains(PrefsKeys.CACHED_HIGHSCORES)) {
                     menuScreen.setHighscores(prefs.getString(PrefsKeys.CACHED_HIGHSCORES).split("\n"));
-                    //Gdx.app.log(getClass().getName(), prefs.getString(PrefsKeys.CACHED_HIGHSCORES));
                 }
                 menuScreen.setState(MenuScreen.MenuState.ShowHighscores);
-                menuScreen.highscoresButton.release();
-            } else if (menuScreen.settingsButton.isPressed()) {
+                menuScreen.buttonShowHighscores.release();
+            } else if (menuScreen.buttonShowSettings.isPressed()) {
                 menuScreen.setState(MenuScreen.MenuState.ShowSettings);
-                menuScreen.settingsButton.release();
-            } else if (menuScreen.aboutButton.isPressed()) {
+                menuScreen.buttonShowSettings.release();
+            } else if (menuScreen.buttonShowAbout.isPressed()) {
                 menuScreen.setState(MenuScreen.MenuState.ShowAbout);
-                menuScreen.aboutButton.release();
+                menuScreen.buttonShowAbout.release();
             }
         }
         lastDeltaY = -deltaY;

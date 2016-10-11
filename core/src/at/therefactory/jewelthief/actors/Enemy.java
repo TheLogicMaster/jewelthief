@@ -3,16 +3,17 @@ package at.therefactory.jewelthief.actors;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import at.therefactory.jewelthief.misc.Util;
+import at.therefactory.jewelthief.misc.Utils;
 
 public abstract class Enemy extends Actor {
 
 	protected final float speed;
-	protected Vector2 movementInverter = new Vector2(Util.randomSignum(), Util.randomSignum());
+	protected Vector2 movementInverter;
 
 	protected Enemy(String spriteId, float speed) {
 		super(spriteId);
-		this.speed = Util.randomWithin(speed - 0.3f, speed + 1f);
+		this.speed = Utils.randomWithin(speed - .3f, speed + 1);
+		this.movementInverter = new Vector2(Utils.randomSignum(), Utils.randomSignum());
 	}
 
 	public void update(Rectangle enemyField) {
@@ -39,4 +40,5 @@ public abstract class Enemy extends Actor {
 	public Vector2 getMovementInverter() {
 		return movementInverter;
 	}
+
 }

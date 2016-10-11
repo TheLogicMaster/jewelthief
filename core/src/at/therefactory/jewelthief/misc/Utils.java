@@ -7,32 +7,32 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.Random;
+
 import at.therefactory.jewelthief.JewelThief;
 import at.therefactory.jewelthief.constants.I18NKeys;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.ui.buttons.GrayButton;
 
-import java.util.Random;
-
-public class Util {
+public class Utils {
 
 	private static final Random random = new Random();
 	private static final GlyphLayout testLayout = new GlyphLayout(JewelThief.getInstance().getFont(), "Teststring");
-    
-	private static Random random() {
-		return random;
-	}
 
 	public static boolean within(float v, float min, float max) {
 		return v >= min && v <= max;
 	}
 
+	public static boolean within(short v, int min, int max) {
+		return v >= min && v <= max;
+	}
+
 	public static int randomWithin(int min, int max) {
-		return random().nextInt(max + 1) + min;
+		return random.nextInt(max + 1) + min;
 	}
 
 	public static float randomWithin(float min, float max) {
-		return random().nextFloat() * (max - min) + min;
+		return random.nextFloat() * (max - min) + min;
 	}
 
     /**
@@ -40,7 +40,7 @@ public class Util {
      * @return
      */
     public static boolean isAndroid() {
-        return Gdx.app.getType() == Application.ApplicationType.Android;
+        return Gdx.app.getType().equals(Application.ApplicationType.Android);
     }
 
 
@@ -49,7 +49,7 @@ public class Util {
      * @return
      */
     public static boolean isDesktop() {
-        return Gdx.app.getType() == Application.ApplicationType.Desktop;
+        return Gdx.app.getType().equals(Application.ApplicationType.Desktop);
     }
 
 	public static float randomSignum() {
@@ -85,7 +85,7 @@ public class Util {
 			return JewelThief.getInstance().getBundle().format(I18NKeys.YOUR_BEST_SCORE_IS,
 			        prefs.getInteger(PrefsKeys.BEST_SCORE),
 			        prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_JEWELS),
-			        Util.secondsToTimeString(prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_SECONDS)));
+			        Utils.secondsToTimeString(prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_SECONDS)));
 		else
 			return "";
 	}
@@ -110,7 +110,7 @@ public class Util {
      * @param button
      */
 	public static void pressOrReleaseButton(Vector3 vec3, GrayButton button) {
-		if (Util.within(vec3, button)) {
+		if (Utils.within(vec3, button)) {
 			if (!button.isPressed()) {
 				JewelThief.getInstance().playButtonClickSound();
 			}
@@ -132,10 +132,6 @@ public class Util {
             pressOrReleaseButton(vec3, button);
         }
     }
-    
-	public static float getFontHeight() {
-	    return testLayout.height;
-	}
 
     /**
      * Returns true if the given vector is enclosed by the sprite's area.

@@ -1,6 +1,4 @@
 android {
-    signingConfigs {
-    }
     buildToolsVersion "23.0.3"
     compileSdkVersion 24
     sourceSets {
@@ -20,10 +18,8 @@ android {
         applicationId "at.therefactory.jewelthief"
         minSdkVersion 8
         targetSdkVersion 24
-        versionCode 109
-        versionName '1.0.9'
-    }
-    productFlavors {
+        versionCode 110
+        versionName '1.1.0'
     }
 }
 // called every time gradle gets executed, takes the native dependencies of

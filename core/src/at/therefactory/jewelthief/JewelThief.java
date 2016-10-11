@@ -7,19 +7,20 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.I18NBundle;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.misc.AndroidInterface;
-import at.therefactory.jewelthief.misc.Util;
-import at.therefactory.jewelthief.net.HTTP;
+import at.therefactory.jewelthief.misc.Utils;
+import at.therefactory.jewelthief.net.HttpServer;
 import at.therefactory.jewelthief.screens.GameIntroScreen;
 import at.therefactory.jewelthief.screens.GameScreen;
 import at.therefactory.jewelthief.screens.LogoScreen;
@@ -33,29 +34,35 @@ import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
 
 public class JewelThief extends Game {
 
+    // general
     private static JewelThief instance;
     private AndroidInterface androidInterface;
 
+    // rendering
     private SpriteBatch batch;
-    private ShapeRenderer sr;
-    private TextureAtlas textureAtlas;
-    private AssetManager assetManager;
-    private Preferences prefs;
+    private ShapeRenderer shapeRenderer;
+    private OrthographicCamera camera;
+    private FitViewport viewport;
     private Particles particles;
 
+    // assets
+    private TextureAtlas textureAtlas;
+    private AssetManager assetManager;
+    private Preferences preferences;
+    private BitmapFont font;
+    private Sound soundClick;
+    private Sound soundCymbal;
+    private Music music;
+    private Sprite fade;
+    private I18NBundle bundle;
+    private String[] musicFiles; // list of music files located in "assets/audio/music"
+    private short currentMusicFile = -1; // pointer to the music file that is currently being played
+
+    // screens
     private MenuScreen menuScreen;
     private GameIntroScreen gameIntroScreen;
     private GameScreen gameScreen;
     private LogoScreen theRefactoryLogoScreen;
-
-    private BitmapFont font;
-    private Sound soundClick, soundCymbal;
-    private Music music;
-    private Sprite fade;
-    private I18NBundle bundle;
-
-    private String[] musicFiles; // list of music files located in "assets/audio/music"
-    private int currentMusicFile = -1; // pointer to the music file that is currently being played
 
     public JewelThief() {
     }
@@ -67,58 +74,70 @@ public class JewelThief extends Game {
     @Override
     public void create() {
         instance = this;
-        prefs = Gdx.app.getPreferences(PrefsKeys.PREFERENCES_FILE_ID);
 
-        // init font
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/amiga4ever pro2.ttf"));
-        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 8;
         parameter.mono = true;
         font = generator.generateFont(parameter);
         generator.dispose();
 
-        // load initial preferences
-        if (!prefs.contains(PrefsKeys.ID)) {
-            prefs.putString(PrefsKeys.ID, System.nanoTime() + "0" + Util.randomWithin(1000, 9999)).flush();
-        }
-        if (!prefs.contains(PrefsKeys.LANGUAGE)) {
-            prefs.putString(PrefsKeys.LANGUAGE, DEFAULT_LOCALE).flush();
-        }
-        for (String setting : new String[]{PrefsKeys.ENABLE_SOUND, PrefsKeys.ENABLE_MUSIC}) {
-            if (!prefs.contains(setting)) {
-                prefs.putBoolean(setting, true).flush();
-            }
-        }
-
-        // initialize singleton vars
         batch = new SpriteBatch();
-        sr = new ShapeRenderer();
+        shapeRenderer = new ShapeRenderer();
+        camera = new OrthographicCamera();
+        viewport =  new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
+        camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
+        camera.update();
+
         textureAtlas = new TextureAtlas("textures.pack");
         assetManager = new AssetManager();
+
         fade = textureAtlas.createSprite("fade");
         fade.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         fade.setPosition(0, 0);
+
         particles = new Particles(textureAtlas);
 
-        // load resources
+        loadInitialPreferences();
+        loadAssets();
+        tryToSubmitLatestHighscores();
+
+        // load and show logo screen
+        theRefactoryLogoScreen = new LogoScreen(batch, shapeRenderer, viewport, camera);
+        setScreen(theRefactoryLogoScreen);
+    }
+
+    private void loadInitialPreferences() {
+        preferences = Gdx.app.getPreferences(PrefsKeys.PREFERENCES_FILE_ID);
+        if (!preferences.contains(PrefsKeys.ID)) {
+            preferences.putString(PrefsKeys.ID, System.nanoTime() + "0" + Utils.randomWithin(1000, 9999)).flush();
+        }
+        if (!preferences.contains(PrefsKeys.LANGUAGE)) {
+            preferences.putString(PrefsKeys.LANGUAGE, DEFAULT_LOCALE).flush();
+        }
+        for (String setting : new String[]{PrefsKeys.ENABLE_SOUND, PrefsKeys.ENABLE_MUSIC}) {
+            if (!preferences.contains(setting)) {
+                preferences.putBoolean(setting, true).flush();
+            }
+        }
+    }
+
+    private void loadAssets() {
         assetManager.load("audio/sounds/mouse_click.ogg", Sound.class);
         assetManager.load("audio/sounds/finger_cymbal_hit.ogg", Sound.class);
-        assetManager.load("i18n/" + prefs.getString("language"), I18NBundle.class);
+        assetManager.load("i18n/" + preferences.getString("language"), I18NBundle.class);
         assetManager.finishLoading();
         soundClick = assetManager.get("audio/sounds/mouse_click.ogg");
         soundCymbal = assetManager.get("audio/sounds/finger_cymbal_hit.ogg");
-        bundle = assetManager.get("i18n/" + prefs.getString("language"), I18NBundle.class);
+        bundle = assetManager.get("i18n/" + preferences.getString("language"), I18NBundle.class);
+    }
 
-        // try to submit latest highscores
-        if (prefs.contains(PrefsKeys.BEST_SCORE_NUM_JEWELS) && prefs.contains(PrefsKeys.BEST_SCORE_NUM_SECONDS)) {
-            HTTP.submitHighscores(prefs.getString(PrefsKeys.ID),
-                    prefs.getString(PrefsKeys.PLAYER_NAME), prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_JEWELS),
-                    prefs.getInteger(PrefsKeys.BEST_SCORE_NUM_SECONDS));
+    private void tryToSubmitLatestHighscores() {
+        if (preferences.contains(PrefsKeys.BEST_SCORE_NUM_JEWELS) && preferences.contains(PrefsKeys.BEST_SCORE_NUM_SECONDS)) {
+            HttpServer.submitHighscores(preferences.getString(PrefsKeys.ID),
+                    preferences.getString(PrefsKeys.PLAYER_NAME), preferences.getInteger(PrefsKeys.BEST_SCORE_NUM_JEWELS),
+                    preferences.getInteger(PrefsKeys.BEST_SCORE_NUM_SECONDS));
         }
-
-        // first screen
-        theRefactoryLogoScreen = new LogoScreen(batch, sr);
-        setScreen(theRefactoryLogoScreen);
     }
 
     @Override
@@ -153,31 +172,31 @@ public class JewelThief extends Game {
             menuScreen.dispose();
         if (assetManager != null)
             assetManager.dispose();
-        if (prefs != null)
-            prefs.flush();
+        if (preferences != null)
+            preferences.flush();
     }
 
     public void switchToMainMenu() {
         if (menuScreen == null) {
-            menuScreen = new MenuScreen(batch, sr);
+            menuScreen = new MenuScreen(batch, shapeRenderer, viewport, camera);
         }
         setScreen(menuScreen);
     }
 
     public void showIntroScreen() {
         if (gameIntroScreen == null) {
-            gameIntroScreen = new GameIntroScreen(batch);
+            gameIntroScreen = new GameIntroScreen(batch, viewport, camera);
         }
         setScreen(gameIntroScreen);
     }
 
     public Preferences getPreferences() {
-        return prefs;
+        return preferences;
     }
 
     public void startSinglePlayerGame() {
         if (gameScreen == null) {
-            gameScreen = new GameScreen(batch, sr);
+            gameScreen = new GameScreen(batch, shapeRenderer, viewport, camera);
         }
         gameScreen.resetGame();
         setScreen(gameScreen);
@@ -204,7 +223,7 @@ public class JewelThief extends Game {
     }
 
     public void playButtonClickSound() {
-        if (prefs.getBoolean(PrefsKeys.ENABLE_SOUND))
+        if (preferences.getBoolean(PrefsKeys.ENABLE_SOUND))
             soundClick.play();
     }
 
@@ -226,7 +245,7 @@ public class JewelThief extends Game {
             musicFiles = new String[fileList.length];
             for (int i = 0; i < musicFiles.length; i++) {
                 musicFiles[i] = fileList[i].path();
-                Gdx.app.log(getClass().getName(), "Loaded '" + fileList[i].path() + "'");
+                Gdx.app.log(getClass().getName(), "Found '" + fileList[i].path() + "'");
             }
         }
         
@@ -237,13 +256,13 @@ public class JewelThief extends Game {
             // select a music file to play
             if (currentMusicFile == -1) {
                 // if there is no previous music file, choose a new one randomly
-                currentMusicFile = Util.randomWithin(0, musicFiles.length - 1);
+                currentMusicFile = (short) Utils.randomWithin(0, musicFiles.length - 1);
                 music = loadMusicAsset(musicFiles[currentMusicFile]);
             } else if (proceedToNext) {
                 // switch to the next music file randomly
                 int previousMusicFile = currentMusicFile;
                 do {
-                    currentMusicFile = Util.randomWithin(0, musicFiles.length - 1);
+                    currentMusicFile = (short) Utils.randomWithin(0, musicFiles.length - 1);
                 } while (previousMusicFile == currentMusicFile);
                 assetManager.unload(musicFiles[previousMusicFile]); // free the resources of the previous music file
                 if (music != null) {
@@ -269,6 +288,7 @@ public class JewelThief extends Game {
     private Music loadMusicAsset(String path) {
         assetManager.load(path, Music.class);
         assetManager.finishLoading();
+        Gdx.app.log(getClass().getName(), "Loaded '" + path + "'");
         return assetManager.get(path);
     }
 
@@ -297,7 +317,7 @@ public class JewelThief extends Game {
      * @return The bundle associated with the given locale id
      */
     public I18NBundle setLocale(String localeId) {
-        prefs.putString("language", localeId).flush();
+        preferences.putString("language", localeId).flush();
         if (!assetManager.isLoaded("i18n/" + localeId)) {
             assetManager.load("i18n/" + localeId, I18NBundle.class);
             assetManager.finishLoading();
@@ -307,15 +327,15 @@ public class JewelThief extends Game {
     }
 
     public void playCymbalSound() {
-        if (prefs.getBoolean(PrefsKeys.ENABLE_SOUND))
+        if (preferences.getBoolean(PrefsKeys.ENABLE_SOUND))
             soundCymbal.play();
     }
 
-    public void renderFireworksEffect(SpriteBatch batch, float delta) {
+    void renderFireworksEffect(SpriteBatch batch, float delta) {
         particles.renderFireworks(batch, delta);
     }
 
-    public void resetFireworksEffects() {
+    void resetFireworksEffects() {
         particles.resetFireworksEffects();
     }
 

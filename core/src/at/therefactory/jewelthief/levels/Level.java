@@ -8,10 +8,10 @@ public class Level {
 	private String levelName;
 	private Class<Jewel> jewelClass;
 	private Class<Enemy> enemyClass;
-	private int numJewels;
-	private int numEnemies;
+	private short numJewels;
+	private short numEnemies;
 
-	public Level(String levelName, Class<?> jewelClass, int numJewels, Class<?> enemyClass, int numEnemies) {
+	public Level(String levelName, Class<?> jewelClass, short numJewels, Class<?> enemyClass, short numEnemies) {
 		this.levelName = levelName;
 		this.jewelClass = (Class<Jewel>) jewelClass;
 		this.numJewels = numJewels;
@@ -39,7 +39,7 @@ public class Level {
 		return numJewels;
 	}
 
-	public void setNumJewels(int numJewels) {
+	public void setNumJewels(short numJewels) {
 		this.numJewels = numJewels;
 	}
 
@@ -55,7 +55,7 @@ public class Level {
 		return numEnemies;
 	}
 
-	public void setNumEnemies(int numEnemies) {
+	public void setNumEnemies(short numEnemies) {
 		this.numEnemies = numEnemies;
 	}
 

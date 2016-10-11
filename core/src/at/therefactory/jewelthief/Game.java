@@ -19,8 +19,8 @@ import at.therefactory.jewelthief.actors.Enemy;
 import at.therefactory.jewelthief.actors.Player;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.jewels.Jewel;
-import at.therefactory.jewelthief.misc.Util;
-import at.therefactory.jewelthief.net.HTTP;
+import at.therefactory.jewelthief.misc.Utils;
+import at.therefactory.jewelthief.net.HttpServer;
 import at.therefactory.jewelthief.ui.buttons.GrayButton;
 
 import static at.therefactory.jewelthief.constants.Config.PLUS_ONE_MAN_INTERVAL;
@@ -48,23 +48,23 @@ public class Game {
     private final Array<Enemy> enemies;
     private final Array<Jewel> jewels;
     private final Array<Enemy> newEnemies;
-    private int currentLevel = 0;
-    private int numSeconds = 0;
+    private short currentLevel = 0;
+    private short numSeconds = 0;
 
     // gfx
-    private final Sprite background;
-    private Rectangle enemyField;
-    private Rectangle jewelField;
-    private final Rectangle playerField;
-    private final Rectangle getreadyRect;
-    private final Rectangle showMenuRect;
-    private final Rectangle gameOverRect;
+    private Sprite spriteBackground;
+    private Rectangle rectangleEnemyField;
+    private Rectangle rectangleJewelField;
+    private Rectangle rectanglePlayerField;
+    private Rectangle rectangleGetReady;
+    private Rectangle rectangleShowMenu;
+    private Rectangle rectangleGameOver;
     private final BitmapFont font;
-    private final GrayButton menuYesBtn;
-    private final GrayButton menuNoBtn;
-    private final GrayButton menuRestartBtn;
-    private final GrayButton gameOverPlayAgainBtn;
-    private final GrayButton gameOverExitBtn;
+    private GrayButton buttonYes;
+    private GrayButton buttonNo;
+    private GrayButton buttonRestart;
+    private GrayButton buttonPlayAgain;
+    private GrayButton buttonExit;
     private boolean renderFireworksEffect = false;
     private boolean showGetReady = true;
     private boolean showMenu = false;
@@ -73,29 +73,58 @@ public class Game {
 
     // sfx
     private boolean soundEnabled; // loaded in constructor
-    private final Sound soundCollectJewel;
-    private final Sound soundOuch;
-    private final Sound soundApplause;
-    private final Sound soundLose;
+    private Sound soundCollectJewel;
+    private Sound soundOuch;
+    private Sound soundApplause;
+    private Sound soundLose;
 
     // other
     private final Preferences prefs;
-    private int frames = 0;
+    private short frames = 0;
     private boolean debug = false;
     private boolean paused = true;
 
     public Game(Player player) {
         font = JewelThief.getInstance().getFont();
-        font.setColor(Color.BLACK);
         prefs = JewelThief.getInstance().getPreferences();
-        soundEnabled = prefs.getBoolean(PrefsKeys.ENABLE_SOUND);
-        this.bundle = JewelThief.getInstance().getBundle();
-        this.player = player;
-        this.enemies = new Array<Enemy>();
-        this.newEnemies = new Array<Enemy>();
-        this.jewels = new Array<Jewel>();
+        bundle = JewelThief.getInstance().getBundle();
 
-        // load resources
+        soundEnabled = prefs.getBoolean(PrefsKeys.ENABLE_SOUND);
+        font.setColor(Color.BLACK);
+        this.player = player;
+
+        enemies = new Array<Enemy>();
+        newEnemies = new Array<Enemy>();
+        jewels = new Array<Jewel>();
+
+        loadAssets();
+        initGuiElements();
+        resetGame();
+    }
+
+    private void initGuiElements() {
+        // sprites
+        spriteBackground = new Sprite(new Texture("levels/" + levels[currentLevel].getLevelName() + ".png"));
+        spriteBackground.setPosition((WINDOW_WIDTH - spriteBackground.getWidth()) / 2, (WINDOW_HEIGHT - spriteBackground.getHeight() - 32) / 2);
+
+        // rectangles
+        rectanglePlayerField = new Rectangle(spriteBackground.getX(), spriteBackground.getY(), spriteBackground.getWidth() - 1,
+                spriteBackground.getHeight() - 1);
+        rectangleGetReady = new Rectangle(WINDOW_WIDTH / 2 - 120 / 2, WINDOW_HEIGHT / 2 - 48 / 2, 120, 48);
+        rectangleShowMenu = new Rectangle(WINDOW_WIDTH / 2 - 230 / 2, WINDOW_HEIGHT / 2 - 120 / 2, 230, 120);
+        rectangleGameOver = new Rectangle(WINDOW_WIDTH / 2 - 320 / 2, WINDOW_HEIGHT / 2 - 130 / 2, 320, 130);
+
+        // buttons
+        buttonYes = new GrayButton(bundle.get(YES), 150, 95, 55, 40);
+        buttonNo = new GrayButton(bundle.get(NO), 215, buttonYes.getY(), 55, buttonYes.getHeight());
+        buttonRestart = new GrayButton(bundle.get(RESTART), 280, buttonYes.getY(), 80,
+                buttonYes.getHeight());
+        buttonPlayAgain = new GrayButton(bundle.get(PLAY_AGAIN), 155, 90, 90, buttonYes.getHeight());
+        buttonExit = new GrayButton(bundle.get(EXIT_TO_MENU), 260, buttonPlayAgain.getY(), 110,
+                buttonYes.getHeight());
+    }
+
+    private void loadAssets() {
         AssetManager manager = JewelThief.getInstance().getAssetManager();
         manager.load("audio/sounds/collect.ogg", Sound.class);
         manager.load("audio/sounds/coin.ogg", Sound.class);
@@ -106,44 +135,17 @@ public class Game {
         soundOuch = manager.get("audio/sounds/coin.ogg", Sound.class);
         soundApplause = manager.get("audio/sounds/applause.ogg", Sound.class);
         soundLose = manager.get("audio/sounds/one_blow_from_party_horn.ogg", Sound.class);
-        Sprite fade = JewelThief.getInstance().getTextureAtlas().createSprite("fade");
-        fade.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        fade.setPosition(0, 0);
-        fade.setAlpha(0.6f);
-
-        // sprites
-        background = new Sprite(new Texture("levels/" + levels[currentLevel].getLevelName() + ".png"));
-        float fieldBorder = (WINDOW_WIDTH - background.getWidth()) / 2;
-        background.setPosition(fieldBorder, (WINDOW_HEIGHT - background.getHeight() - 32) / 2);
-
-        // rectangles
-        playerField = new Rectangle(background.getX(), background.getY(), background.getWidth() - 1,
-                background.getHeight() - 1);
-        getreadyRect = new Rectangle(WINDOW_WIDTH / 2 - 120 / 2, WINDOW_HEIGHT / 2 - 48 / 2, 120, 48);
-        showMenuRect = new Rectangle(WINDOW_WIDTH / 2 - 230 / 2, WINDOW_HEIGHT / 2 - 120 / 2, 230, 120);
-        gameOverRect = new Rectangle(WINDOW_WIDTH / 2 - 320 / 2, WINDOW_HEIGHT / 2 - 130 / 2, 320, 130);
-
-        // buttons
-        menuYesBtn = new GrayButton(bundle.get(YES), 150, 95, 55, 40);
-        menuNoBtn = new GrayButton(bundle.get(NO), 215, menuYesBtn.getY(), 55, menuYesBtn.getHeight());
-        menuRestartBtn = new GrayButton(bundle.get(RESTART), 280, menuYesBtn.getY(), 80,
-                menuYesBtn.getHeight());
-        gameOverPlayAgainBtn = new GrayButton(bundle.get(PLAY_AGAIN), 155, 90, 90, menuYesBtn.getHeight());
-        gameOverExitBtn = new GrayButton(bundle.get(EXIT_TO_MENU), 260, gameOverPlayAgainBtn.getY(), 110,
-                menuYesBtn.getHeight());
-
-        resetGame();
     }
 
     private void loadLevel(int currentLevel) {
-        background.setTexture(new Texture("levels/" + levels[currentLevel].getLevelName() + ".png"));
-        enemyField = new Rectangle(background.getX(), background.getY(), background.getWidth(), background.getHeight());
-        jewelField = new Rectangle(background.getX(), background.getY(), background.getWidth(), 145);
+        spriteBackground.setTexture(new Texture("levels/" + levels[currentLevel].getLevelName() + ".png"));
+        rectangleEnemyField = new Rectangle(spriteBackground.getX(), spriteBackground.getY(), spriteBackground.getWidth(), spriteBackground.getHeight());
+        rectangleJewelField = new Rectangle(spriteBackground.getX(), spriteBackground.getY(), spriteBackground.getWidth(), 145);
         if (currentLevel == 13) {
-            jewelField.height = 92;
+            rectangleJewelField.height = 92;
         }
         if (currentLevel == 0 || currentLevel == 2 || currentLevel == 8 || currentLevel == 9 || currentLevel == 13) {
-            enemyField.height = 145;
+            rectangleEnemyField.height = 145;
         }
 
         // spawn enemies
@@ -154,12 +156,10 @@ public class Game {
             enemies.pop();
         }
 
-        int numRemainingEnemies = enemies.size;
-
         // update existing enemies while preserving their positions and movement directions
         try {
             newEnemies.clear();
-            for (int i = 0; i < numRemainingEnemies; i++) {
+            for (int i = 0; i < enemies.size; i++) {
                 Enemy enemy = levels[currentLevel].getEnemyClass().newInstance();
                 Enemy oldEnemy = enemies.get(i);
                 enemy.setMovementInverter(oldEnemy.getMovementInverter());
@@ -176,8 +176,8 @@ public class Game {
             for (int i = 0; deltaEnemies > 0 && i < deltaEnemies; i++) {
                 Enemy enemy = levels[currentLevel].getEnemyClass().newInstance();
                 enemy.setPosition(
-                        Util.randomWithin(enemyField.getX() + enemy.getSprite().getWidth() / 2, enemyField.getX()
-                                + enemyField.getWidth() - enemy.getSprite().getWidth() / 2), 100);
+                        Utils.randomWithin(rectangleEnemyField.getX() + enemy.getSprite().getWidth() / 2, rectangleEnemyField.getX()
+                                + rectangleEnemyField.getWidth() - enemy.getSprite().getWidth() / 2), 100);
                 enemy.update();
                 enemies.add(enemy);
             }
@@ -187,10 +187,10 @@ public class Game {
             // spawn jewels
             for (int i = 0; i < levels[currentLevel].getNumJewels(); i++) {
                 Jewel jewel = levels[currentLevel].getJewelClass().newInstance();
-                jewel.setPosition(Util.randomWithin(jewelField.getX() + jewel.getSprite().getWidth() / 2,
-                        jewelField.getX() + jewelField.getWidth() - jewel.getSprite().getWidth() / 2), Util
-                        .randomWithin(jewelField.getY() + jewel.getSprite().getHeight() / 2,
-                                (jewelField.getY() + jewelField.getHeight()) - (jewel.getSprite().getHeight())));
+                jewel.setPosition(Utils.randomWithin(rectangleJewelField.getX() + jewel.getSprite().getWidth() / 2,
+                        rectangleJewelField.getX() + rectangleJewelField.getWidth() - jewel.getSprite().getWidth() / 2), Utils
+                        .randomWithin(rectangleJewelField.getY() + jewel.getSprite().getHeight() / 2,
+                                (rectangleJewelField.getY() + rectangleJewelField.getHeight()) - (jewel.getSprite().getHeight())));
                 jewel.update();
                 jewels.add(jewel);
             }
@@ -222,7 +222,7 @@ public class Game {
         player.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 50);
         player.update();
         for (Enemy enemy : enemies)
-            enemy.update(enemyField);
+            enemy.update(rectangleEnemyField);
         for (Jewel jewel : jewels)
             jewel.update();
     }
@@ -233,17 +233,17 @@ public class Game {
         }
 
         player.update();
-        Rectangle playerBoundingRectangle = player.getSprite().getBoundingRectangle();
+        Rectangle rectanglePlayerBounds = player.getSprite().getBoundingRectangle();
 
         // collision with wall
-        boolean touchingWall = !playerField.contains(playerBoundingRectangle);
+        boolean touchingWall = !rectanglePlayerField.contains(rectanglePlayerBounds);
         if (touchingWall) {
             if (!player.isAlreadyTouchingWall()) {
                 player.setAlreadyTouchingWall(true);
                 player.decrementNumMen();
                 player.turnTemporarilyRed(true);
                 if (soundEnabled)
-                    soundOuch.play(0.5f);
+                    soundOuch.play(.5f);
             }
             player.setAlreadyTouchingWall(true);
         }
@@ -262,10 +262,10 @@ public class Game {
         Polygon playerPolygon = player.getPolygon();
         for (Enemy enemy : enemies) {
             if (!debug)
-                enemy.update(enemyField);
+                enemy.update(rectangleEnemyField);
 
             // rectangular collision detection
-            if (enemy.getSprite().getBoundingRectangle().overlaps(playerBoundingRectangle)) {
+            if (enemy.getSprite().getBoundingRectangle().overlaps(rectanglePlayerBounds)) {
                 rectangularCollision = true;
                 if (!player.isAlreadyTouchingEnemy()) {
 
@@ -275,7 +275,7 @@ public class Game {
                         player.decrementNumMen();
                         player.turnTemporarilyRed(true);
                         if (soundEnabled)
-                            soundOuch.play(0.5f);
+                            soundOuch.play(.5f);
                         break;
                     }
                 }
@@ -292,7 +292,7 @@ public class Game {
             if (Intersector.overlapConvexPolygons(player.getPolygon(), jewel.getPolygon())) {
                 jewels.removeIndex(i);
                 if (soundEnabled) {
-                    soundCollectJewel.play(0.6f);
+                    soundCollectJewel.play(.6f);
                 }
                 player.incrementNumCollectedJewels();
                 if (player.getNumCollectedJewels() % PLUS_ONE_MAN_INTERVAL == 0)
@@ -328,12 +328,12 @@ public class Game {
                 .format(GAME_END_PHRASE,
                         Math.max(0, currentScore),
                         player.getNumCollectedJewels(),
-                        Util.secondsToTimeString(numSeconds),
+                        Utils.secondsToTimeString(numSeconds),
                         currentScore > bestScore ? bundle.get(IMPROVED_HIGHSCORE) : bundle
                                 .get(MISSED_HIGHSCORE), currentScore > bestScore ? (currentScore - bestScore)
                                 : Math.abs(Math.max(0, currentScore) - bestScore),
-                        currentScore > bestScore ? applausePhrases[Util.randomWithin(0, applausePhrases.length - 1)]
-                                : motivationPhrases[Util.randomWithin(0, motivationPhrases.length - 1)]);
+                        currentScore > bestScore ? applausePhrases[Utils.randomWithin(0, applausePhrases.length - 1)]
+                                : motivationPhrases[Utils.randomWithin(0, motivationPhrases.length - 1)]);
 
         if (currentScore > bestScore) {
             renderFireworksEffect = true;
@@ -343,7 +343,7 @@ public class Game {
             prefs.putInteger(PrefsKeys.BEST_SCORE_NUM_JEWELS, player.getNumCollectedJewels());
             prefs.putInteger(PrefsKeys.BEST_SCORE_NUM_SECONDS, numSeconds);
             prefs.flush();
-            HTTP.submitHighscores(prefs.getString("id"), prefs.getString(PrefsKeys.PLAYER_NAME), player.getNumCollectedJewels(), numSeconds);
+            HttpServer.submitHighscores(prefs.getString("id"), prefs.getString(PrefsKeys.PLAYER_NAME), player.getNumCollectedJewels(), numSeconds);
         } else {
             if (soundEnabled)
                 soundLose.play();
@@ -357,29 +357,29 @@ public class Game {
     public void postRender(ShapeRenderer sr) {
         if (player.getNumMen() <= 0) {
             sr.setColor(Color.WHITE);
-            sr.rect(gameOverRect.x, gameOverRect.y, gameOverRect.width, gameOverRect.height);
+            sr.rect(rectangleGameOver.x, rectangleGameOver.y, rectangleGameOver.width, rectangleGameOver.height);
             sr.setColor(Color.DARK_GRAY);
-            sr.rect(gameOverRect.x, gameOverRect.y + gameOverRect.height - 28, gameOverRect.width, 28);
-            gameOverPlayAgainBtn.renderShape(sr);
-            gameOverExitBtn.renderShape(sr);
+            sr.rect(rectangleGameOver.x, rectangleGameOver.y + rectangleGameOver.height - 28, rectangleGameOver.width, 28);
+            buttonPlayAgain.renderShape(sr);
+            buttonExit.renderShape(sr);
         } else if (showMenu) {
             sr.setColor(Color.WHITE);
-            sr.rect(showMenuRect.x, showMenuRect.y, showMenuRect.width, showMenuRect.height);
+            sr.rect(rectangleShowMenu.x, rectangleShowMenu.y, rectangleShowMenu.width, rectangleShowMenu.height);
             sr.setColor(Color.DARK_GRAY);
-            sr.rect(showMenuRect.x, showMenuRect.y + showMenuRect.height - 28, showMenuRect.width, 28);
-            menuYesBtn.renderShape(sr);
-            menuNoBtn.renderShape(sr);
-            menuRestartBtn.renderShape(sr);
+            sr.rect(rectangleShowMenu.x, rectangleShowMenu.y + rectangleShowMenu.height - 28, rectangleShowMenu.width, 28);
+            buttonYes.renderShape(sr);
+            buttonNo.renderShape(sr);
+            buttonRestart.renderShape(sr);
         } else if (showGetReady) {
             sr.setColor(Color.BLUE);
-            sr.rect(getreadyRect.x + 1, getreadyRect.y + 1, getreadyRect.width - 2, getreadyRect.height - 2);
+            sr.rect(rectangleGetReady.x + 1, rectangleGetReady.y + 1, rectangleGetReady.width - 2, rectangleGetReady.height - 2);
             sr.setColor(Color.WHITE);
-            sr.rect(getreadyRect.x + 5, getreadyRect.y + 5, getreadyRect.width - 10, getreadyRect.height - 10);
+            sr.rect(rectangleGetReady.x + 5, rectangleGetReady.y + 5, rectangleGetReady.width - 10, rectangleGetReady.height - 10);
         }
     }
 
     public void render(SpriteBatch batch, float delta) {
-        background.draw(batch);
+        spriteBackground.draw(batch);
         for (Jewel jewel : jewels)
             jewel.getSprite().draw(batch);
         for (Enemy enemy : enemies)
@@ -402,21 +402,21 @@ public class Game {
             font.draw(batch, "Jewel Thief", 220, 198);
             font.setColor(Color.BLACK);
             font.draw(batch, gameEndPhrase, WINDOW_WIDTH / 2 - 145, WINDOW_HEIGHT / 2 + 25);
-            gameOverPlayAgainBtn.setCaption(bundle.get(PLAY_AGAIN));
-            gameOverPlayAgainBtn.renderCaption(batch);
-            gameOverExitBtn.setCaption(bundle.get(EXIT_TO_MENU));
-            gameOverExitBtn.renderCaption(batch);
+            buttonPlayAgain.setCaption(bundle.get(PLAY_AGAIN));
+            buttonPlayAgain.renderCaption(batch);
+            buttonExit.setCaption(bundle.get(EXIT_TO_MENU));
+            buttonExit.renderCaption(batch);
         } else if (showMenu) {
             font.setColor(Color.WHITE);
             font.draw(batch, "Jewel Thief", 220, 193);
             font.setColor(Color.BLACK);
             font.draw(batch, bundle.get(GIVING_UP_ALREADY), 200, 157);
-            menuYesBtn.setCaption(bundle.get(YES));
-            menuYesBtn.renderCaption(batch);
-            menuNoBtn.setCaption(bundle.get(NO));
-            menuNoBtn.renderCaption(batch);
-            menuRestartBtn.setCaption(bundle.get(RESTART));
-            menuRestartBtn.renderCaption(batch);
+            buttonYes.setCaption(bundle.get(YES));
+            buttonYes.renderCaption(batch);
+            buttonNo.setCaption(bundle.get(NO));
+            buttonNo.renderCaption(batch);
+            buttonRestart.setCaption(bundle.get(RESTART));
+            buttonRestart.renderCaption(batch);
         } else if (showGetReady) {
             font.draw(batch, bundle.get(GET_READY) + "...", WINDOW_WIDTH / 2 - 43, WINDOW_HEIGHT / 2 + 3);
         }
@@ -432,31 +432,31 @@ public class Game {
             for (Jewel jewel : jewels)
                 sr.polygon(jewel.getPolygon().getVertices());
             if (showMenu) {
-                sr.rect(menuYesBtn.getX(), menuYesBtn.getY(), menuYesBtn.getWidth(), menuYesBtn.getHeight());
-                sr.rect(menuNoBtn.getX(), menuNoBtn.getY(), menuNoBtn.getWidth(), menuNoBtn.getHeight());
-                sr.rect(menuRestartBtn.getX(), menuRestartBtn.getY(), menuRestartBtn.getWidth(),
-                        menuRestartBtn.getHeight());
+                sr.rect(buttonYes.getX(), buttonYes.getY(), buttonYes.getWidth(), buttonYes.getHeight());
+                sr.rect(buttonNo.getX(), buttonNo.getY(), buttonNo.getWidth(), buttonNo.getHeight());
+                sr.rect(buttonRestart.getX(), buttonRestart.getY(), buttonRestart.getWidth(),
+                        buttonRestart.getHeight());
             } else if (player.getNumMen() <= 0) {
                 sr.rect(WINDOW_WIDTH / 2 - 63, WINDOW_HEIGHT / 2 - 45, 58, 28);
                 sr.rect(WINDOW_WIDTH / 2 + 5, WINDOW_HEIGHT / 2 - 45, 57, 28);
             } else {
                 sr.setColor(Color.RED);
-                sr.rect(enemyField.x, enemyField.y, enemyField.width, enemyField.height);
+                sr.rect(rectangleEnemyField.x, rectangleEnemyField.y, rectangleEnemyField.width, rectangleEnemyField.height);
                 sr.setColor(Color.GREEN);
-                sr.rect(jewelField.x, jewelField.y, jewelField.width, jewelField.height);
+                sr.rect(rectangleJewelField.x, rectangleJewelField.y, rectangleJewelField.width, rectangleJewelField.height);
                 sr.setColor(Color.WHITE);
-                sr.rect(playerField.x, playerField.y, playerField.width, playerField.height);
+                sr.rect(rectanglePlayerField.x, rectanglePlayerField.y, rectanglePlayerField.width, rectanglePlayerField.height);
             }
         }
         sr.end();
     }
 
-    public int getCurrentLevel() {
+    public short getCurrentLevel() {
         return currentLevel;
     }
 
-    public Sprite getBackground() {
-        return background;
+    public Sprite getSpriteBackground() {
+        return spriteBackground;
     }
 
     public Player getPlayer() {
@@ -523,40 +523,40 @@ public class Game {
     public void rearrangeEnemies() {
         for (Enemy enemy : enemies) {
             Sprite sprite = enemy.getSprite();
-            if (sprite.getBoundingRectangle().x < enemyField.x) {
-                enemy.setPosition(enemyField.x + sprite.getWidth() / 2, enemy.getPosition().y);
+            if (sprite.getBoundingRectangle().x < rectangleEnemyField.x) {
+                enemy.setPosition(rectangleEnemyField.x + sprite.getWidth() / 2, enemy.getPosition().y);
             }
-            if (sprite.getBoundingRectangle().x > enemyField.x + enemyField.width) {
-                enemy.setPosition(enemyField.x + enemyField.width - sprite.getWidth() / 2, enemy.getPosition().y);
+            if (sprite.getBoundingRectangle().x > rectangleEnemyField.x + rectangleEnemyField.width) {
+                enemy.setPosition(rectangleEnemyField.x + rectangleEnemyField.width - sprite.getWidth() / 2, enemy.getPosition().y);
             }
-            if (sprite.getBoundingRectangle().y < enemyField.y) {
+            if (sprite.getBoundingRectangle().y < rectangleEnemyField.y) {
                 enemy.setPosition(enemy.getPosition().x, enemy.getPosition().y + sprite.getHeight() / 2);
             }
-            if (sprite.getBoundingRectangle().y > enemyField.y + enemyField.height) {
-                enemy.setPosition(enemy.getPosition().x, enemyField.y + enemyField.height - sprite.getHeight() / 2);
+            if (sprite.getBoundingRectangle().y > rectangleEnemyField.y + rectangleEnemyField.height) {
+                enemy.setPosition(enemy.getPosition().x, rectangleEnemyField.y + rectangleEnemyField.height - sprite.getHeight() / 2);
             }
             enemy.update();
         }
     }
 
-    public GrayButton getMenuRestartBtn() {
-        return menuRestartBtn;
+    public GrayButton getButtonRestart() {
+        return buttonRestart;
     }
 
-    public GrayButton getMenuNoBtn() {
-        return menuNoBtn;
+    public GrayButton getButtonNo() {
+        return buttonNo;
     }
 
-    public GrayButton getMenuYesBtn() {
-        return menuYesBtn;
+    public GrayButton getButtonYes() {
+        return buttonYes;
     }
 
-    public GrayButton getGameOverPlayAgainBtn() {
-        return gameOverPlayAgainBtn;
+    public GrayButton getButtonPlayAgain() {
+        return buttonPlayAgain;
     }
 
-    public GrayButton getGameOverExitBtn() {
-        return gameOverExitBtn;
+    public GrayButton getButtonExit() {
+        return buttonExit;
     }
 
     public void collectAllJewels() {
@@ -570,13 +570,13 @@ public class Game {
             font.setColor(Color.BLACK);
             font.draw(batch, sb, 5, 20);
             font.setColor(Color.RED);
-            font.draw(batch, "enemyField", enemyField.getX(), enemyField.getY() + enemyField.getHeight());
+            font.draw(batch, "rectangleEnemyField", rectangleEnemyField.getX(), rectangleEnemyField.getY() + rectangleEnemyField.getHeight());
             font.setColor(Color.GREEN);
-            font.draw(batch, "jewelField", jewelField.getX() + jewelField.getWidth() - 65, jewelField.getY()
-                    + jewelField.getHeight());
+            font.draw(batch, "rectangleJewelField", rectangleJewelField.getX() + rectangleJewelField.getWidth() - 65, rectangleJewelField.getY()
+                    + rectangleJewelField.getHeight());
             font.setColor(Color.WHITE);
-            font.draw(batch, "playerField", playerField.getX() + playerField.getWidth() - 70, playerField.getY()
-                    + playerField.getHeight());
+            font.draw(batch, "rectanglePlayerField", rectanglePlayerField.getX() + rectanglePlayerField.getWidth() - 70, rectanglePlayerField.getY()
+                    + rectanglePlayerField.getHeight());
             batch.end();
         }
     }

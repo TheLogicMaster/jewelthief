@@ -29,7 +29,7 @@ import at.therefactory.jewelthief.jewels.Ruby;
 import at.therefactory.jewelthief.jewels.Sapphire;
 import at.therefactory.jewelthief.jewels.Topaz;
 import at.therefactory.jewelthief.levels.Level;
-import at.therefactory.jewelthief.misc.Util;
+import at.therefactory.jewelthief.misc.Utils;
 
 public class Config {
 
@@ -51,29 +51,29 @@ public class Config {
 	public static final int PLUS_ONE_MAN_INTERVAL = 10; // num of jewels to collect to gain one extra man
 	public static final int INITIAL_NUM_MEN = 18;
 	public static final Level[] levels = {
-		new Level("Mars", 		Emerald.class, 		4, 		Bandit.class, 		3),
-        new Level("Mars", 		Opal.class, 		6, 		BigBandit.class, 	4),
-        new Level("Egypt", 		Sapphire.class, 	8, 		Camel.class, 		4),
-        new Level("Egypt", 		Garnet.class,		10,		Sphinx.class,		5),
-        new Level("Sea", 		Pearl.class,		11, 	Sailboat.class,		6),
-        new Level("Sea",		Onyx.class, 		13, 	Battleship.class,	6),
-        new Level("Cave",		Ruby.class,			11,		Bat.class,			6),
-        new Level("Cave",		Aquamarine.class,	16,		Spider.class, 		17),
-        new Level("Castle",		Gold.class, 		20, 	Soldier.class, 		6),
-        new Level("Castle", 	Amethyst.class,		22, 	Wizard.class, 		7),
-        new Level("City", 		Peridot.class,		24,		Helicopter.class,	8),
-        new Level("City",		Topaz.class,		26, 	Battlecopter.class, 9),
-        new Level("Rainbow", 	Citrine.class,		35, 	Drop.class,			20),
-        new Level("Rainbow",    Diamond.class,      31,     Cloud.class,        8),
+		new Level("Mars", 		Emerald.class, 		(short) 4, 		Bandit.class, 		(short) 3),
+        new Level("Mars", 		Opal.class, 		(short) 6, 		BigBandit.class, 	(short) 4),
+        new Level("Egypt", 		Sapphire.class, 	(short) 8, 		Camel.class, 		(short) 4),
+        new Level("Egypt", 		Garnet.class,		(short) 10,		Sphinx.class,		(short) 5),
+        new Level("Sea", 		Pearl.class,		(short) 11, 	Sailboat.class,		(short) 6),
+        new Level("Sea",		Onyx.class, 		(short) 13, 	Battleship.class,	(short) 6),
+        new Level("Cave",		Ruby.class,			(short) 11,		Bat.class,			(short) 6),
+        new Level("Cave",		Aquamarine.class,	(short) 16,		Spider.class, 		(short) 17),
+        new Level("Castle",		Gold.class, 		(short) 20, 	Soldier.class, 		(short) 6),
+        new Level("Castle", 	Amethyst.class,		(short) 22, 	Wizard.class, 		(short) 7),
+        new Level("City", 		Peridot.class,		(short) 24,		Helicopter.class,	(short) 8),
+        new Level("City",		Topaz.class,		(short) 26, 	Battlecopter.class, (short) 9),
+        new Level("Rainbow", 	Citrine.class,		(short) 35, 	Drop.class,			(short) 20),
+        new Level("Rainbow",    Diamond.class,      (short) 31,     Cloud.class,        (short) 8),
 	};
 
 	// application
     public static final String DEFAULT_LOCALE = "en"; // en, de, es
-    public static final String VERSION_NAME = "1.0.9";
+    public static final String VERSION_NAME = "1.1.0";
 	
     // ui
     public static final long TIME_PLAYER_STAYS_RED_WHEN_HURT = 400; // in ms
-    public static final int MENU_SCREEN_NUM_STARS = Util.randomWithin(20, 40);
+    public static final int MENU_SCREEN_NUM_STARS = Utils.randomWithin(20, 40);
     public static final int FONT_OFFSET_ON_BUTTON_PRESS = 1; // in pixels
     public static final float FADING_SPEED = 0.05f;
     public static final int HIGHSCORES_LINE_HEIGHT = 9;
@@ -82,4 +82,5 @@ public class Config {
 	public static final int PLAYERNAME_MAXLEN = 20;
 	public static final int NUM_HTTP_REQUEST_TRIES = 3;
 	public static final float INITIAL_SCROLLBAR_POSITION_Y = 200;
+	public static final String EMAIL = "christian.detamble@outlook.com";
 }

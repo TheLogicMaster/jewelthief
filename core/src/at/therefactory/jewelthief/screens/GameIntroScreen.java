@@ -13,8 +13,6 @@ import at.therefactory.jewelthief.JewelThief;
 import at.therefactory.jewelthief.constants.I18NKeys;
 
 import static at.therefactory.jewelthief.constants.Config.FADING_SPEED;
-import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
-import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
 
 public class GameIntroScreen extends ScreenAdapter {
 
@@ -23,17 +21,15 @@ public class GameIntroScreen extends ScreenAdapter {
 	private final SpriteBatch batch;
 	private final BitmapFont font;
 
-	private float alpha = 1;
-	private boolean touched = false;
+	private float alpha;
+	private boolean touched;
 
-	public GameIntroScreen(SpriteBatch batch) {
+	public GameIntroScreen(SpriteBatch batch, FitViewport viewport, OrthographicCamera camera) {
 		this.batch = batch;
-
-		camera = new OrthographicCamera();
-		viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
-		camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
-		camera.update();
-
+		this.viewport = viewport;
+		this.camera = camera;
+        alpha = 1;
+        touched = false;
 		font = JewelThief.getInstance().getFont();
 		font.setColor(Color.WHITE);
 	}

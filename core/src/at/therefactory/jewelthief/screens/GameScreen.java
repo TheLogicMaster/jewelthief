@@ -13,30 +13,23 @@ import at.therefactory.jewelthief.actors.Player;
 import at.therefactory.jewelthief.input.GameScreenInputAdapter;
 import at.therefactory.jewelthief.ui.Hud;
 
-import static at.therefactory.jewelthief.constants.Config.DEBUG_MODE;
-import static at.therefactory.jewelthief.constants.Config.WINDOW_HEIGHT;
-import static at.therefactory.jewelthief.constants.Config.WINDOW_WIDTH;
-
 public class GameScreen extends ScreenAdapter {
 
     private final FitViewport viewport;
     private final OrthographicCamera camera;
     private final SpriteBatch batch;
-    private final ShapeRenderer sr;
+    private final ShapeRenderer shapeRenderer;
     private final Hud hud;
     private final Game game;
 
-    public GameScreen(SpriteBatch batch, ShapeRenderer sr) {
+    public GameScreen(SpriteBatch batch, ShapeRenderer shapeRenderer, FitViewport viewport, OrthographicCamera camera) {
         this.batch = batch;
-        this.sr = sr;
+        this.shapeRenderer = shapeRenderer;
+        this.viewport = viewport;
+        this.camera = camera;
         Player player = new Player();
         game = new Game(player);
         hud = new Hud(game);
-
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
-        camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
-        camera.update();
     }
 
     @Override
@@ -70,40 +63,40 @@ public class GameScreen extends ScreenAdapter {
         // simulate world
         update(delta);
 
-        // renderCaption shapes
-        sr.setProjectionMatrix(camera.combined);
-        sr.begin(ShapeRenderer.ShapeType.Filled);
-        hud.render(sr);
-        game.render(sr);
-        sr.end();
+        // render shapes
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        hud.render(shapeRenderer);
+        game.render(shapeRenderer);
+        shapeRenderer.end();
 
-        // renderCaption sprites/fonts
+        // render sprites/fonts
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         hud.render(batch);
         game.render(batch, delta);
         batch.end();
 
-        // renderCaption shapes for dialogs
-        sr.setProjectionMatrix(camera.combined);
-        sr.begin(ShapeRenderer.ShapeType.Filled);
-        hud.postRender(sr);
-        game.postRender(sr);
-        sr.end();
+        // render shapes for dialogs
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        hud.postRender(shapeRenderer);
+        game.postRender(shapeRenderer);
+        shapeRenderer.end();
 
-        // renderCaption sprites/fonts for dialogs
+        // render sprites/fonts for dialogs
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         hud.postRender(batch);
         game.postRender(batch, delta);
         batch.end();
 
-        if (DEBUG_MODE) {
-            sr.setProjectionMatrix(camera.combined);
-            game.debug(sr);
-            batch.setProjectionMatrix(camera.combined);
-            game.debug(batch);
-        }
+//        if (DEBUG_MODE) {
+//            shapeRenderer.setProjectionMatrix(camera.combined);
+//            game.debug(shapeRenderer);
+//            batch.setProjectionMatrix(camera.combined);
+//            game.debug(batch);
+//        }
     }
 
     private void update(float delta) {
