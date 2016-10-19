@@ -1,6 +1,6 @@
 # Jewel Thief
 
-This project is a remake of the legendary Jewel Thief game from 1991 for Android and Desktop using the [libGDX framework](https://github.com/libgdx/libgdx).
+This project is a remake of the legendary Jewel Thief game from 1991 for Android using the [libGDX framework](https://github.com/libgdx/libgdx).
 
 You can follow my <a href="https://goo.gl/U0x1Fy">development blog</a> for the latest news on this and other projects of mine.
 
