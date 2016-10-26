@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2016  Christian DeTamble
+ *
+ * This file is part of Jewel Thief.
+ *
+ * Jewel Thief is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Jewel Thief is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Jewel Thief.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package at.therefactory.jewelthief.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -61,13 +80,13 @@ public class GameScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // simulate world
-        update(delta);
+        update();
 
         // render shapes
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         hud.render(shapeRenderer);
-        game.render(shapeRenderer);
+        game.render();
         shapeRenderer.end();
 
         // render sprites/fonts
@@ -88,7 +107,7 @@ public class GameScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         hud.postRender(batch);
-        game.postRender(batch, delta);
+        game.postRender(batch);
         batch.end();
 
 //        if (DEBUG_MODE) {
@@ -99,8 +118,8 @@ public class GameScreen extends ScreenAdapter {
 //        }
     }
 
-    private void update(float delta) {
-        game.update(delta);
+    private void update() {
+        game.update();
     }
 
     @Override
