@@ -74,4 +74,4 @@ Crafted with &hearts; in <a href="http://goo.gl/KvKHze">The Refactory</a> in Bar
 
 (My software is and stays open source, free of charge and ad-free)
 
-<!--<a href="http://goo.gl/KvKHze"><img src="http://therefactory.bplaced.net/favicon/favicon.svg" width="32"></a>-->
+<a href="http://goo.gl/KvKHze"><img src="http://therefactory.bplaced.net/favicon/favicon.svg" width="16px"></a>
