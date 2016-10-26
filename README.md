@@ -1,8 +1,8 @@
-# Jewel Thief [![version](https://img.shields.io/badge/version-1.0.1-blue.svg)](CHANGELOG.md) [![license](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
+# Jewel Thief ![appicon](excluded-resources/appicon.png)
 
 *This Android game is a remake of the legendary Jewel Thief game made by Paul Ligeski from ServantWare in 1991.*
 
-![appicon](excluded-resources/appicon.png)
+[![version](https://img.shields.io/badge/version-1.0.1-blue.svg)](CHANGELOG.md) [![license](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 The National Museum is in a tissy.
 The country's jewel collection has been stolen and scattered all over creation.
