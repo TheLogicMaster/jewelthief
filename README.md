@@ -2,24 +2,24 @@
 
 *This Android game is a remake of the legendary Jewel Thief game made by Paul Ligeski from ServantWare in 1991.*
 
-[![version](https://img.shields.io/badge/version-1.0.1-2095ff.svg)](CHANGELOG.md) [![license](https://img.shields.io/badge/license-GPL--3.0-2095ff.svg)](LICENSE)
+[![version](https://img.shields.io/badge/version-1.1.0-2095ff.svg)](CHANGELOG.md) [![license](https://img.shields.io/badge/license-GPL--3.0-2095ff.svg)](LICENSE)
 
 The National Museum is in a tissy.
 The country's jewel collection has been stolen and scattered all over creation.
 Your mission is to travel to far away places and steal back the jewels from their unrightful owners.
 As you leave your mother wishes you well and reminds you to be careful...
 
-You can follow my <a href="https://goo.gl/U0x1Fy">development blog</a> for the latest news on this and other projects of mine.
+You can follow me on my <a href="https://goo.gl/U0x1Fy">development blog</a> for the latest news on this and other projects of mine.
 
 ## Download
- 
- App now available on Google Play Store.
- 
+
+App now available on Google Play Store.
+
 <a href="http://goo.gl/l1lngU"><img src="http://therefactory.bplaced.net/img/google-play-badge.png" width="180"></a>
 
 ## Promotion Video
- 
- Watch the promotion video showing in-game footage.
+
+Watch the promotion video showing in-game footage.
 
 <a href="https://youtu.be/RObU2xX5HiE"><img src="excluded-resources/youtube.png"></a>
 
