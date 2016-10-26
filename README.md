@@ -1,38 +1,49 @@
-# Jewel Thief <img src="http://therefactory.bplaced.net/projects-json/jewelthief/icon.png" height="24px">
+# Jewel Thief [![version](https://img.shields.io/badge/version-1.0.1-blue.svg)](CHANGELOG.md) [![license](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
-*This project is a remake of the legendary Jewel Thief game from 1991 for Android using the [libGDX game development framework](https://github.com/libgdx/libgdx).*
+*This Android game is a remake of the legendary Jewel Thief game made by Paul Ligeski from ServantWare in 1991.*
+
+![appicon](excluded-resources/appicon.png)
+
+The National Museum is in a tissy.
+The country's jewel collection has been stolen and scattered all over creation.
+Your mission is to travel to far away places and steal back the jewels from their unrightful owners.
+As you leave your mother wishes you well and reminds you to be careful...
 
 You can follow my <a href="https://goo.gl/U0x1Fy">development blog</a> for the latest news on this and other projects of mine.
 
+## Download
+ 
+ App now available on Google Play Store.
+ 
 <a href="http://goo.gl/l1lngU"><img src="http://therefactory.bplaced.net/img/google-play-badge.png" width="180"></a>
 
-<a href="https://youtu.be/RObU2xX5HiE"><img src="https://github.com/frittatenbank/jewelthief/raw/master/excluded-resources/youtube.png"></a>
+## Promotion Video
+ 
+ Watch the promotion video showing in-game footage.
 
+<a href="https://youtu.be/RObU2xX5HiE"><img src="excluded-resources/youtube.png"></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png" align="left" height="45%" width="45%" ></a>
+## Screenshots
 
+<a href="excluded-resources/screenshots/en/device-2016-08-23-163342.png"><img src="excluded-resources/screenshots/en/device-2016-08-23-163342.png" align="left" height="45%" width="45%" ></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png" align="left" height="45%" width="45%" ></a>
+<a href="excluded-resources/screenshots/en/device-2016-08-23-163400.png"><img src="excluded-resources/screenshots/en/device-2016-08-23-163400.png" align="left" height="45%" width="45%" ></a>
 
+<a href="excluded-resources/screenshots/en/device-2016-08-23-163225.png"><img src="excluded-resources/screenshots/en/device-2016-08-23-163225.png" align="left" height="45%" width="45%" ></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png" align="left" height="45%" width="45%" ></a>
+<a href="excluded-resources/screenshots/en/device-2016-08-23-163328.png"><img src="excluded-resources/screenshots/en/device-2016-08-23-163328.png" align="left" height="45%" width="45%" ></a>
 
+<a href="excluded-resources/screenshots/en/device-2016-08-23-163421.png"><img src="excluded-resources/screenshots/en/device-2016-08-23-163421.png" align="left" height="45%" width="45%" ></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png" align="left" height="45%" width="45%" ></a>
+<a href="excluded-resources/screenshots/en/device-2016-09-10-213255.png"><img src="excluded-resources/screenshots/en/device-2016-09-10-213255.png" height="40%" width="45%" ></a>
 
-
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png" align="left" height="45%" width="45%" ></a>
-
-
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-09-10-213255.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-09-10-213255.png" height="40%" width="45%" ></a>
-
-## How to play
+## Gameplay
 
 Collect all jewels as fast as possible and avoid guards and borders. You get extra men when you collect jewels.
 
-Tip: Use only one finger to move around.
+**Tip**: Use only one finger to move around.
 
-## Problems, Feedback?
+## Bugs, Problems, Feedback?
 
 The more you tell me, the better my apps get. Please use the comments on <a href="http://goo.gl/l1lngU">Google Play Store</a> or visit <a href="http://goo.gl/KvKHze">my website</a> to post feedback. 
 
@@ -44,7 +55,7 @@ Your privacy is really important to me. The only permission that this app requir
 
 Copyright &copy; 2016 Christian DeTamble
 
-Licensed under the GNU General Public License, Version 3.0.
+Licensed under the GNU General Public License, Version 3.0. See [LICENSE](LICENSE) for details.
 
     https://www.gnu.org/licenses/gpl-3.0.txt
 
