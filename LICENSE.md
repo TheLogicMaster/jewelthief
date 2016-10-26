@@ -1,9 +1,13 @@
 Jewel Thief - License
 =========
 
-This app is licensed under the GNU General Public License Version 3. See LICENSE file.
+Copyright &copy; 2016 Christian DeTamble
 
-Jewel Thief was a game made by Paul Ligeski from ServantWare in 1991. This app is a re-implementation for modern hardware using the original sprites and backgrounds.
+Licensed under the GNU General Public License, Version 3.0. See [LICENSE](LICENSE) for details.
+
+    https://www.gnu.org/licenses/gpl-3.0.txt
+
+'Jewel Thief' was a game made by Paul Ligeski from ServantWare in 1991. This app is a re-implementation for modern hardware using the original sprites and backgrounds.
 
 * Game Idea, Sprites and Backgrounds by Paul Ligeski and ServantWare
 * Applause Sound by Yannick Lemieux, CC BY 3.0
