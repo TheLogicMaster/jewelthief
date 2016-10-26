@@ -1,22 +1,13 @@
 # Jewel Thief <img src="http://therefactory.bplaced.net/projects-json/jewelthief/icon.png" height="24px">
 
-This project is a remake of the legendary Jewel Thief game from 1991 for Android using the [libGDX game development framework](https://github.com/libgdx/libgdx).
+*This project is a remake of the legendary Jewel Thief game from 1991 for Android using the [libGDX game development framework](https://github.com/libgdx/libgdx).*
 
 You can follow my <a href="https://goo.gl/U0x1Fy">development blog</a> for the latest news on this and other projects of mine.
 
-## Download
-
-App now available on Google Play Store.
-
 <a href="http://goo.gl/l1lngU"><img src="http://therefactory.bplaced.net/img/google-play-badge.png" width="180"></a>
-
-## Promotion Video
-
-Watch the promotion video showing in-game footage.
 
 <a href="https://youtu.be/RObU2xX5HiE"><img src="https://github.com/frittatenbank/jewelthief/raw/master/excluded-resources/youtube.png"></a>
 
-## Screenshots
 
 <a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png" align="left" height="45%" width="45%" ></a>
 
