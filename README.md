@@ -22,17 +22,22 @@ https://youtu.be/RObU2xX5HiE
 
 ***
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png" align="left" height="40%" width="40%" ></a>
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png" align="left" height="45%" width="45%" ></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png" align="left" height="40%" width="40%" ></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163342.png" align="left" height="40%" width="40%" ></a>
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png" align="left" height="45%" width="45%" ></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163400.png" align="left" height="40%" width="40%" ></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png" align="left" height="40%" width="40%" ></a>
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163225.png" align="left" height="45%" width="45%" ></a>
 
-<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-09-10-213255.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-09-10-213255.png" height="40%" width="40%" ></a>
+
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163328.png" align="left" height="45%" width="45%" ></a>
+
+
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-08-23-163421.png" align="left" height="45%" width="45%" ></a>
+
+
+<a href="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-09-10-213255.png"><img src="http://therefactory.bplaced.net/projects-json/jewelthief/screenshots/device-2016-09-10-213255.png" height="40%" width="45%" ></a>
 
 
 ***
