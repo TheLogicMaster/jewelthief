@@ -1,4 +1,4 @@
-# Jewel Thief ![appicon](excluded-resources/appicon.png) <a href="https://www.youtube.com/channel/UCShL6kEbNc02XjA89zsrtDQ"><img src="https://www.youtube.com/yt/brand/media/image/YouTube-icon-full_color.png" height="16px" align="right"></a>
+# Jewel Thief ![appicon](excluded-resources/appicon.png) <a href="https://www.youtube.com/channel/UCShL6kEbNc02XjA89zsrtDQ"><img src="https://www.youtube.com/yt/brand/media/image/YouTube-icon-full_color.png" height="32px" align="right"></a>
 
 *This Android game is a remake of the legendary Jewel Thief game made by Paul Ligeski from ServantWare in 1991.*
 
@@ -73,5 +73,3 @@ Licensed under the GNU General Public License, Version 3.0. See [LICENSE](LICENS
 Crafted with &hearts; in <a href="http://goo.gl/KvKHze">The Refactory</a> in Barcelona 2016.
 
 (My software is and stays open source, free of charge and ad-free)
-
-<a href="http://goo.gl/KvKHze"><img src="http://therefactory.bplaced.net/favicon/favicon.svg" width="16px"></a>
