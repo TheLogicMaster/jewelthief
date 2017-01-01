@@ -55,6 +55,7 @@ public class I18NKeys {
     public static final String UPDATE = "update";
     public static final String FETCHING = "fetching";
     public static final String YOUR_BEST_SCORE_IS = "your_best_score_is";
+    public static final String SET_YOUT_PLAYER_NAME_TO_SEE_HIGHSCORES = "set_your_playername_to_see_highscores";
 
     // in-game
     public static final String INTRO_TEXT = "intro_text";

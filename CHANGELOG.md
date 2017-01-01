@@ -1,6 +1,12 @@
 Jewel Thief - Changelog
 =========
 
+### Version 1.1.1 - January 1, 2017
+
+* Unknown players will be ignored in the highscores
+* Changed language icons
+* Upgraded to libGDX 1.9.5
+
 ### Version 1.1.0 - October 11, 2016
 
 * Fixed memory leak in about screen

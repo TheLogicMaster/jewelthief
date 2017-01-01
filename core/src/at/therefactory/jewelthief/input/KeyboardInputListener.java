@@ -23,6 +23,7 @@ import com.badlogic.gdx.Input.TextInputListener;
 
 import at.therefactory.jewelthief.JewelThief;
 import at.therefactory.jewelthief.constants.I18NKeys;
+import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.net.HttpServer;
 
 import static at.therefactory.jewelthief.constants.Config.PLAYERNAME_MAXLEN;
@@ -33,6 +34,9 @@ class KeyboardInputListener implements TextInputListener {
     public void input(String text) {
         if (text.length() <= PLAYERNAME_MAXLEN) {
             HttpServer.changeName(JewelThief.getInstance().getPreferences().getString("id"), text);
+            if (text.length() == 0) {
+                JewelThief.getInstance().getPreferences().putInteger(PrefsKeys.MY_RANK, -1);
+            }
         } else {
             JewelThief.getInstance().toast(JewelThief.getInstance().getBundle().format(I18NKeys.NAME_MUST_BE_SHORTER_THAN, PLAYERNAME_MAXLEN + 1), true);
         }

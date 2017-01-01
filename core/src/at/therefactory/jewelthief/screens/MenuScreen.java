@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.JewelThief;
+import at.therefactory.jewelthief.constants.I18NKeys;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.input.MenuScreenInputAdapter;
 import at.therefactory.jewelthief.misc.Utils;
@@ -187,7 +188,7 @@ public class MenuScreen extends ScreenAdapter {
         buttonChangePlayername = new GrayButton(bundle.get(PLAYERNAME), 155, buttonToggleSound.getY(), 100,
                 buttonToggleSound.getHeight(), true);
         buttonChangeLanguage = new GrayStateButton(new String[]{"English", "Deutsch"}, new String[]{"flag_usa",
-                "flag_germany"}, (short) (prefs.getString("language").equals("en") ? 0 : 1), true,
+                "flag_austria"}, (short) (prefs.getString("language").equals("en") ? 0 : 1), true,
                 buttonChangePlayername.getX(), 16, 100, 40);
         buttonResetHighscore = new GrayButton(bundle.get(RESET_HIGHSCORE), 264, 16, 100, 40, true);
     }
@@ -489,6 +490,9 @@ public class MenuScreen extends ScreenAdapter {
             spriteSkyline.setY(115);
         } else if (state.equals(MenuState.ShowHighscores)) {
             spriteSkyline.setY(WINDOW_HEIGHT - 75);
+            if (prefs.getString(PrefsKeys.PLAYER_NAME) == null || prefs.getString(PrefsKeys.PLAYER_NAME).length() == 0) {
+                JewelThief.getInstance().toast(bundle.get(I18NKeys.SET_YOUT_PLAYER_NAME_TO_SEE_HIGHSCORES), true);
+            }
         }
     }
 
