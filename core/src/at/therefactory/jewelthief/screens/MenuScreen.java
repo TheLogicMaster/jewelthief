@@ -113,7 +113,7 @@ public class MenuScreen extends ScreenAdapter {
 
     private String[] highscores;
     private boolean fetchingHighscores;
-    private final String aboutText;
+    private String aboutText;
 
     public MenuScreen(SpriteBatch batch, ShapeRenderer shapeRenderer, FitViewport viewport, OrthographicCamera camera) {
 
@@ -126,7 +126,7 @@ public class MenuScreen extends ScreenAdapter {
         this.bundle = JewelThief.getInstance().getBundle();
         this.highscores = new String[0];
         font = JewelThief.getInstance().getFont();
-        aboutText = bundle.format(ABOUT_TEXT, PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()); // calls to format in update method cause memory leak
+        updateAboutText(bundle);
 
         initSprites();
         initStars();
@@ -145,6 +145,10 @@ public class MenuScreen extends ScreenAdapter {
 
         positionImagesOnButtons();
         setState(MenuState.ShowMenu);
+    }
+
+    private void updateAboutText(I18NBundle bundle) {
+        aboutText = bundle.format(ABOUT_TEXT, PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()); // calls to format in update method cause memory leak
     }
 
     private void initButtonsHighscores(short buttonWidth, short buttonHeight, int borderDist) {
@@ -370,7 +374,8 @@ public class MenuScreen extends ScreenAdapter {
                             for (int i = 0; i < highscores.length; i++) {
                                 font.setColor(i == getMyRank() ? Color.GREEN : Color.WHITE);
                                 float yOfHighscoreLine = (205 - i * HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
-                                if (yOfHighscoreLine < spriteSkyline.getY()) { // lines disappear when above spriteSkyline sprite
+                                if (yOfHighscoreLine < spriteSkyline.getY() // lines disappear when above spriteSkyline sprite
+                                		&& yOfHighscoreLine > 0) { // lines disappear when outside of the viewport
                                     font.draw(batch, highscores[i], 15, yOfHighscoreLine);
                                 }
                             }
@@ -550,6 +555,7 @@ public class MenuScreen extends ScreenAdapter {
 
     public void setBundle(I18NBundle bundle) {
         this.bundle = bundle;
+        updateAboutText(bundle);
     }
 
     public enum MenuState {

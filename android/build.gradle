@@ -18,8 +18,8 @@ android {
         applicationId "at.therefactory.jewelthief"
         minSdkVersion 8
         targetSdkVersion 25
-        versionCode 111
-        versionName '1.1.1'
+        versionCode 112
+        versionName '1.1.2'
     }
 }
 /*

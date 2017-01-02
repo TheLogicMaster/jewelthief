@@ -88,13 +88,13 @@ public class Config {
 
 	// application
     public static final String DEFAULT_LOCALE = "en"; // en, de, es
-    public static final String VERSION_NAME = "1.1.1";
+    public static final String VERSION_NAME = "1.1.2";
 	
     // ui
     public static final long TIME_PLAYER_STAYS_RED_WHEN_HURT = 400; // in ms
     public static final int MENU_SCREEN_NUM_STARS = Utils.randomWithin(20, 40);
     public static final int FONT_OFFSET_ON_BUTTON_PRESS = 1; // in pixels
-    public static final float FADING_SPEED = 0.05f;
+    public static final float FADING_SPEED = .05f;
     public static final int HIGHSCORES_LINE_HEIGHT = 9;
     
 	// other
