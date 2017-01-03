@@ -1,6 +1,11 @@
 Jewel Thief - Changelog
 =========
 
+### Version 1.1.2 - January 2, 2017
+
+* Improved efficiency of rendering the highscore list by ignoring lines that are outside of the viewport
+* Fixed error with the about text not being affected when changing the game language
+
 ### Version 1.1.1 - January 1, 2017
 
 * Unknown players will be ignored in the highscores
