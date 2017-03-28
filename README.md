@@ -4,7 +4,7 @@
 
 [![version](https://img.shields.io/badge/version-1.1.2-2095ff.svg)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-GPL--3.0-2095ff.svg)](LICENSE.md)
-[![download](https://img.shields.io/badge/download-play store-2095ff.svg)](http://goo.gl/l1lngU)
+[![download](https://img.shields.io/badge/download-play-store-2095ff.svg)](http://goo.gl/l1lngU)
 
 The National Museum is in a tissy.
 The country's jewel collection has been stolen and scattered all over creation.
