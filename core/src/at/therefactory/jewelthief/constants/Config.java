@@ -88,7 +88,7 @@ public class Config {
 
 	// application
     public static final String DEFAULT_LOCALE = "en"; // en, de, es
-    public static final String VERSION_NAME = "1.1.2";
+    public static final String VERSION_NAME = "2017.5";
 	
     // ui
     public static final long TIME_PLAYER_STAYS_RED_WHEN_HURT = 400; // in ms

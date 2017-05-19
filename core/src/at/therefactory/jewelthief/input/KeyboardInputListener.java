@@ -33,6 +33,7 @@ class KeyboardInputListener implements TextInputListener {
     @Override
     public void input(String text) {
         if (text.length() <= PLAYERNAME_MAXLEN) {
+            text = text.trim().replaceAll(" ", "_");
             HttpServer.changeName(JewelThief.getInstance().getPreferences().getString("id"), text);
             if (text.length() == 0) {
                 JewelThief.getInstance().getPreferences().putInteger(PrefsKeys.MY_RANK, -1);
