@@ -3,7 +3,8 @@ Jewel Thief - Changelog
 
 ### Version 2017.5 - May 19, 2017
 
-* Fixed bugs in changing player name
+* Fixed bug with whitespaces when changing player name
+* Upgraded to libGDX version 1.9.6
 * Changed to new versioning pattern
 
 ### Version 1.1.2 - January 2, 2017
