@@ -1,6 +1,11 @@
 Jewel Thief - Changelog
 =========
 
+### Version 2017.5 - May 19, 2017
+
+* Fixed bugs in changing player name
+* Changed to new versioning pattern
+
 ### Version 1.1.2 - January 2, 2017
 
 * Improved efficiency of rendering the highscore list by ignoring lines that are outside of the viewport
