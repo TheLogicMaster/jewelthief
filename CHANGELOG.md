@@ -1,7 +1,7 @@
 Jewel Thief - Changelog
 =========
 
-### Version 2018.3 - February 2, 2018
+### Version 2018.3 - February 26, 2018
 
 * Updated to libGDX v1.9.8 with lots of fixes and improvements
 * Optimized for latest Android versions
