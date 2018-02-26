@@ -1,6 +1,6 @@
 android {
-    buildToolsVersion '25.0.2'
-    compileSdkVersion 25
+    buildToolsVersion '26.0.3'
+    compileSdkVersion 26
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -17,9 +17,9 @@ android {
     defaultConfig {
         applicationId "at.therefactory.jewelthief"
         minSdkVersion 8
-        targetSdkVersion 25
-        versionCode 113
-        versionName '2017.5'
+        targetSdkVersion 26
+        versionCode 114
+        versionName '2018.3'
     }
 }
 /*

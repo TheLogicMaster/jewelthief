@@ -32,10 +32,10 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '2017.5'
+    version = '2018.3'
     ext {
         appName = "jewelthief"
-        gdxVersion = '1.9.6'
+        gdxVersion = '1.9.8'
         roboVMVersion = '2.2.0'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.3'

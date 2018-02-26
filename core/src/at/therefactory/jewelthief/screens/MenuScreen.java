@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.JewelThief;
+import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.constants.I18NKeys;
 import at.therefactory.jewelthief.constants.PrefsKeys;
 import at.therefactory.jewelthief.input.MenuScreenInputAdapter;
@@ -60,10 +61,12 @@ import static at.therefactory.jewelthief.constants.I18NKeys.MUSIC;
 import static at.therefactory.jewelthief.constants.I18NKeys.OFF;
 import static at.therefactory.jewelthief.constants.I18NKeys.ON;
 import static at.therefactory.jewelthief.constants.I18NKeys.PLAYERNAME;
+import static at.therefactory.jewelthief.constants.I18NKeys.RATE;
 import static at.therefactory.jewelthief.constants.I18NKeys.RESET_HIGHSCORE;
 import static at.therefactory.jewelthief.constants.I18NKeys.SETTINGS;
 import static at.therefactory.jewelthief.constants.I18NKeys.SINGLEPLAYER;
 import static at.therefactory.jewelthief.constants.I18NKeys.SOUND;
+import static at.therefactory.jewelthief.constants.I18NKeys.SOUNDTRACK;
 import static at.therefactory.jewelthief.constants.I18NKeys.UPDATE;
 
 public class MenuScreen extends ScreenAdapter {
@@ -78,8 +81,10 @@ public class MenuScreen extends ScreenAdapter {
     public GrayButton buttonShowSettings;
     public GrayButton buttonShowAbout;
     public GrayButton buttonUpdateHighscores;
-    public final GrayButton buttonExitToMainMenu;
     public GrayButton buttonShowLicense;
+    public GrayButton buttonSoundtrack;
+    public GrayButton buttonRate;
+    public final GrayButton buttonExitToMainMenu;
 
     private final SpriteBatch batch;
     private final ShapeRenderer shapeRenderer;
@@ -98,6 +103,8 @@ public class MenuScreen extends ScreenAdapter {
     private Sprite spriteSkyline;
     private Sprite spriteThere;
     private Sprite spriteFactory;
+    private Sprite spriteStar;
+    private Sprite spriteDownload;
 //    private Sprite spriteBadge;
 
     private Sprite[] spritesStars;
@@ -114,6 +121,7 @@ public class MenuScreen extends ScreenAdapter {
     private String[] highscores;
     private boolean fetchingHighscores;
     private String aboutText;
+    private float elapsedTime;
 
     public MenuScreen(SpriteBatch batch, ShapeRenderer shapeRenderer, FitViewport viewport, OrthographicCamera camera) {
 
@@ -157,8 +165,16 @@ public class MenuScreen extends ScreenAdapter {
                 - buttonHeight / 2 - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
 
         // button for showing license
-        buttonShowLicense = new GrayButton(bundle.get(LICENSE), borderDist, WINDOW_HEIGHT - buttonHeight
+        buttonSoundtrack = new GrayButton(bundle.get(SOUNDTRACK), borderDist, WINDOW_HEIGHT - buttonHeight
                 / 2 - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
+
+        // button for viewing the soundtrack
+        buttonRate = new GrayButton(bundle.get(RATE), borderDist,
+                buttonSoundtrack.getY() - buttonSoundtrack.getHeight() - borderDist, buttonWidth / 2 + 5, buttonHeight / 2, true);
+
+        // button for rating the app
+        buttonShowLicense = new GrayButton(bundle.get(LICENSE), Config.WINDOW_WIDTH - 105 + borderDist,
+                buttonRate.getY(), buttonWidth / 2 + 5, buttonHeight / 2, true);
     }
 
     private void initButtonsMainMenu(short buttonWidth, short buttonHeight, int borderDist, short spaceBetweenButtons) {
@@ -213,6 +229,8 @@ public class MenuScreen extends ScreenAdapter {
     private void initSprites() {
         spriteThere = new Sprite(new Texture("there.png"));
         spriteFactory = new Sprite(new Texture("factory.png"));
+        spriteStar = new Sprite(new Texture("star.png"));
+        spriteDownload = new Sprite(new Texture("download.png"));
 
         spriteTitle = new Sprite(new Texture("title.png"));
         spriteTitle.setPosition(WINDOW_WIDTH / 2 - spriteTitle.getWidth() / 2, WINDOW_HEIGHT / 2 + 70
@@ -259,6 +277,7 @@ public class MenuScreen extends ScreenAdapter {
     }
 
     private void update(float delta) {
+        elapsedTime += delta;
         inputHandler.update(delta);
 
         // move spritesStars
@@ -283,9 +302,9 @@ public class MenuScreen extends ScreenAdapter {
         spriteSettings.setPosition(buttonShowSettings.getX() + buttonShowSettings.getWidth() / 2 - spriteSettings.getWidth() / 2
                 + buttonShowSettings.getPressedOffset(), 52 - buttonShowSettings.getPressedOffset());
         spriteSoldier.setPosition(buttonShowAbout.getX() + buttonShowAbout.getWidth() / 2 - spriteSoldier.getWidth() / 2
-                        + buttonShowAbout.getPressedOffset() - 1, 63 - buttonShowAbout.getPressedOffset());
+                + buttonShowAbout.getPressedOffset() - 1, 63 - buttonShowAbout.getPressedOffset());
         spritePearl.setPosition(buttonShowAbout.getX() + buttonShowAbout.getWidth() / 2 - spriteSoldier.getWidth() / 2
-                        + buttonShowAbout.getPressedOffset(), 50 - buttonShowAbout.getPressedOffset());
+                + buttonShowAbout.getPressedOffset(), 50 - buttonShowAbout.getPressedOffset());
     }
 
     @Override
@@ -312,8 +331,13 @@ public class MenuScreen extends ScreenAdapter {
 
         spriteSkyline.draw(batch);
 
-        if (!state.equals(MenuState.ShowHighscores) && showLicenseYOffset == 0)
-            spriteTitle.draw(batch);
+        if (!state.equals(MenuState.ShowHighscores) && showLicenseYOffset == 0) {
+            batch.draw(spriteTitle, spriteTitle.getX(), spriteTitle.getY(), 0, 0,
+                    spriteTitle.getWidth(), spriteTitle.getHeight(),
+                    Utils.oscilliate(elapsedTime, 0.9f, 1f, 3f),
+                    Utils.oscilliate(elapsedTime, 0.9f, 1f, -3f),
+                    Utils.oscilliate(elapsedTime, -2f, 2f, 3f));
+        }
         batch.end();
 
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -330,123 +354,133 @@ public class MenuScreen extends ScreenAdapter {
 //            batch.draw(spriteTheRefactory, 310, 70, 180, 14);
 //            batch.end();
 //        } else {
-            // buttons
-            if (state.equals(MenuState.ShowAbout) || state.equals(MenuState.ShowHighscores) || state.equals(MenuState.ShowSettings)) {
-                buttonExitToMainMenu.renderShape(shapeRenderer);
-                switch (getState()) {
-                    case ShowHighscores:
-                        buttonUpdateHighscores.renderShape(shapeRenderer);
-                        break;
-                    case ShowSettings:
-                        buttonToggleSound.renderShape(shapeRenderer);
-                        buttonToggleMusic.renderShape(shapeRenderer);
-                        buttonChangePlayername.renderShape(shapeRenderer);
-                        buttonChangeLanguage.renderShape(shapeRenderer);
-                        buttonResetHighscore.renderShape(shapeRenderer);
-                        break;
-                    case ShowAbout:
-                        buttonShowLicense.renderShape(shapeRenderer);
-                        break;
-                }
-            } else {
-                buttonStartSinglePlayerGame.renderShape(shapeRenderer);
-                buttonShowHighscores.renderShape(shapeRenderer);
-                buttonShowSettings.renderShape(shapeRenderer);
-                buttonShowAbout.renderShape(shapeRenderer);
-            }
-            shapeRenderer.end();
-
-            batch.begin();
-            if (state.equals(MenuState.ShowAbout) || state.equals(MenuState.ShowHighscores) ||state.equals(MenuState.ShowSettings)) {
-                buttonExitToMainMenu.renderCaption(batch);
-            }
+        // buttons
+        if (state.equals(MenuState.ShowAbout) || state.equals(MenuState.ShowHighscores) || state.equals(MenuState.ShowSettings)) {
+            buttonExitToMainMenu.renderShape(shapeRenderer);
             switch (getState()) {
                 case ShowHighscores:
-                    buttonUpdateHighscores.setCaption(bundle.get(UPDATE));
-                    buttonUpdateHighscores.renderCaption(batch);
-                    if (fetchingHighscores) {
-                        font.setColor(Color.WHITE);
-                        font.draw(batch, bundle.get(FETCHING) + "...", 15, 205);
-                    } else {
-                        if (highscores != null) {
-
-                            // lines of highscores
-                            for (int i = 0; i < highscores.length; i++) {
-                                font.setColor(i == getMyRank() ? Color.GREEN : Color.WHITE);
-                                float yOfHighscoreLine = (205 - i * HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
-                                if (yOfHighscoreLine < spriteSkyline.getY() // lines disappear when above spriteSkyline sprite
-                                		&& yOfHighscoreLine > 0) { // lines disappear when outside of the viewport
-                                    font.draw(batch, highscores[i], 15, yOfHighscoreLine);
-                                }
-                            }
-
-                            // scrollbar
-                            if (highscores.length > 0) {
-                                font.draw(batch, "^", WINDOW_WIDTH - 20, INITIAL_SCROLLBAR_POSITION_Y + 5);
-                                font.draw(batch, "#", WINDOW_WIDTH - 20, Math.min(INITIAL_SCROLLBAR_POSITION_Y, scrollbarPositionY));
-                                font.getData().setScale(1, -1);
-                                font.draw(batch, "^", WINDOW_WIDTH - 20, 10);
-                                font.getData().setScale(1, 1);
-                            }
-                        }
-                    }
+                    buttonUpdateHighscores.renderShape(shapeRenderer);
                     break;
                 case ShowSettings:
-                    // playername
-                    buttonChangePlayername.setCaption(prefs.getString(PrefsKeys.PLAYER_NAME).trim().length() == 0 ? "<"
-                            + bundle.get(PLAYERNAME) + ">" : bundle.get(PLAYERNAME) + ": " + prefs.getString(PrefsKeys.PLAYER_NAME));
-                    buttonChangePlayername.renderCaption(batch);
-                    font.setColor(Color.WHITE);
-
-                    // sound
-                    buttonToggleSound.setCaption(bundle.get(SOUND) + " " + bundle.get(IS) + " "
-                            + (prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? bundle.get(ON) : bundle.get(OFF)));
-                    buttonToggleSound.renderCaption(batch);
-
-                    // music
-                    buttonToggleMusic.setCaption(bundle.get(MUSIC) + " " + bundle.get(IS) + " "
-                            + (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? bundle.get(ON) : bundle.get(OFF)));
-                    buttonToggleMusic.renderCaption(batch);
-
-                    // language
-                    buttonChangeLanguage.renderCaption(batch);
-
-                    // reset highscore
-                    buttonResetHighscore.setCaption(bundle.get(RESET_HIGHSCORE));
-                    buttonResetHighscore.renderCaption(batch);
+                    buttonToggleSound.renderShape(shapeRenderer);
+                    buttonToggleMusic.renderShape(shapeRenderer);
+                    buttonChangePlayername.renderShape(shapeRenderer);
+                    buttonChangeLanguage.renderShape(shapeRenderer);
+                    buttonResetHighscore.renderShape(shapeRenderer);
                     break;
                 case ShowAbout:
-                    font.setColor(Color.WHITE);
-                    font.draw(batch, aboutText, 15, 100 + showLicenseYOffset);
-                    if (showLicenseYOffset > 0) {
-                        font.draw(batch, bundle.get(LICENSE_TEXT), 15, showLicenseYOffset + 2);
-                    }
-                    batch.draw(spriteThere, 145, showLicenseYOffset + 19, spriteThere.getWidth()/3, spriteThere.getHeight()/3);
-                    batch.draw(spriteFactory, 200, showLicenseYOffset + 19, spriteFactory.getWidth()/3, spriteFactory.getHeight()/3);
-                    buttonShowLicense.setCaption(bundle.get(LICENSE));
-                    buttonShowLicense.renderCaption(batch);
-                    break;
-                default:
-                    // buttons' icons
-                    spritePlayer.draw(batch);
-                    spriteRedPlayer.draw(batch);
-                    spriteBluePlayer.draw(batch);
-                    spritePearl.draw(batch);
-                    spriteSoldier.draw(batch);
-                    spriteSettings.draw(batch);
-
-                    // buttons themselves
-                    buttonStartSinglePlayerGame.setCaption(bundle.get(SINGLEPLAYER));
-                    buttonShowHighscores.setCaption(bundle.get(HIGHSCORES));
-                    buttonShowSettings.setCaption(bundle.get(SETTINGS));
-                    buttonShowAbout.setCaption(bundle.get(ABOUT));
-                    buttonStartSinglePlayerGame.renderCaption(batch);
-                    buttonShowHighscores.renderCaption(batch);
-                    buttonShowSettings.renderCaption(batch);
-                    buttonShowAbout.renderCaption(batch);
+                    buttonShowLicense.renderShape(shapeRenderer);
+                    buttonSoundtrack.renderShape(shapeRenderer);
+                    buttonRate.renderShape(shapeRenderer);
                     break;
             }
-            batch.end();
+        } else {
+            buttonStartSinglePlayerGame.renderShape(shapeRenderer);
+            buttonShowHighscores.renderShape(shapeRenderer);
+            buttonShowSettings.renderShape(shapeRenderer);
+            buttonShowAbout.renderShape(shapeRenderer);
+        }
+        shapeRenderer.end();
+
+        batch.begin();
+        if (state.equals(MenuState.ShowAbout) || state.equals(MenuState.ShowHighscores) || state.equals(MenuState.ShowSettings)) {
+            buttonExitToMainMenu.renderCaption(batch);
+        }
+        switch (getState()) {
+            case ShowHighscores:
+                buttonUpdateHighscores.setCaption(bundle.get(UPDATE));
+                buttonUpdateHighscores.renderCaption(batch);
+                if (fetchingHighscores) {
+                    font.setColor(Color.WHITE);
+                    font.draw(batch, bundle.get(FETCHING) + "...", 15, 205);
+                } else {
+                    if (highscores != null) {
+
+                        // lines of highscores
+                        for (int i = 0; i < highscores.length; i++) {
+                            font.setColor(i == getMyRank() ? Color.GREEN : Color.WHITE);
+                            float yOfHighscoreLine = (205 - i * HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
+                            if (yOfHighscoreLine < spriteSkyline.getY() // lines disappear when above spriteSkyline sprite
+                                    && yOfHighscoreLine > 0) { // lines disappear when outside of the viewport
+                                font.draw(batch, highscores[i], 15, yOfHighscoreLine);
+                            }
+                        }
+
+                        // scrollbar
+                        if (highscores.length > 0) {
+                            font.draw(batch, "^", WINDOW_WIDTH - 20, INITIAL_SCROLLBAR_POSITION_Y + 5);
+                            font.draw(batch, "#", WINDOW_WIDTH - 20, Math.min(INITIAL_SCROLLBAR_POSITION_Y, scrollbarPositionY));
+                            font.getData().setScale(1, -1);
+                            font.draw(batch, "^", WINDOW_WIDTH - 20, 10);
+                            font.getData().setScale(1, 1);
+                        }
+                    }
+                }
+                break;
+            case ShowSettings:
+                // playername
+                buttonChangePlayername.setCaption(prefs.getString(PrefsKeys.PLAYER_NAME).trim().length() == 0 ? "<"
+                        + bundle.get(PLAYERNAME) + ">" : bundle.get(PLAYERNAME) + ": " + prefs.getString(PrefsKeys.PLAYER_NAME));
+                buttonChangePlayername.renderCaption(batch);
+                font.setColor(Color.WHITE);
+
+                // sound
+                buttonToggleSound.setCaption(bundle.get(SOUND) + " " + bundle.get(IS) + " "
+                        + (prefs.getBoolean(PrefsKeys.ENABLE_SOUND) ? bundle.get(ON) : bundle.get(OFF)));
+                buttonToggleSound.renderCaption(batch);
+
+                // music
+                buttonToggleMusic.setCaption(bundle.get(MUSIC) + " " + bundle.get(IS) + " "
+                        + (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC) ? bundle.get(ON) : bundle.get(OFF)));
+                buttonToggleMusic.renderCaption(batch);
+
+                // language
+                buttonChangeLanguage.renderCaption(batch);
+
+                // reset highscore
+                buttonResetHighscore.setCaption(bundle.get(RESET_HIGHSCORE));
+                buttonResetHighscore.renderCaption(batch);
+                break;
+            case ShowAbout:
+                font.setColor(Color.WHITE);
+                font.draw(batch, aboutText, 15, 100 + showLicenseYOffset);
+                if (showLicenseYOffset > 0) {
+                    font.draw(batch, bundle.get(LICENSE_TEXT), 15, showLicenseYOffset + 2);
+                }
+                batch.draw(spriteThere, 145, showLicenseYOffset + 19, spriteThere.getWidth() / 3, spriteThere.getHeight() / 3);
+                batch.draw(spriteFactory, 200, showLicenseYOffset + 19, spriteFactory.getWidth() / 3, spriteFactory.getHeight() / 3);
+                buttonShowLicense.setCaption(bundle.get(LICENSE));
+                buttonShowLicense.renderCaption(batch);
+                buttonSoundtrack.setCaption(bundle.get(SOUNDTRACK));
+                buttonSoundtrack.renderCaption(batch);
+                buttonRate.setCaption(bundle.get(RATE));
+                buttonRate.renderCaption(batch);
+                Utils.oscilliate(batch, spriteDownload, buttonSoundtrack.getX() + buttonSoundtrack.getWidth() - 20, buttonSoundtrack.getY() - 10,
+                        spriteDownload.getWidth() / 2f, spriteDownload.getHeight() / 2f, elapsedTime);
+                Utils.oscilliate(batch, spriteStar, buttonRate.getX() + buttonRate.getWidth() - 20, buttonRate.getY() - 10,
+                        spriteStar.getWidth() / 2f, spriteStar.getHeight() / 2f, elapsedTime);
+                break;
+            default:
+                // buttons' icons
+                spritePlayer.draw(batch);
+                spriteRedPlayer.draw(batch);
+                spriteBluePlayer.draw(batch);
+                spritePearl.draw(batch);
+                spriteSoldier.draw(batch);
+                spriteSettings.draw(batch);
+
+                // buttons themselves
+                buttonStartSinglePlayerGame.setCaption(bundle.get(SINGLEPLAYER));
+                buttonShowHighscores.setCaption(bundle.get(HIGHSCORES));
+                buttonShowSettings.setCaption(bundle.get(SETTINGS));
+                buttonShowAbout.setCaption(bundle.get(ABOUT));
+                buttonStartSinglePlayerGame.renderCaption(batch);
+                buttonShowHighscores.renderCaption(batch);
+                buttonShowSettings.renderCaption(batch);
+                buttonShowAbout.renderCaption(batch);
+                break;
+        }
+        batch.end();
 //        }
     }
 
@@ -462,6 +496,8 @@ public class MenuScreen extends ScreenAdapter {
         buttonChangePlayername.release();
         buttonResetHighscore.release();
         buttonShowLicense.release();
+        buttonSoundtrack.release();
+        buttonRate.release();
     }
 
     public void setFetchingHighscores(boolean fetchingHighscores) {
@@ -537,7 +573,7 @@ public class MenuScreen extends ScreenAdapter {
     public void pressOrReleaseButtons(Vector3 screenCoord) {
         switch (getState()) {
             case ShowAbout:
-                Utils.pressOrReleaseButtons(screenCoord, buttonExitToMainMenu, buttonShowLicense);
+                Utils.pressOrReleaseButtons(screenCoord, buttonExitToMainMenu, buttonShowLicense, buttonSoundtrack, buttonRate);
                 break;
             case ShowHighscores:
                 Utils.pressOrReleaseButtons(screenCoord, buttonExitToMainMenu, buttonUpdateHighscores);

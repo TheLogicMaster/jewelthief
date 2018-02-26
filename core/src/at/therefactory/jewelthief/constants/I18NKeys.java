@@ -29,6 +29,8 @@ public class I18NKeys {
     public static final String HIGHSCORES = "highscores";
     public static final String SETTINGS = "settings";
     public static final String ABOUT = "about";
+    public static final String SOUNDTRACK = "soundtrack";
+    public static final String RATE = "rate";
 
     // about
     public static final String LICENSE_TEXT = "license_text";

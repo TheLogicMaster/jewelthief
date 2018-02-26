@@ -34,6 +34,8 @@ import at.therefactory.jewelthief.net.HttpServer;
 import at.therefactory.jewelthief.screens.MenuScreen;
 
 import static at.therefactory.jewelthief.constants.Config.HIGHSCORES_LINE_HEIGHT;
+import static at.therefactory.jewelthief.constants.Config.URL_TO_PLAY_STORE;
+import static at.therefactory.jewelthief.constants.Config.URL_TO_SOUNDTRACK;
 import static at.therefactory.jewelthief.constants.I18NKeys.HIGHSCORE_IS_RESET;
 import static at.therefactory.jewelthief.constants.I18NKeys.PLEASE_ENTER_YOUR_NAME;
 import static at.therefactory.jewelthief.constants.I18NKeys.TAP_AGAIN_TO_RESET_HIGHSCORE;
@@ -132,6 +134,12 @@ public class MenuScreenInputAdapter extends InputAdapter {
                 } else {
                     menuScreen.setShowLicenseYOffset(0);
                 }
+            } else if (menuScreen.buttonSoundtrack.isPressed()) {
+                menuScreen.buttonSoundtrack.release();
+                Gdx.net.openURI(URL_TO_SOUNDTRACK);
+            } else if (menuScreen.buttonRate.isPressed()) {
+                menuScreen.buttonRate.release();
+                Gdx.net.openURI(URL_TO_PLAY_STORE);
             }
         } else if (menuScreen.getState().equals(MenuScreen.MenuState.ShowHighscores)) {
             if (menuScreen.buttonUpdateHighscores.isPressed()) {

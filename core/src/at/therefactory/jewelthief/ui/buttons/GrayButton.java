@@ -45,7 +45,7 @@ public class GrayButton {
     float xCaptionOffset;
     float yCaptionOffset;
 
-	private boolean adaptWidthToCaption;
+    private boolean adaptWidthToCaption;
     private final GlyphLayout layout;
     final BitmapFont font;
     private Color captionColor;
@@ -64,13 +64,13 @@ public class GrayButton {
 
         // horizontally and vertically align to center
         layout = new GlyphLayout(font, caption);
-        xCaptionOffset = width/2 - layout.width/2;
-        yCaptionOffset = height/2 + layout.height/2;
+        xCaptionOffset = width / 2 - layout.width / 2;
+        yCaptionOffset = height / 2 + layout.height / 2;
     }
-    
+
     public GrayButton(String caption, float x, float y, float width, float height, boolean adaptWidthToCaption) {
-    	this(caption, x, y, width, height);
-    	this.adaptWidthToCaption = adaptWidthToCaption;
+        this(caption, x, y, width, height);
+        this.adaptWidthToCaption = adaptWidthToCaption;
     }
 
     public float getX() {
@@ -128,10 +128,10 @@ public class GrayButton {
     public void setCaption(String caption) {
         this.caption = caption;
         layout.setText(font, caption);
-        xCaptionOffset = width/2 - layout.width/2;
-    	if (adaptWidthToCaption) {
-	        width = layout.width + 20 + borderSize *2;
-    	}
+        xCaptionOffset = width / 2 - layout.width / 2;
+        if (adaptWidthToCaption) {
+            width = layout.width + 20 + borderSize * 2;
+        }
     }
 
     public float getPressedOffset() {

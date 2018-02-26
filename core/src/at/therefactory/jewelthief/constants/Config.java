@@ -88,7 +88,7 @@ public class Config {
 
 	// application
     public static final String DEFAULT_LOCALE = "en"; // en, de, es
-    public static final String VERSION_NAME = "2017.5";
+    public static final String VERSION_NAME = "2018.3";
 	
     // ui
     public static final long TIME_PLAYER_STAYS_RED_WHEN_HURT = 400; // in ms
@@ -102,4 +102,6 @@ public class Config {
 	public static final int NUM_HTTP_REQUEST_TRIES = 3;
 	public static final float INITIAL_SCROLLBAR_POSITION_Y = 200;
 	public static final String EMAIL = "christian.detamble@outlook.com";
+	public static final String URL_TO_SOUNDTRACK = "https://goo.gl/1MxkJ7";
+	public static final String URL_TO_PLAY_STORE = "http://goo.gl/l1lngU";
 }
