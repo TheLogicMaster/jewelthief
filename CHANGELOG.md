@@ -1,6 +1,14 @@
 Jewel Thief - Changelog
 =========
 
+### Version 2018.3 - February 2, 2018
+
+* Updated to libGDX v1.9.8 with lots of fixes and improvements
+* Optimized for latest Android versions
+* Added button to download the Soundtrack
+* Added button to rate the app
+* Minor visual improvements
+
 ### Version 2017.5 - May 19, 2017
 
 * Fixed bug with whitespaces when changing player name
