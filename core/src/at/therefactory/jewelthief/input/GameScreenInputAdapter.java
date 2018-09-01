@@ -30,6 +30,7 @@ import at.therefactory.jewelthief.JewelThief;
 import at.therefactory.jewelthief.misc.Utils;
 import at.therefactory.jewelthief.screens.GameScreen;
 import at.therefactory.jewelthief.ui.Hud;
+import at.therefactory.jewelthief.ui.buttons.GrayButton;
 
 import static at.therefactory.jewelthief.constants.Config.DEBUG_MODE;
 
@@ -45,7 +46,8 @@ public class GameScreenInputAdapter extends InputAdapter {
     private float deltaY;
     private short numTouches;
     private boolean playerDragging;
-    private boolean allowButtonClick; // prevent button click when dialog appears while still dragging player around
+    private GrayButton pressedButton;
+    private GrayButton[] buttons;
 
     public GameScreenInputAdapter(Game game, Viewport viewport, Hud hud) {
         this.game = game;
@@ -53,8 +55,16 @@ public class GameScreenInputAdapter extends InputAdapter {
         this.hud = hud;
         playerDragging = false;
         numTouches = 0;
-        allowButtonClick = false;
         Gdx.input.setCatchBackKey(true);
+
+        buttons = new GrayButton[]{
+                game.getButtonYes(),
+                game.getButtonNo(),
+                game.getButtonRestart(),
+                game.getButtonPlayAgain(),
+                game.getButtonExit(),
+                hud.getButtonShowMenu()
+        };
     }
 
     @Override
@@ -106,16 +116,14 @@ public class GameScreenInputAdapter extends InputAdapter {
         super.touchUp(screenX, screenY, pointer, button);
         numTouches = (short) Math.max(0, numTouches - 1);
         playerDragging = false;
-        releaseAllButtons();
 
         // check if button has been clicked
         Vector3 touchCoordinates = viewport.unproject(new Vector3(screenX, screenY, 0));
-        if (!game.isMenuShown() && game.getPlayer().getNumMen() > 0
-                && Utils.within(touchCoordinates, hud.getButtonShowMenu())) {
-            game.showMenu();
-        } else if (game.getPlayer().getNumMen() <= 0) {
-            if (allowButtonClick) {
-                allowButtonClick = false;
+        if (pressedButton != null && pressedButton.contains(touchCoordinates)) {
+            if (!game.isMenuShown() && game.getPlayer().getNumMen() > 0
+                    && Utils.within(touchCoordinates, hud.getButtonShowMenu())) {
+                game.showMenu();
+            } else if (game.getPlayer().getNumMen() <= 0) {
 
                 // play again? yes
                 if (Utils.within(touchCoordinates, game.getButtonPlayAgain())) {
@@ -125,23 +133,23 @@ public class GameScreenInputAdapter extends InputAdapter {
                 else if (Utils.within(touchCoordinates, game.getButtonExit())) {
                     JewelThief.getInstance().switchToMainMenu();
                 }
-            } else {
-                allowButtonClick = true;
-            }
-        } else if (game.isMenuShown()) {
-            // yes
-            if (Utils.within(touchCoordinates, game.getButtonYes())) {
-                JewelThief.getInstance().switchToMainMenu();
-            }
-            // no
-            else if (Utils.within(touchCoordinates, game.getButtonNo())) {
-                game.hideMenu();
-            }
-            // restart
-            else if (Utils.within(touchCoordinates, game.getButtonRestart())) {
-                game.resetGame();
+            } else if (game.isMenuShown()) {
+                // yes
+                if (Utils.within(touchCoordinates, game.getButtonYes())) {
+                    JewelThief.getInstance().switchToMainMenu();
+                }
+                // no
+                else if (Utils.within(touchCoordinates, game.getButtonNo())) {
+                    game.hideMenu();
+                }
+                // restart
+                else if (Utils.within(touchCoordinates, game.getButtonRestart())) {
+                    game.resetGame();
+                }
             }
         }
+        releaseAllButtons();
+        pressedButton = null;
         return true;
     }
 
@@ -157,10 +165,9 @@ public class GameScreenInputAdapter extends InputAdapter {
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         super.touchDragged(screenX, screenY, pointer);
+
         Vector3 touchCoordinates = viewport.unproject(new Vector3(screenX, screenY, 0));
-        if (game.isPaused()) {
-            pressOrReleaseButtonAt(touchCoordinates);
-        } else {
+        if (!game.isPaused()) {
             if (playerDragging && numTouches == 1) {
 
                 // do not exceed right border
@@ -188,6 +195,7 @@ public class GameScreenInputAdapter extends InputAdapter {
     }
 
     private void pressOrReleaseButtonAt(Vector3 screenCoord) {
+
         // "play again?" dialog after winning game or no men left
         if (game.getPlayer().getNumMen() <= 0) {
             Utils.pressOrReleaseButton(screenCoord, game.getButtonPlayAgain());
@@ -208,6 +216,13 @@ public class GameScreenInputAdapter extends InputAdapter {
                 Utils.pressOrReleaseButton(screenCoord, hud.getButtonShowMenu());
             } else if (game.isGetReadyShown()) {
                 game.play();
+            }
+        }
+
+        for (GrayButton grayButton : buttons) {
+            if (grayButton != null && grayButton.isPressed()) {
+                pressedButton = grayButton;
+                break;
             }
         }
     }

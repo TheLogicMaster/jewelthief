@@ -73,6 +73,9 @@ public class LogoScreen extends ScreenAdapter {
         spriteThere = new Sprite(new Texture("there.png"));
         spriteFactory = new Sprite(new Texture("factory.png"));
         spriteLibGdxLogo = new Sprite(new Texture("libgdx.png"));
+        spriteLibGdxLogo.setSize(spriteLibGdxLogo.getWidth() / 2, spriteLibGdxLogo.getHeight() / 2);
+        spriteLibGdxLogo.setPosition(WINDOW_WIDTH / 2 - spriteLibGdxLogo.getWidth() / 2,
+                WINDOW_HEIGHT / 2 - spriteLibGdxLogo.getHeight() / 2);
 
         AssetManager am = JewelThief.getInstance().getAssetManager();
         am.load("audio/sounds/keyboard.ogg", Sound.class);
@@ -92,7 +95,7 @@ public class LogoScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
         if (!libGdxLogoFinished) {
-            Gdx.gl.glClearColor(1, 1, 1, 1);
+            Gdx.gl.glClearColor(1 - alpha, 1 - alpha, 1 - alpha, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
             updateAndRenderLibGdxLogo(delta);
         } else {
@@ -108,13 +111,10 @@ public class LogoScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        batch.draw(spriteLibGdxLogo, WINDOW_WIDTH/2 - spriteLibGdxLogo.getWidth()/4,
-                WINDOW_HEIGHT/2 - spriteLibGdxLogo.getHeight()/4,
-                spriteLibGdxLogo.getWidth()/2,
-                spriteLibGdxLogo.getHeight()/2);
+        spriteLibGdxLogo.draw(batch, 1 - alpha);
 
-        JewelThief.getInstance().getFadeSprite().setAlpha(alpha);
-        JewelThief.getInstance().getFadeSprite().draw(batch);
+        //JewelThief.getInstance().getFadeSprite().setAlpha(alpha);
+        //JewelThief.getInstance().getFadeSprite().draw(batch);
 
         batch.end();
     }
@@ -131,16 +131,16 @@ public class LogoScreen extends ScreenAdapter {
 
         // fade in
         if (timestamp == 0 && alpha > 0) {
-            alpha = Math.max(0, alpha - FADING_SPEED/4);
+            alpha = Math.max(0, alpha - FADING_SPEED / 4);
         } else {
 
             // wait a bit
             if (timestamp == 0)
                 timestamp = System.currentTimeMillis();
             if (System.currentTimeMillis() - 1200 > timestamp) {
-                
+
                 // fade out
-                alpha = Math.min(1, alpha + FADING_SPEED/4);
+                alpha = Math.min(1, alpha + FADING_SPEED / 4);
 
                 if (alpha == 1) {
                     libGdxLogoFinished = true;
@@ -174,7 +174,7 @@ public class LogoScreen extends ScreenAdapter {
         spriteFactory.setX(spriteThere.getX() + spriteThere.getWidth() + 1 - deltaXFactory);
         spriteFactory.setY(spriteThere.getY());
         spriteFactory.draw(batch);
-        
+
         JewelThief.getInstance().getFadeSprite().setAlpha(alpha);
         JewelThief.getInstance().getFadeSprite().draw(batch);
         batch.end();
@@ -251,13 +251,13 @@ public class LogoScreen extends ScreenAdapter {
                 } else if (numFrames > 32 * typeSpeedForOneLetter && numFrames <= 37 * typeSpeedForOneLetter) {
                     //blinkCursor();
                     showCursor = false;
-                    
+
                 }
 
                 // fade out
                 else if (numFrames > 37 * typeSpeedForOneLetter) {
                     showCursor = false;
-                    alpha = Math.min(1, alpha + FADING_SPEED/4);
+                    alpha = Math.min(1, alpha + FADING_SPEED / 4);
                 }
 
                 if (alpha == 1) {

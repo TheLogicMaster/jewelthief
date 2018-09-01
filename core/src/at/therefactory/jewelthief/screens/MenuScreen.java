@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import at.therefactory.jewelthief.JewelThief;
+import at.therefactory.jewelthief.MediaManager;
 import at.therefactory.jewelthief.constants.Config;
 import at.therefactory.jewelthief.constants.I18NKeys;
 import at.therefactory.jewelthief.constants.PrefsKeys;
@@ -84,7 +85,9 @@ public class MenuScreen extends ScreenAdapter {
     public GrayButton buttonShowLicense;
     public GrayButton buttonSoundtrack;
     public GrayButton buttonRate;
-    public final GrayButton buttonExitToMainMenu;
+    public GrayButton buttonExitToMainMenu;
+
+    public GrayButton[] buttons;
 
     private final SpriteBatch batch;
     private final ShapeRenderer shapeRenderer;
@@ -119,9 +122,19 @@ public class MenuScreen extends ScreenAdapter {
     private I18NBundle bundle;
 
     private String[] highscores;
-    private boolean fetchingHighscores;
+    private boolean isFetchingHighscores;
     private String aboutText;
     private float elapsedTime;
+    private float yOfHighscoreLine;
+
+    private String[] soundsToPreload = new String[]{
+            "audio/sounds/applause.ogg",
+            "audio/sounds/coin.ogg",
+            "audio/sounds/collect.ogg",
+            "audio/sounds/finger_cymbal_hit.ogg",
+            "audio/sounds/mouse_click.ogg",
+            "audio/sounds/one_blow_from_party_horn.ogg",
+    };
 
     public MenuScreen(SpriteBatch batch, ShapeRenderer shapeRenderer, FitViewport viewport, OrthographicCamera camera) {
 
@@ -153,6 +166,23 @@ public class MenuScreen extends ScreenAdapter {
 
         positionImagesOnButtons();
         setState(MenuState.ShowMenu);
+
+        buttons = new GrayButton[]{
+                buttonToggleSound,
+                buttonToggleMusic,
+                buttonChangeLanguage,
+                buttonResetHighscore,
+                buttonChangePlayername,
+                buttonStartSinglePlayerGame,
+                buttonShowHighscores,
+                buttonShowSettings,
+                buttonShowAbout,
+                buttonUpdateHighscores,
+                buttonShowLicense,
+                buttonSoundtrack,
+                buttonRate,
+                buttonExitToMainMenu,
+        };
     }
 
     private void updateAboutText(I18NBundle bundle) {
@@ -259,6 +289,10 @@ public class MenuScreen extends ScreenAdapter {
         Gdx.input.setCatchBackKey(true);
         scrollbarPositionY = INITIAL_SCROLLBAR_POSITION_Y;
 
+        for (String assetPath : soundsToPreload) {
+            MediaManager.preloadSound(assetPath);
+        }
+
         // play background music
         if (prefs.getBoolean(PrefsKeys.ENABLE_MUSIC)) {
             JewelThief.getInstance().playMusicFile(false);
@@ -291,7 +325,7 @@ public class MenuScreen extends ScreenAdapter {
         }
     }
 
-    private void positionImagesOnButtons() {
+    public void positionImagesOnButtons() {
         spritePlayer.setPosition(buttonStartSinglePlayerGame.getX() + buttonStartSinglePlayerGame.getWidth() / 2 - spritePlayer.getWidth() / 2
                 + buttonStartSinglePlayerGame.getPressedOffset(), buttonStartSinglePlayerGame.getY() + buttonStartSinglePlayerGame.getHeight() / 2
                 - 5 - buttonStartSinglePlayerGame.getPressedOffset());
@@ -360,6 +394,9 @@ public class MenuScreen extends ScreenAdapter {
             switch (getState()) {
                 case ShowHighscores:
                     buttonUpdateHighscores.renderShape(shapeRenderer);
+                    if (!isFetchingHighscores) {
+                        renderMedals();
+                    }
                     break;
                 case ShowSettings:
                     buttonToggleSound.renderShape(shapeRenderer);
@@ -390,7 +427,7 @@ public class MenuScreen extends ScreenAdapter {
             case ShowHighscores:
                 buttonUpdateHighscores.setCaption(bundle.get(UPDATE));
                 buttonUpdateHighscores.renderCaption(batch);
-                if (fetchingHighscores) {
+                if (isFetchingHighscores) {
                     font.setColor(Color.WHITE);
                     font.draw(batch, bundle.get(FETCHING) + "...", 15, 205);
                 } else {
@@ -399,7 +436,7 @@ public class MenuScreen extends ScreenAdapter {
                         // lines of highscores
                         for (int i = 0; i < highscores.length; i++) {
                             font.setColor(i == getMyRank() ? Color.GREEN : Color.WHITE);
-                            float yOfHighscoreLine = (205 - i * HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
+                            yOfHighscoreLine = (205 - i * HIGHSCORES_LINE_HEIGHT + inputHandler.getDeltaY());
                             if (yOfHighscoreLine < spriteSkyline.getY() // lines disappear when above spriteSkyline sprite
                                     && yOfHighscoreLine > 0) { // lines disappear when outside of the viewport
                                 font.draw(batch, highscores[i], 15, yOfHighscoreLine);
@@ -484,24 +521,42 @@ public class MenuScreen extends ScreenAdapter {
 //        }
     }
 
+    private void renderMedals() {
+        float radius = 3;
+        float x = 7;
+        float y = yOfHighscoreLine + highscores.length * HIGHSCORES_LINE_HEIGHT - 3 - HIGHSCORES_LINE_HEIGHT;
+
+        if (highscores.length >= 1) {
+            if (y + HIGHSCORES_LINE_HEIGHT / 2f < spriteSkyline.getY() && y > 0) {
+                shapeRenderer.setColor(Color.GOLD);
+                shapeRenderer.circle(x, y, radius);
+            }
+        }
+
+        if (highscores.length >= 2) {
+            y -= HIGHSCORES_LINE_HEIGHT;
+            if (y + HIGHSCORES_LINE_HEIGHT / 2f < spriteSkyline.getY() && y > 0) {
+                shapeRenderer.setColor(Color.GRAY);
+                shapeRenderer.circle(x, y, radius);
+            }
+        }
+        if (highscores.length >= 3) {
+            y -= HIGHSCORES_LINE_HEIGHT;
+            if (y + HIGHSCORES_LINE_HEIGHT / 2f < spriteSkyline.getY() && y > 0) {
+                shapeRenderer.setColor(Color.BROWN);
+                shapeRenderer.circle(x, y, radius);
+            }
+        }
+    }
+
     public void releaseAllButtons() {
-        buttonStartSinglePlayerGame.release();
-        buttonShowHighscores.release();
-        buttonShowSettings.release();
-        buttonShowAbout.release();
-        buttonExitToMainMenu.release();
-        buttonUpdateHighscores.release();
-        buttonToggleSound.release();
-        buttonToggleMusic.release();
-        buttonChangePlayername.release();
-        buttonResetHighscore.release();
-        buttonShowLicense.release();
-        buttonSoundtrack.release();
-        buttonRate.release();
+        for (GrayButton button : buttons) {
+            button.release();
+        }
     }
 
     public void setFetchingHighscores(boolean fetchingHighscores) {
-        this.fetchingHighscores = fetchingHighscores;
+        this.isFetchingHighscores = fetchingHighscores;
     }
 
     public int getMyRank() {

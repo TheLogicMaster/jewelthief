@@ -32,7 +32,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '2018.3'
+    version = '2018.9'
     ext {
         appName = "jewelthief"
         gdxVersion = '1.9.8'

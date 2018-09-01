@@ -311,7 +311,8 @@ public class Game {
             if (Intersector.overlapConvexPolygons(player.getPolygon(), jewel.getPolygon())) {
                 jewels.removeIndex(i);
                 if (soundEnabled) {
-                    soundCollectJewel.play(.6f);
+                    long id = soundCollectJewel.play(.6f);
+                    soundCollectJewel.setPitch(id, Utils.randomWithin(1f, 1.25f));
                 }
                 player.incrementNumCollectedJewels();
                 if (player.getNumCollectedJewels() % PLUS_ONE_MAN_INTERVAL == 0)

@@ -152,8 +152,7 @@ public class Utils {
     /**
      * Fires the "pressed" state of the given buttons if the given vector is enclosed by its area,
      * and releases the buttons otherwise.
-     *
-     * @param vec3
+     *  @param vec3
      * @param buttons
      */
     public static void pressOrReleaseButtons(Vector3 vec3, GrayButton... buttons) {

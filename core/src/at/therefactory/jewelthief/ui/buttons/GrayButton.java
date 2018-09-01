@@ -24,8 +24,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 
 import at.therefactory.jewelthief.JewelThief;
+import at.therefactory.jewelthief.misc.Utils;
 
 import static at.therefactory.jewelthief.constants.Colors.BUTTON;
 import static at.therefactory.jewelthief.constants.Colors.BUTTON_BORDER_DARK;
@@ -150,4 +152,7 @@ public class GrayButton {
         return yCaptionOffset;
     }
 
+    public boolean contains(Vector3 vec3) {
+        return Utils.within(vec3.x, x, x + width) && Utils.within(vec3.y, y, y + height);
+    }
 }
