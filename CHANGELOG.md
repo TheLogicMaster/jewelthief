@@ -1,6 +1,13 @@
 Jewel Thief - Changelog
 =========
 
+### Version 2018.9 - September 1, 2018
+
+* Fixed audio bugs
+* Improved button behaviors
+* Optimized for latest Android versions
+* Optimized for tablets
+
 ### Version 2018.3 - February 26, 2018
 
 * Updated to libGDX v1.9.8 with lots of fixes and improvements
