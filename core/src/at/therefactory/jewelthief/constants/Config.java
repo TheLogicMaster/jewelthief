@@ -88,20 +88,20 @@ public class Config {
 
 	// application
     public static final String DEFAULT_LOCALE = "en"; // en, de, es
-    public static final String VERSION_NAME = "2018.3";
+    public static final String VERSION_NAME = "2018.9";
 	
     // ui
     public static final long TIME_PLAYER_STAYS_RED_WHEN_HURT = 400; // in ms
     public static final int MENU_SCREEN_NUM_STARS = Utils.randomWithin(20, 40);
     public static final int FONT_OFFSET_ON_BUTTON_PRESS = 1; // in pixels
     public static final float FADING_SPEED = .05f;
-    public static final int HIGHSCORES_LINE_HEIGHT = 9;
+    public static final float HIGHSCORES_LINE_HEIGHT = 9;
     
 	// other
 	public static final int PLAYERNAME_MAXLEN = 20;
 	public static final int NUM_HTTP_REQUEST_TRIES = 3;
 	public static final float INITIAL_SCROLLBAR_POSITION_Y = 200;
 	public static final String EMAIL = "christian.detamble@outlook.com";
-	public static final String URL_TO_SOUNDTRACK = "https://goo.gl/1MxkJ7";
-	public static final String URL_TO_PLAY_STORE = "http://goo.gl/l1lngU";
+	public static final String URL_TO_SOUNDTRACK = "https://youtu.be/KCuPMm8N57I";
+	public static final String URL_TO_PLAY_STORE = "https://play.google.com/store/apps/details?id=at.therefactory.jewelthief";
 }

@@ -104,7 +104,7 @@ public class JewelThief extends Game {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
-        viewport =  new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
+        viewport = new FitViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
         camera.position.set(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
         camera.update();
 
@@ -242,8 +242,9 @@ public class JewelThief extends Game {
     }
 
     public void playButtonClickSound() {
-        if (preferences.getBoolean(PrefsKeys.ENABLE_SOUND))
+        if (preferences.getBoolean(PrefsKeys.ENABLE_SOUND)) {
             soundClick.play();
+        }
     }
 
     public Sprite getFadeSprite() {
@@ -253,6 +254,7 @@ public class JewelThief extends Game {
     /**
      * Either continues the music playback of a previously paused music file or proceeds to the next music file depending on the proceedToNext flag.
      * If there was no previous music file, a new music file is chosen randomly.
+     *
      * @param proceedToNext If set to true, a new music file is chosen randomly. If set to false, the previously paused file is being resumed.
      */
     public void playMusicFile(boolean proceedToNext) {
@@ -270,8 +272,7 @@ public class JewelThief extends Game {
 
         if (musicFiles.length == 0) {
             Gdx.app.error(getClass().getName(), "Could not find any music files!");
-        }
-        else {
+        } else {
             // select a music file to play
             if (currentMusicFile == -1) {
                 // if there is no previous music file, choose a new one randomly
@@ -346,8 +347,10 @@ public class JewelThief extends Game {
     }
 
     public void playCymbalSound() {
-        if (preferences.getBoolean(PrefsKeys.ENABLE_SOUND))
-            soundCymbal.play();
+        if (preferences.getBoolean(PrefsKeys.ENABLE_SOUND)) {
+            long id = soundCymbal.play();
+            soundClick.setPitch(id, 0.5f + Utils.randomWithin(0f, 1.5f));
+        }
     }
 
     void renderFireworksEffect(SpriteBatch batch, float delta) {
