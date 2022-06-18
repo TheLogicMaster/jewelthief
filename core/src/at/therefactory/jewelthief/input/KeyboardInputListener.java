@@ -36,7 +36,7 @@ class KeyboardInputListener implements TextInputListener {
             text = text.trim().replaceAll(" ", "_");
             HttpServer.changeName(JewelThief.getInstance().getPreferences().getString("id"), text);
             if (text.length() == 0) {
-                JewelThief.getInstance().getPreferences().putInteger(PrefsKeys.MY_RANK, -1);
+                JewelThief.getInstance().getPreferences().putInteger(PrefsKeys.MY_RANK, -1).flush();
             }
         } else {
             JewelThief.getInstance().toast(JewelThief.getInstance().getBundle().format(I18NKeys.NAME_MUST_BE_SHORTER_THAN, PLAYERNAME_MAXLEN + 1), true);

@@ -17,4 +17,4 @@
  * along with Jewel Thief.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include 'desktop', 'android', 'core'
+include 'desktop', /*'android',*/ 'core', 'switch'

@@ -186,7 +186,11 @@ public class MenuScreen extends ScreenAdapter {
     }
 
     private void updateAboutText(I18NBundle bundle) {
-        aboutText = bundle.format(ABOUT_TEXT, PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()); // calls to format in update method cause memory leak
+//        aboutText = bundle.format(ABOUT_TEXT, PLUS_ONE_MAN_INTERVAL, JewelThief.getInstance().getVersionName()); // calls to format in update method cause memory leak
+        aboutText = "Collect all jewels as fast as possible and avoid guards and borders.\nYou get an extra man with every " + PLUS_ONE_MAN_INTERVAL
+            + "th jewel you collect.\nTip: Use only one finger to move around.\n\nJewel Thief was a game made by Paul Ligeski from ServantWare in 1991.\n"
+            + "This app is a re-implementation for modern hardware using the original\nsprites and backgrounds.\n\nVersion " + JewelThief.getInstance().getVersionName()
+            + " (SwitchGDX port by TheLogicMaster)\n\nCrafted with <3 in                   in Barcelona 2016.";
     }
 
     private void initButtonsHighscores(short buttonWidth, short buttonHeight, int borderDist) {
@@ -484,8 +488,8 @@ public class MenuScreen extends ScreenAdapter {
                 if (showLicenseYOffset > 0) {
                     font.draw(batch, bundle.get(LICENSE_TEXT), 15, showLicenseYOffset + 2);
                 }
-                batch.draw(spriteThere, 145, showLicenseYOffset + 19, spriteThere.getWidth() / 3, spriteThere.getHeight() / 3);
-                batch.draw(spriteFactory, 200, showLicenseYOffset + 19, spriteFactory.getWidth() / 3, spriteFactory.getHeight() / 3);
+                batch.draw(spriteThere, 145, showLicenseYOffset + 10, spriteThere.getWidth() / 3, spriteThere.getHeight() / 3);
+                batch.draw(spriteFactory, 200, showLicenseYOffset + 10, spriteFactory.getWidth() / 3, spriteFactory.getHeight() / 3);
                 buttonShowLicense.setCaption(bundle.get(LICENSE));
                 buttonShowLicense.renderCaption(batch);
                 buttonSoundtrack.setCaption(bundle.get(SOUNDTRACK));

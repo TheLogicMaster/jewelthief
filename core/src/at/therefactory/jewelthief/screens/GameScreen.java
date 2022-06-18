@@ -21,6 +21,7 @@ package at.therefactory.jewelthief.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -120,6 +121,17 @@ public class GameScreen extends ScreenAdapter {
 
     private void update() {
         game.update();
+
+        float newX = game.getPlayer().getPosition().x + Controllers.getCurrent().getAxis(0) * 3;
+        float newY = game.getPlayer().getPosition().y + Controllers.getCurrent().getAxis(1) * 3;
+
+        newX = Math.min(game.getSpriteBackground().getX() + game.getSpriteBackground().getWidth() - game.getPlayer().getSprite().getWidth() / 2 - 1, newX);
+        newX = Math.max(game.getSpriteBackground().getX() + game.getPlayer().getSprite().getWidth() / 2, newX);
+
+        newY = Math.min(game.getSpriteBackground().getY() + game.getSpriteBackground().getHeight() - game.getPlayer().getSprite().getHeight() / 2 - 1, newY);
+        newY = Math.max(game.getSpriteBackground().getY() + game.getPlayer().getSprite().getHeight() / 2, newY);
+
+        game.getPlayer().setPosition(newX, newY);
     }
 
     @Override

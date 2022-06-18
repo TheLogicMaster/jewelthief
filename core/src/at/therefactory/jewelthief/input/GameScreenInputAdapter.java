@@ -70,7 +70,7 @@ public class GameScreenInputAdapter extends InputAdapter {
     @Override
     public boolean keyDown(int keycode) {
         boolean returnValue = super.keyDown(keycode);
-        if (keycode == Keys.BACK) {
+        if (keycode == Keys.BACK || keycode == Keys.BUTTON_B) {
             if (game.isMenuShown()) {
                 JewelThief.getInstance().switchToMainMenu();
                 return true;

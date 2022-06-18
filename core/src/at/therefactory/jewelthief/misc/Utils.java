@@ -98,9 +98,10 @@ public class Utils {
         int hours = numSeconds / 3600;
         int minutes = (numSeconds - (hours * 3600)) / 60;
         int seconds = Math.max(0, numSeconds - (hours * 3600) - (minutes * 60));
-        return (hours > 0 ? String.format("%2s", hours).replace(' ', '0') + ":" : "")
-                + String.format("%2s", minutes).replace(' ', '0')
-                + ":" + String.format("%2s", seconds).replace(' ', '0');
+//        return (hours > 0 ? String.format("%2s", hours).replace(' ', '0') + ":" : "")
+//                + String.format("%2s", minutes).replace(' ', '0')
+//                + ":" + String.format("%2s", seconds).replace(' ', '0');
+        return "" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
     }
 
     /**

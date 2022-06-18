@@ -1,6 +1,6 @@
 # Jewel Thief ![appicon](excluded-resources/appicon.png) <a href="https://www.youtube.com/channel/UCShL6kEbNc02XjA89zsrtDQ"><img src="http://therefactory.bplaced.net/img/youtube_hover.png" height="32px" align="right"></a>
 
-*This Android game is a remake of the legendary Jewel Thief game made by Paul Ligeski from ServantWare in 1991.*
+*This Android game is a remake of the legendary Jewel Thief game made by Paul Ligeski from ServantWare in 1991. Ported to Switch using [SwitchGDX](https://github.com/TheLogicMaster/switch-gdx).*
 
 [![version](https://img.shields.io/badge/version-2018.9-2095ff.svg)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-GPL--3.0-2095ff.svg)](LICENSE.md)
@@ -52,6 +52,9 @@ The more you tell me, the better my apps get. Please use the comments on <a href
 ## Permissions
 
 Your privacy is really important to me. The only permission that this app requires is internet access (android.permission.INTERNET). This is needed for the highscore list to function.
+
+## Building
+To build for PC or Switch, the `crypt` directory needs to be sourced from an APK of the game and placed into the `assets` directory.
 
 ## License
 

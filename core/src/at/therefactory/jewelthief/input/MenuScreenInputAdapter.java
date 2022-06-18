@@ -68,7 +68,7 @@ public class MenuScreenInputAdapter extends InputAdapter {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.BACK) {
+        if (keycode == Input.Keys.BACK || keycode == Input.Keys.BUTTON_B) {
             if (menuScreen.getState().equals(MenuScreen.MenuState.ShowSettings)
                     || menuScreen.getState().equals(MenuScreen.MenuState.ShowHighscores)
                     || menuScreen.getState().equals(MenuScreen.MenuState.ShowAbout)) {

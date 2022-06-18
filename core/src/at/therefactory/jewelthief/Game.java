@@ -344,16 +344,27 @@ public class Game {
         // build game end phrase to display in dialog
         String[] applausePhrases = bundle.get(APPLAUSE_PHRASES).split(";");
         String[] motivationPhrases = bundle.get(MOTIVATION_PHRASES).split(";");
-        gameEndPhrase = bundle
-                .format(GAME_END_PHRASE,
-                        Math.max(0, currentScore),
-                        player.getNumCollectedJewels(),
-                        Utils.secondsToTimeString(numSeconds),
-                        currentScore > bestScore ? bundle.get(IMPROVED_HIGHSCORE) : bundle
-                                .get(MISSED_HIGHSCORE), currentScore > bestScore ? (currentScore - bestScore)
-                                : Math.abs(Math.max(0, currentScore) - bestScore),
-                        currentScore > bestScore ? applausePhrases[Utils.randomWithin(0, applausePhrases.length - 1)]
-                                : motivationPhrases[Utils.randomWithin(0, motivationPhrases.length - 1)]);
+//        gameEndPhrase = bundle
+//                .format(GAME_END_PHRASE,
+//                        Math.max(0, currentScore),
+//                        player.getNumCollectedJewels(),
+//                        Utils.secondsToTimeString(numSeconds),
+//                        currentScore > bestScore ? bundle.get(IMPROVED_HIGHSCORE) : bundle
+//                                .get(MISSED_HIGHSCORE), currentScore > bestScore ? (currentScore - bestScore)
+//                                : Math.abs(Math.max(0, currentScore) - bestScore),
+//                        currentScore > bestScore ? applausePhrases[Utils.randomWithin(0, applausePhrases.length - 1)]
+//                                : motivationPhrases[Utils.randomWithin(0, motivationPhrases.length - 1)]);
+        int score = Math.max(0, currentScore);
+        gameEndPhrase = "You scored "
+            + (score == 0 ? "no points" : (score == 1 ? "one point" : score + " points"))
+            + " ("
+            + (player.getNumCollectedJewels() == 1 ? "1 jewel" : player.getNumCollectedJewels() + " jewels")
+            + " in "
+            + Utils.secondsToTimeString(numSeconds) + ")\nand "
+            + (currentScore > bestScore ? bundle.get(IMPROVED_HIGHSCORE) : bundle.get(MISSED_HIGHSCORE)) + " "
+            + (currentScore > bestScore ? (currentScore - bestScore) : Math.abs(Math.max(0, currentScore) - bestScore))
+            + "\n\n" + (currentScore > bestScore ? applausePhrases[Utils.randomWithin(0, applausePhrases.length - 1)]
+            : motivationPhrases[Utils.randomWithin(0, motivationPhrases.length - 1)]);
 
         if (currentScore > bestScore) {
             renderFireworksEffect = true;
